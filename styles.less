@@ -1,0 +1,72 @@
+@time: 0.1s;
+
+@background: #e3e3e3;
+@ui_light: #eeeeee;
+@ui_normal: #dedede;
+@ui_dark: #787878;
+@white: #ffffff;
+@purple: #967dfa;
+
+body {
+
+    margin: 0;
+    background-color: @background;
+    font-family: arial;
+    text-align: center;
+
+    #header {
+        width: 100%;
+        height: 60px;
+        background-color: @purple;
+    }
+
+    div {
+        &.section {
+            margin: 40px;
+            padding: 20px;
+            min-width: 400px;
+            border-radius: 20px;
+            background-color: @white;
+            overflow: auto;
+
+            &#input table {
+                border-spacing: 0;
+
+                td {
+                    width: 40px;
+                    height: 40px;
+                    text-align: center;
+                    transition: background-color @time;
+                    user-select: none;
+
+                    &:hover {
+                        background-color: @ui_dark !important;
+                    }
+
+                    &:nth-child(odd) {
+                        background-color: @ui_light;
+                    }
+
+                    &:nth-child(even) {
+                        background-color: @ui_normal;
+                    }
+                }
+            }
+
+            &#options {
+                span#dictionary {
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 50%;
+                    background-color: @ui_normal;
+                    display: inline-block;
+                    transition: background-color @time;
+
+                    &:hover {
+                        background-color: @ui_light;
+                    }
+                }
+            }
+        }
+    }
+}
