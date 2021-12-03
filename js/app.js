@@ -19,7 +19,9 @@ function convert(note, part) {
         clef: clef,
         keys: [`${JSB.BasicTone.LETTERS[note.letter]}/${note.octave}`],
         duration: {
+            "0.25": "16",
             "0.5": "8",
+            "0.75": "8",
             "1": "q",
             "1.5": "q",
             "2": "h",
@@ -31,10 +33,9 @@ function convert(note, part) {
     if (note.accidental !== 0) {
         vfNote.addAccidental(0, new VF.Accidental(JSB.BasicTone.ACCIDENTALS[note.accidental]));
     }
-    if (note.duration === 1.5 || note.duration === 3) {
+    if ([0.75, 1.5, 3].includes(note.duration)) {
         vfNote.addDot(0);
     }
-    // vfNote.addAnnotation(0, VF.ChordSymbol().addGlyph(bar[e].chord.string));
     return vfNote;
 }
 
