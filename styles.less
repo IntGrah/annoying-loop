@@ -1,10 +1,11 @@
 @fast: 0.1s;
-@slow: 0.5s;
+@slow: 0.4s;
 
 @grey1: #eeeeee;
 @grey2: #e3e3e3;
 @grey3: #dedede;
 @grey4: #c7c7c7;
+@grey5: #484848;
 @white: #ffffff;
 @purple1: #eadbfa;
 @purple2: #e3c8ff;
@@ -17,8 +18,11 @@
 body {
   margin: 0;
   background-color: @grey2;
-  font-family: arial;
+  font-family: sans-serif;
+  color: @grey5;
+  font-size: 12px;
   text-align: center;
+  user-select: none;
 
   #header {
     width: 100%;
@@ -56,8 +60,8 @@ body {
               padding: 0;
               min-width: 40px;
               height: 40px;
+              font-size: 12px;
               text-align: center;
-              user-select: none;
               cursor: pointer;
               transition: background-color @fast;
 
@@ -76,23 +80,38 @@ body {
 
     #options {
       display: flex;
-      justify-content: space-between;
+      justify-content: left;
       padding: 10px;
       height: 20px;
-      text-align: left;
 
       #key {
         width: 20px;
         height: 20px;
-        border-radius: 12px;
+        border-radius: 10px;
         background-color: @grey3;
-        transition: left @slow, top @slow, width @slow, height @slow, background-color @slow, box-shadow @slow;
+        z-index: 1;
+        transition: width @slow, background-color @slow, box-shadow @slow;
 
         &:hover {
-          width: 100px;
-          height: 100px;
+          width: 160px;
           background-color: @grey1;
           box-shadow: @shadow;
+        }
+      }
+
+      #tonality {
+        margin-left: 10px;
+        width: 48px;
+        height: 20px;
+        line-height: 20px;
+        border-radius: 10px;
+        background-color: @grey3;
+        transition: background-color @slow, box-shadow @slow;
+
+        &:hover {
+          background-color: @grey1;
+          box-shadow: @shadow;
+          cursor: pointer;
         }
       }
     }
@@ -112,13 +131,19 @@ body {
     float: right;
 
     #info {
-      height: calc(100% - 200px);
+      height: calc(100% - 200px); // TO DO
 
       #infoheader {
         height: 40px;
+        line-height: 40px;
+        border-radius: 10px 10px 0 0;
         background-color: @grey1;
         text-align: center;
       }
+    }
+
+    #console {
+      padding: 20px;
     }
   }
 }
