@@ -1,113 +1,148 @@
-@time: 0.1s;
+@fast: 0.1s;
+@slow: 0.5s;
 
-@background: #e3e3e3;
-@ui_light: #eeeeee;
-@ui_dark: #dedede;
-@ui_darker: #b7b7b7;
+@grey1: #eeeeee;
+@grey2: #e3e3e3;
+@grey3: #dedede;
+@grey4: #c7c7c7;
 @white: #ffffff;
-@purple: #9d5ee0;
+@purple1: #eadbfa;
+@purple2: #e3c8ff;
+@purple3: #d3a9ff;
+@purple4: #b28cda;
+@purple5: #9d5ee0;
+
+@shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
 
 body {
   margin: 0;
-  background-color: @background;
+  background-color: @grey2;
   font-family: arial;
   text-align: center;
 
   #header {
     width: 100%;
     height: 60px;
-    background-color: @purple;
+    background-color: @purple5;
   }
 
-  #center {
-    width: 100%;
-    height: 260px;
+  #left {
+    width: 70%;
+    float: left;
 
-    #left {
-      width: 60%;
-      float: left;
+    #input {
+      width: fit-content;
+      max-width: calc(100% - 40px);
+      background-color: @grey1;
+      overflow-x: auto;
 
-      #input {
-        margin: 20px;
+      #piece {
+        display: flex;
+        width: flex;
 
-        table {
-          border-spacing: 0;
+        .bar {
+          &:nth-child(odd) {
+            background-color: @purple2;
+          }
 
-          td {
-            width: 40px;
-            height: 40px;
-            background-color: @ui_light;
-            text-align: center;
-            user-select: none;
-            transition: background-color @time;
+          &:nth-child(even) {
+            background-color: @purple1;
+          }
 
-            &:hover {
-              background-color: @ui_dark  !important;
+          table {
+            border-spacing: 0;
+
+            td {
+              padding: 0;
+              min-width: 40px;
+              height: 40px;
+              text-align: center;
+              user-select: none;
+              cursor: pointer;
+              transition: background-color @fast;
+
+              &:hover {
+                background-color: @purple3;
+              }
+
+              &.selected {
+                background-color: @purple4;
+              }
             }
           }
         }
       }
+    }
 
-      #options {
-        margin: 20px;
-        padding: 10px;
-        text-align: left;
+    #options {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      height: 20px;
+      text-align: left;
 
-        #dictionary {
-          width: 20px;
-          height: 20px;
-          border-radius: 12px;
-          background-color: @ui_dark;
-          display: inline-block;
-          transition: width 0.5s, background-color 0.5s;
+      #key {
+        width: 20px;
+        height: 20px;
+        border-radius: 12px;
+        background-color: @grey3;
+        transition: left @slow, top @slow, width @slow, height @slow, background-color @slow, box-shadow @slow;
 
-          &:hover {
-            width: 200px;
-            background-color: @ui_light;
-          }
+        &:hover {
+          width: 100px;
+          height: 100px;
+          background-color: @grey1;
+          box-shadow: @shadow;
         }
       }
     }
 
-    #right {
-      width: 40%;
-      float: right;
+    #bottom {
+      overflow-x: auto;
 
-      #info {
-        margin: 20px;
-        padding: 20px;
-        height: calc(100% - 80px);
+      #output {
+        width: 100%;
+        height: 240px;
       }
     }
   }
 
-  #bottom {
-    margin: 0 20px;
-    height: 240px;
-    overflow-x: auto;
-    overflow-y: hidden;
+  #right {
+    width: 30%;
+    float: right;
 
-    &::-webkit-scrollbar {
-      width: 10px;
-    }
+    #info {
+      height: calc(100% - 200px);
 
-    &::-webkit-scrollbar-track {
-      border-radius: 0 0 10px 10px;
-      background: @ui_light;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background-color: @ui_dark;
-
-      &:hover {
-        background-color: @ui_darker;
+      #infoheader {
+        height: 40px;
+        background-color: @grey1;
+        text-align: center;
       }
     }
   }
 }
 
 .section {
+  margin: 20px;
   border-radius: 10px;
   background-color: @white;
-  box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
+  box-shadow: @shadow;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 0 0 10px 10px;
+    background: @grey1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: @grey3;
+
+    &:hover {
+      background-color: @grey4;
+    }
+  }
 }
