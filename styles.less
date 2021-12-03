@@ -3,77 +3,111 @@
 @background: #e3e3e3;
 @ui_light: #eeeeee;
 @ui_dark: #dedede;
+@ui_darker: #b7b7b7;
 @white: #ffffff;
 @purple: #9d5ee0;
 
 body {
-    margin: 0;
-    background-color: @background;
-    font-family: arial;
-    text-align: center;
-}
+  margin: 0;
+  background-color: @background;
+  font-family: arial;
+  text-align: center;
 
-#header {
+  #header {
     width: 100%;
     height: 60px;
     background-color: @purple;
-}
+  }
 
-#left {
-    width: 60%;
-    float: left;
-}
+  #center {
+    width: 100%;
+    height: 260px;
 
-#right {
-    width: 40%;
-    float: right;
+    #left {
+      width: 60%;
+      float: left;
+
+      #input {
+        margin: 20px;
+
+        table {
+          border-spacing: 0;
+
+          td {
+            width: 40px;
+            height: 40px;
+            background-color: @ui_light;
+            text-align: center;
+            user-select: none;
+            transition: background-color @time;
+
+            &:hover {
+              background-color: @ui_dark  !important;
+            }
+          }
+        }
+      }
+
+      #options {
+        margin: 20px;
+        padding: 10px;
+        text-align: left;
+
+        #dictionary {
+          width: 20px;
+          height: 20px;
+          border-radius: 12px;
+          background-color: @ui_dark;
+          display: inline-block;
+          transition: width 0.5s, background-color 0.5s;
+
+          &:hover {
+            width: 200px;
+            background-color: @ui_light;
+          }
+        }
+      }
+    }
+
+    #right {
+      width: 40%;
+      float: right;
+
+      #info {
+        margin: 20px;
+        padding: 20px;
+        height: calc(100% - 80px);
+      }
+    }
+  }
+
+  #bottom {
+    margin: 0 20px;
+    height: 240px;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 0 0 10px 10px;
+      background: @ui_light;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: @ui_dark;
+
+      &:hover {
+        background-color: @ui_darker;
+      }
+    }
+  }
 }
 
 .section {
-    margin: 40px;
-    padding: 20px;
-    min-width: 400px;
-    border-radius: 20px;
-    background-color: @white;
-    box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
-    overflow: auto;
-}
-
-#input table {
-    border-spacing: 0;
-
-    td {
-        width: 40px;
-        height: 40px;
-        background-color: @ui_light;
-        text-align: center;
-        user-select: none;
-        transition: background-color @time;
-
-        &:hover {
-            background-color: @ui_dark  !important;
-        }
-    }
-}
-
-#options {
-    text-align: left;
-}
-
-#dictionary {
-    width: 24px;
-    height: 24px;
-    border-radius: 12px;
-    background-color: @ui_dark;
-    display: inline-block;
-    transition: width 0.5s, background-color 0.5s;
-
-    &:hover {
-        width: 200px;
-        background-color: @ui_light;
-    }
-}
-
-#output {
-    height: 500px;
+  border-radius: 10px;
+  background-color: @white;
+  box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
 }

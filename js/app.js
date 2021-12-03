@@ -3,39 +3,116 @@ import Vex from "https://unpkg.com/vexflow";
 
 const VF = Vex.Flow;
 
-console.clear();
+const bach = new JSB.Piece("A major", "[A4|A A (F#/,G#/) A|(B/,A/) G# F#_@|G# A B E4/ F#/|(G#/,A/) F# E@]").load("[A3|A2 C# D F#|D# E B_@|G# F# E G#/ A/|B B2 E@]", "b").harmonise();
+const simple = new JSB.Piece("F# minor", "[F#4 F# F# G#|A G# F#_|D F# F# E#|F#__]").harmonise({
+    dictionary: JSB.Dict.PRIMARY_A
+});
+const anthem = new JSB.Piece("G major", "[G4 G A|F#. G/ A|B@ B C|B. A/ G|A G F#|G_.@]").harmonise();
+const hark = new JSB.Piece("G major", "[D G G. F#/|G@ B B A@|D D C_|B A B_@]").harmonise();
 
-const piece = new JSB.Piece("A major", "[A4|A A (F#/,G#/) A|(B/,A/) G# F#_@|G# A B E4/ F#/|(G#/,A/) F# E@]").load("[A3|A2 C# D F#|D# E B_@|G# F# E G#/ A/|B B2 E@]", "b").harmonise();
+function convert(note, part) {
+    const clef = part === "s" || part === "a" ? "treble" : "bass";
+    const stem = part === "s" || part === "t" ? 1 : -1;
+    const vfNote = new VF.StaveNote({
+        clef: clef,
+        keys: [`${JSB.BasicTone.LETTERS[note.letter]}/${note.octave}`],
+        duration: {
+            "0.5": "8",
+            "1": "q",
+            "1.5": "q",
+            "2": "h",
+            "3": "h",
+            "4": "1"
+        } [note.duration],
+        stem_direction: stem
+    });
+    if (note.accidental !== 0) {
+        vfNote.addAccidental(0, new VF.Accidental(JSB.BasicTone.ACCIDENTALS[note.accidental]));
+    }
+    if (note.duration === 1.5 || note.duration === 3) {
+        vfNote.addDot(0);
+    }
+    // vfNote.addAnnotation(0, VF.ChordSymbol().addGlyph(bar[e].chord.string));
+    return vfNote;
+}
 
-var div = document.getElementById("output")
-var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
+const factory = new Vex.Flow.Factory({
+    renderer: {
+        elementId: "output",
+    }
+});
 
-renderer.resize(500, 500);
+function render(piece) {
+    let x = 40;
 
-var context = renderer.getContext();
+    factory.getContext().clear();
+    factory.getContext().resize(100000, 240);
 
-var stave = new VF.Stave(10, 40, 400);
+    for (let i = 0; i < piece.bars.length; ++i) {
+        const s = [];
+        const a = [];
+        const t = [];
+        const b = [];
 
-stave.addClef("treble").addTimeSignature("4/4");
+        const bar = piece.bars[i];
 
-stave.setContext(context).draw();
+        for (let e = 0; e < bar.length; ++e) {
+            s.push(...bar[e].s.notes.map(note => convert(note, "s")));
+            a.push(...bar[e].a.notes.map(note => convert(note, "a")));
+            t.push(...bar[e].t.notes.map(note => convert(note, "t")));
+            b.push(...bar[e].b.notes.map(note => convert(note, "b")));
+        }
 
-var notes = [
-  new VF.StaveNote({clef: "treble", keys: ["c/5"], duration: "q" }),
-  new VF.StaveNote({clef: "treble", keys: ["d/4"], duration: "q" }),
-  new VF.StaveNote({clef: "treble", keys: ["b/4"], duration: "qr" }),
-  new VF.StaveNote({clef: "treble", keys: ["c/4", "e/4", "g/4"], duration: "q" })
-];
+        let width = 60 * piece.bars[i].map(event => event.duration).reduce((l, r) => l + r);
 
-var notes2 = [
-  new VF.StaveNote({clef: "treble", keys: ["c/4"], duration: "w" })
-];
+        if (i === 0) {
+            width += 80;
+        }
 
-var voices = [
-  new VF.Voice({num_beats: 4,  beat_value: 4}).addTickables(notes),
-  new VF.Voice({num_beats: 4,  beat_value: 4}).addTickables(notes2)
-];
+        const system = factory.System({
+            x: x,
+            y: 0,
+            width: width,
+            spaceBetweenStaves: 10
+        });
 
-var formatter = new VF.Formatter().joinVoices(voices).format(voices, 400);
+        x += width;
 
-voices.forEach(voice => voice.draw(context, stave));
+        const score = factory.EasyScore();
+
+        const vfKey = piece.key.tonality ? piece.key.tone.string : piece.key.degree(2).string;
+
+        let upper = system.addStave({
+            voices: [
+                score.voice(s).setStrict(false),
+                score.voice(a).setStrict(false)
+            ]
+        });
+
+        let lower = system.addStave({
+            voices: [
+                score.voice(t).setStrict(false),
+                score.voice(b).setStrict(false)
+            ]
+        });
+
+        if (i === 0) {
+            upper.addClef("treble").addKeySignature(vfKey);
+            lower.addClef("bass").addKeySignature(vfKey);
+            system.addConnector("brace");
+            system.addConnector("singleLeft");
+        }
+
+        system.addConnector(i === piece.bars.length - 1 ? "boldDoubleRight" : "singleRight");
+
+        factory.draw();
+    }
+    factory.getContext().resize(x + 40, 240);
+}
+
+render(bach);
+// let k = 0;
+// window.setInterval(() => {
+//     render([anthem, hark, bach, simple][k++]);
+//     k %= 4;
+// }, 1000);
