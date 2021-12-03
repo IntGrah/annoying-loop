@@ -1,16 +1,6 @@
 import * as JSB from "https://unpkg.com/jsb-js";
-const Note = JSB.Note;
-export default Note;
 import Vex from "https://unpkg.com/vexflow";
-
 const VF = Vex.Flow;
-
-const bach = new JSB.Piece("A major").parse("[A4|A A (F#/,G#/) A|(B/,A/) G# F#_@|G# A B E4/ F#/|(G#/,A/) F# E@]", "s").parse("[A3|A2 C# D F#|D# E B_@|G# F# E G#/ A/|B B2 E@]", "b").harmonise();
-const simple = new JSB.Piece("F# minor").parse("[F#4 F# F# G#|A G# F#_|D F# F# E#|F#__]", "s").harmonise({
-    dictionary: JSB.Dict.PRIMARY_A
-});
-const anthem = new JSB.Piece("G major").parse("[G4 G A|F#. G/ A|B@ B C|B. A/ G|A G F#|G_.@]", "s").harmonise();
-const hark = new JSB.Piece("G major").parse("[D G G. F#/|G@ B B A@|D D C_|B A B_@]", "s").harmonise();
 
 function convert(note, part) {
     const clef = part === "s" || part === "a" ? "treble" : "bass";
@@ -113,4 +103,7 @@ function render(piece) {
     factory.getContext().resize(x + 40, 240);
 }
 
-render(bach);
+export {
+    JSB,
+    render
+};
