@@ -1,4 +1,5 @@
-import { JSB, VF } from "./index.js";
+import { JSB } from "./index.js";
+const VF = Vex.Flow;
 
 function convert(note: JSB.Note, part: JSB.Util.Part) {
     const vfNote = new VF.StaveNote({

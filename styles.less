@@ -40,9 +40,8 @@ body {
       background-color: @grey1;
       overflow-x: auto;
 
-      #piece {
-        display: flex;
-        width: flex;
+      #piece { 
+        cursor: pointer;
 
         .bar {
           &:nth-child(odd) {
@@ -53,16 +52,12 @@ body {
             background-color: @purple1;
           }
 
-          table {
-            border-spacing: 0;
-
-            td {
+          .event {
+            .group {
               padding: 0;
-              min-width: 40px;
+              width: 40px;
               height: 40px;
               font-size: 12px;
-              text-align: center;
-              cursor: pointer;
               transition: background-color @fast;
 
               &:hover {
