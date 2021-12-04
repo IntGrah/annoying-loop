@@ -1,12 +1,8 @@
-import render from "./app.js";
 import * as JSB from "../node_modules/jsb-js/dist/index.js";
+import render from "./render.js";
+import display from "./display.js";
 
 const piece = new JSB.Piece().setKey("A major");
-
-function display(piece: JSB.Piece) {
-  $("#piece").empty().append(piece.getInput().map((bar: JSB.Util.Bar) => `<span class="bar"><table>${(["s", "a", "t", "b"] as JSB.Util.Part[]).map(part => `<tr>${bar.map(event => `<td>${event[part].string}</td>`).join("")}</tr>`).join("")}</table></span>`).join(""));
-  $("#piece").children().eq(selected.bar).children().children().children().eq(selected.part).children().eq(selected.event).addClass("selected");
-}
 
 const selected = {
   bar: 0,

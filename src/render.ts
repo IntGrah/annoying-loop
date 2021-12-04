@@ -1,5 +1,4 @@
-import * as JSB from "jsb-js";
-const VF = Vex.Flow;
+import { JSB, VF } from "./index.js";
 
 function convert(note: JSB.Note, part: JSB.Util.Part) {
     const vfNote = new VF.StaveNote({
@@ -14,7 +13,7 @@ function convert(note: JSB.Note, part: JSB.Util.Part) {
             "2": "h",
             "3": "h",
             "4": "1"
-        } [note.getDuration()] as string,
+        }[note.getDuration()] as string,
         stem_direction: part === "s" || part === "t" ? 1 : -1
     });
     if (note.getPitch().getTone().getAccidental() !== 0) {
