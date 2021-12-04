@@ -1,2 +1,2 @@
 # IntGrah.github.io
-jsb-js app
+This is an application of jsb-js.
