@@ -1,2 +1,2 @@
-import * as JSB from "https://unpkg.com/jsb-js";
+import * as JSB from "../node_modules/jsb-js/dist/index.js";
 export { JSB };
