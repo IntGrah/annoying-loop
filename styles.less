@@ -40,10 +40,13 @@ body {
       background-color: @grey1;
       overflow-x: auto;
 
-      #piece { 
+      #piece {
+        display: flex;
         cursor: pointer;
 
         .bar {
+          display: flex;
+
           &:nth-child(odd) {
             background-color: @purple2;
           }
@@ -53,12 +56,13 @@ body {
           }
 
           .event {
+            display: flex;
+            flex-direction: column;
+
             .group {
-              padding: 0;
               width: 40px;
               height: 40px;
-              font-size: 12px;
-              transition: background-color @fast;
+              overflow: auto;
 
               &:hover {
                 background-color: @purple3;
@@ -66,6 +70,14 @@ body {
 
               &.selected {
                 background-color: @purple4;
+              }
+
+              .note {
+                padding: 0;
+                width: 40px;
+                height: 40px;
+                font-size: 12px;
+                transition: background-color @fast;
               }
             }
           }
