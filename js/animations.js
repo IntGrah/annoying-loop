@@ -101,6 +101,6 @@ $(document).ready(function () {
   });
 });
 
-const anthem = new JSB.Piece("G major").parse("[(G4/,F#/) G A|F#. G/ A|B@ B C A|B. A/ G|A G F#|G_.@]", "s").harmonise();
+const anthem = new JSB.Piece("G major").parse("[(G4/,F#4/) G4 A4|F#4. G4/ A4|B4@ B4 C5|B4. A4/ G4|A4 G4 F#4|G4_.@]", "s").harmonise();
 render(anthem);
 display(anthem);

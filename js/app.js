@@ -3,11 +3,9 @@ import Vex from "https://unpkg.com/vexflow";
 const VF = Vex.Flow;
 
 function convert(note, part) {
-    const clef = part === "s" || part === "a" ? "treble" : "bass";
-    const stem = part === "s" || part === "t" ? 1 : -1;
     const vfNote = new VF.StaveNote({
-        clef: clef,
-        keys: [`${JSB.BasicTone.LETTERS[note.letter]}/${note.octave}`],
+        clef: part === "s" || part === "a" ? "treble" : "bass",
+        keys: [`${note.pitch.tone.string}/${note.pitch.octave}`],
         duration: {
             "0.25": "16",
             "0.5": "8",
@@ -18,10 +16,10 @@ function convert(note, part) {
             "3": "h",
             "4": "1"
         } [note.duration],
-        stem_direction: stem
+        stem_direction: part === "s" || part === "t" ? 1 : -1
     });
-    if (note.accidental !== 0) {
-        vfNote.addAccidental(0, new VF.Accidental(JSB.BasicTone.ACCIDENTALS[note.accidental]));
+    if (note.pitch.tone.accidental !== 0) {
+        vfNote.addAccidental(0, new VF.Accidental(JSB.Tone.ACCIDENTALS[note.pitch.tone.accidental]));
     }
     if ([0.75, 1.5, 3].includes(note.duration)) {
         vfNote.addDot(0);
