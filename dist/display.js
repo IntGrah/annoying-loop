@@ -1,0 +1,54 @@
+import { JSB } from "./index.js";
+import render from "./render.js";
+class Piece extends React.Component {
+    render() {
+        return React.createElement("div", { id: "piece" }, this.props.jsb.getInput().map((bar, i) => React.createElement(Bar, { key: i, jsb: bar })));
+    }
+}
+class Bar extends React.Component {
+    render() {
+        return React.createElement("span", { className: "bar" }, this.props.jsb.map((event, i) => React.createElement(Event, { key: i, jsb: event })));
+    }
+}
+class Event extends React.Component {
+    render() {
+        return React.createElement("span", { className: "event" },
+            React.createElement(Group, { key: "s", jsb: this.props.jsb.getS() }),
+            React.createElement(Group, { key: "a", jsb: this.props.jsb.getA() }),
+            React.createElement(Group, { key: "t", jsb: this.props.jsb.getT() }),
+            React.createElement(Group, { key: "b", jsb: this.props.jsb.getB() }));
+    }
+}
+class Group extends React.Component {
+    constructor() {
+        super(...arguments);
+        this.mirror = () => {
+            ReactDOM.render(this.props.jsb.getNotes().map((note, i) => React.createElement(Note, { key: i, jsb: note })), document.getElementById("mirror"));
+        };
+    }
+    render() {
+        return React.createElement("div", { className: "group", onMouseDown: this.mirror }, this.props.jsb.string());
+    }
+}
+class Note extends React.Component {
+    render() {
+        return React.createElement("span", { className: "note" }, this.props.jsb.string());
+    }
+}
+class Tonality extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { tonality: true };
+    }
+    render() {
+        return React.createElement("span", { id: "tonality-button", onMouseDown: () => this.setState({ tonality: !this.state.tonality }) }, this.state.tonality ? "Major" : "Minor");
+    }
+}
+export default function display(piece) {
+    ReactDOM.render(React.createElement(Piece, { jsb: piece }), document.getElementById("piece-box"));
+}
+ReactDOM.render(React.createElement(Tonality, null), document.getElementById("tonality-box"));
+const anthem = new JSB.Piece().setKey("G major").parse("[(G4/,F#4/) G4 A4|F#4. G4/ A4|B4@ B4 C5|B4. A4/ G4|A4 G4 F#4|G4_.@]", "s").harmonise();
+const bach = new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise();
+render(bach);
+display(bach);
