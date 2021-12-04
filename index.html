@@ -3,14 +3,18 @@
     <script src="https://cdn.jsdelivr.net/npm/less@4.1.1"></script>
     <script src="https://unpkg.com/vexflow@4.0.0/build/vexflow.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
 </head>
 
 <body>
     <header id="header"></header>
     <div id="left">
-        <div id="input" class="section"></div>
+        <div id="edit" class="section">
+            <span id="mirror"></span>
+
+        </div>
+        <div id="piece-box" class="section"></div>
         <div id="options" class="section">
             <span id="key">
                 <span id="A"></span>
@@ -21,7 +25,7 @@
                 <span id="F"></span>
                 <span id="G"></span>
             </span>
-            <span id="tonality">Major</span>
+            <span id="tonality-box"></span>
         </div>
         <div id="bottom" class="section">
             <div id="output"></div>
@@ -29,11 +33,11 @@
     </div>
     <div id="right">
         <div id="info" class="section">
-            <div id="infoheader">Console</div>
+            <div id="info-header">Console</div>
             <div id="Console">Text</div>
         </div>
     </div>
     <script type="module" src="dist/index.js"></script>
     <script type="module" src="dist/render.js"></script>
-    <script type="module" src="dist/animations.js"></script>
+    <script type="module" src="dist/display.js"></script>
 </body>

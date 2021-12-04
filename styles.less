@@ -32,9 +32,25 @@ body {
 
   #left {
     width: 70%;
+    min-width: 280px;
     float: left;
 
-    #input {
+    #edit {
+      width: fit-content;
+      max-width: calc(100% - 40px);
+      background-color: @grey1;
+      overflow-x: auto;
+
+      #mirror {
+        display: flex;
+
+        .note {
+          .box();
+        }
+      }
+    }
+
+    #piece-box {
       width: fit-content;
       max-width: calc(100% - 40px);
       background-color: @grey1;
@@ -60,25 +76,7 @@ body {
             flex-direction: column;
 
             .group {
-              width: 40px;
-              height: 40px;
-              overflow: auto;
-
-              &:hover {
-                background-color: @purple3;
-              }
-
-              &.selected {
-                background-color: @purple4;
-              }
-
-              .note {
-                padding: 0;
-                width: 40px;
-                height: 40px;
-                font-size: 12px;
-                transition: background-color @fast;
-              }
+              .box()
             }
           }
         }
@@ -106,7 +104,7 @@ body {
         }
       }
 
-      #tonality {
+      #tonality-box {
         margin-left: 10px;
         width: 48px;
         height: 20px;
@@ -135,12 +133,13 @@ body {
 
   #right {
     width: 30%;
+    min-width: 120px;
     float: right;
 
     #info {
       height: calc(100% - 200px); // TO DO
 
-      #infoheader {
+      #info-header {
         height: 40px;
         line-height: 40px;
         border-radius: 10px 10px 0 0;
@@ -176,5 +175,19 @@ body {
     &:hover {
       background-color: @grey4;
     }
+  }
+}
+
+.box() {
+  width: 40px;
+  height: 40px;
+  transition: background-color @fast;
+
+  &:hover {
+    background-color: @purple3;
+  }
+
+  &.selected {
+    background-color: @purple4;
   }
 }

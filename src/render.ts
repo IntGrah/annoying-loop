@@ -49,7 +49,7 @@ export default function render(piece: JSB.Piece) {
         const t = bars[i].map(e => e.getT().getNotes().map(note => convert(note, "t"))).flat();
         const b = bars[i].map(e => e.getB().getNotes().map(note => convert(note, "b"))).flat();
 
-        let width = 60 * bars[i].map(event => event.getDuration()).reduce((l, r) => l + r);
+        let width = 60 * bars[i].map(event => event.duration()).reduce((l, r) => l + r);
 
         if (i === 0) {
             width += 80;
