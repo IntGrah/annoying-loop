@@ -33,15 +33,12 @@ const factory = new Vex.Flow.Factory({
 });
 
 export default function render(piece: JSB.Piece) {
-    if (!piece.getStatus()) {
-        return;
-    }
     let x = 40;
 
     factory.getContext().clear();
     factory.getContext().resize(100000, 240);
 
-    const bars = piece.getOutput()
+    const bars = piece.getStatus() ? piece.getOutput() : piece.getInput();
 
     for (let i = 0; i < bars.length; ++i) {
         const s = bars[i].map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
