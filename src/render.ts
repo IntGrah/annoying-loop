@@ -36,7 +36,7 @@ export default function render(piece: JSB.Piece) {
     let x = 40;
 
     factory.getContext().clear();
-    factory.getContext().resize(100000, 300);
+    factory.getContext().resize(100000, 240);
 
     const bars = piece.getStatus() ? piece.getOutput() : piece.getInput()
 
@@ -90,5 +90,5 @@ export default function render(piece: JSB.Piece) {
 
         factory.draw();
     }
-    factory.getContext().resize(x + 40, 300);
+    factory.getContext().resize(x + 40, 240);
 }

@@ -2,25 +2,29 @@ import { JSB } from "./index.js";
 import render from "./render.js";
 
 function display(piece: JSB.Piece) {
-    const barsHtml = piece.getInput().map(bar => {
-        const eventsHtml = bar.map(event => {
+    const barsHtml = piece.getInput().map((bar, barIndex) => {
+        const eventsHtml = bar.map((event, eventIndex) => {
             const group = state.group();
 
             const sHtml = document.createElement("div");
             sHtml.setAttribute("class", "group".concat(event.getS() === group ? " selected" : ""));
             sHtml.appendChild(document.createTextNode(event.getS().main()?.string() ?? ""));
+            sHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "s"));
 
             const aHtml = document.createElement("div");
             aHtml.setAttribute("class", "group".concat(event.getA() === group ? " selected" : ""));
             aHtml.appendChild(document.createTextNode(event.getA().main()?.string() ?? ""));
+            aHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "a"));
 
             const tHtml = document.createElement("div");
             tHtml.setAttribute("class", "group".concat(event.getT() === group ? " selected" : ""));
             tHtml.appendChild(document.createTextNode(event.getT().main()?.string() ?? ""));
+            tHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "t"));
 
             const bHtml = document.createElement("div");
             bHtml.setAttribute("class", "group".concat(event.getB() === group ? " selected" : ""));
             bHtml.appendChild(document.createTextNode(event.getB().main()?.string() ?? ""));
+            bHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "b"));
 
             const eventHtml = document.createElement("div");
             eventHtml.setAttribute("class", "event");
@@ -41,10 +45,11 @@ function display(piece: JSB.Piece) {
     pieceBox.appendChild(pieceHtml);
 
     const mirror = document.getElementById("mirror") as HTMLElement;
-    const notesHtml = state.group().getNotes().map(note => {
+    const notesHtml = state.group().getNotes().map((note, noteIndex) => {
         const noteHtml = document.createElement("span");
         noteHtml.setAttribute("class", "note".concat(note === state.note() ? " selected" : ""));
         noteHtml.appendChild(document.createTextNode(note.string()));
+        noteHtml.addEventListener("mousedown", () => state.select(state.barIndex, state.eventIndex, state.part, noteIndex));
         return noteHtml;
     });
     mirror.innerHTML = "";
@@ -58,6 +63,15 @@ const state = {
     eventIndex: 0,
     part: "s" as JSB.Util.Part,
     noteIndex: 0,
+    tonality: true,
+
+    select(barIndex: number, eventIndex: number, part: JSB.Util.Part, noteIndex = 0) {
+        this.barIndex = barIndex;
+        this.eventIndex = eventIndex;
+        this.part = part;
+        this.noteIndex = noteIndex;
+        display(piece);
+    },
 
     group() {
         return piece.getInput()[this.barIndex][this.eventIndex][this.part] as JSB.Group;
@@ -67,7 +81,13 @@ const state = {
         return this.group().getNotes()[this.noteIndex];
     },
 
-    tonality: true
+    setLetter(letter: number) {
+        this.note()?.getPitch().getTone().setLetter(letter);
+    },
+
+    setOctave(octave: number) {
+        this.note()?.getPitch().setOctave(octave);
+    }
 };
 
 const tonality = document.getElementById("tonality") as HTMLElement;
@@ -81,18 +101,18 @@ tonality.addEventListener("mousedown", () => {
 
 document.addEventListener("keydown", e => {
     switch (e.key) {
-        case "a": case "A": state.note()?.getPitch().getTone().setLetter(5); break;
-        case "b": case "B": state.note()?.getPitch().getTone().setLetter(6); break;
-        case "c": case "C": state.note()?.getPitch().getTone().setLetter(0); break;
-        case "d": case "D": state.note()?.getPitch().getTone().setLetter(1); break;
-        case "e": case "E": state.note()?.getPitch().getTone().setLetter(2); break;
-        case "f": case "F": state.note()?.getPitch().getTone().setLetter(3); break;
-        case "g": case "G": state.note()?.getPitch().getTone().setLetter(4); break;
-        case "1": state.note()?.getPitch().setOctave(1); break;
-        case "2": state.note()?.getPitch().setOctave(2); break;
-        case "3": state.note()?.getPitch().setOctave(3); break;
-        case "4": state.note()?.getPitch().setOctave(4); break;
-        case "5": state.note()?.getPitch().setOctave(5); break;
+        case "a": case "A": state.setLetter(5); break;
+        case "b": case "B": state.setLetter(6); break;
+        case "c": case "C": state.setLetter(0); break;
+        case "d": case "D": state.setLetter(1); break;
+        case "e": case "E": state.setLetter(2); break;
+        case "f": case "F": state.setLetter(3); break;
+        case "g": case "G": state.setLetter(4); break;
+        case "1": state.setOctave(1); break;
+        case "2": state.setOctave(2); break;
+        case "3": state.setOctave(3); break;
+        case "4": state.setOctave(4); break;
+        case "5": state.setOctave(5); break;
         case "#": state.note()?.getPitch().getTone().alterAccidental(1); break;
         case "'": state.note()?.getPitch().getTone().alterAccidental(-1); break;
         case "Enter":

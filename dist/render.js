@@ -32,7 +32,7 @@ const factory = new Vex.Flow.Factory({
 export default function render(piece) {
     let x = 40;
     factory.getContext().clear();
-    factory.getContext().resize(100000, 300);
+    factory.getContext().resize(100000, 240);
     const bars = piece.getStatus() ? piece.getOutput() : piece.getInput();
     for (let i = 0; i < bars.length; ++i) {
         const s = bars[i].map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
@@ -73,5 +73,5 @@ export default function render(piece) {
         system.addConnector(i === bars.length - 1 ? "boldDoubleRight" : "singleRight");
         factory.draw();
     }
-    factory.getContext().resize(x + 40, 300);
+    factory.getContext().resize(x + 40, 240);
 }
