@@ -2,51 +2,73 @@ import { JSB } from "./index.js";
 import render from "./render.js";
 class Piece extends React.Component {
     render() {
-        return React.createElement("div", { id: "piece" }, this.props.jsb.getInput().map((bar, i) => React.createElement(Bar, { key: i, jsb: bar, bar: i })));
+        return React.createElement("div", { id: "piece" }, bach.getInput().map((bar, i) => React.createElement(Bar, { key: i, bar: i })));
     }
 }
 class Bar extends React.Component {
     render() {
-        return React.createElement("span", { className: "bar" }, this.props.jsb.map((event, i) => React.createElement(Event, { key: i, jsb: event, time: { bar: this.props.bar, event: i } })));
+        return React.createElement("span", { className: "bar" }, bach.getInput()[this.props.bar].map((event, i) => React.createElement(Event, { key: i, ...this.props, event: i })));
     }
 }
 class Event extends React.Component {
     render() {
-        return React.createElement("span", { className: "event" },
-            React.createElement(Group, { key: "s", jsb: this.props.jsb.getS(), time: this.props.time, part: "s" }),
-            React.createElement(Group, { key: "a", jsb: this.props.jsb.getA(), time: this.props.time, part: "a" }),
-            React.createElement(Group, { key: "t", jsb: this.props.jsb.getT(), time: this.props.time, part: "t" }),
-            React.createElement(Group, { key: "b", jsb: this.props.jsb.getB(), time: this.props.time, part: "b" }));
+        const parts = ["s", "a", "t", "b"];
+        return React.createElement("span", { className: "event" }, parts.map(part => React.createElement(Group, { key: part, ...this.props, part: part, group: bach.getInput()[this.props.bar][this.props.event][part], selected: this.props.bar === selectedGroupProps.bar && this.props.event === selectedGroupProps.event && selectedGroupProps.part === part })));
     }
 }
 class Group extends React.Component {
-    constructor() {
-        super(...arguments);
+    constructor(props) {
+        super(props);
         this.mouseDown = () => {
-            selectedGroup = this.props;
-            ReactDOM.render(this.props.jsb.getNotes().map((note, i) => React.createElement(Note, { key: i, jsb: note, selected: i === 0, time: this.props.time, part: this.props.part, note: i })), document.getElementById("mirror"));
+            selectedGroup.setState({ selected: false });
+            this.setState({ selected: true });
+            selectedGroup = this;
+            selectedGroupProps = { ...this.props };
+            selectedNoteIndex = 0;
+            ReactDOM.render(this.props.group.getNotes().map((note, i) => React.createElement(Note, { key: i, ...this.props, selected: this.props.bar === selectedGroupProps.bar && this.props.event === selectedGroupProps.event && this.props.part === selectedGroupProps.part && i === selectedNoteIndex, index: i })), document.getElementById("mirror"));
         };
+        this.state = { selected: props.selected };
+        if (props.selected) {
+            selectedGroup = this;
+        }
     }
     render() {
-        return React.createElement("div", { className: "group", onMouseDown: this.mouseDown }, this.props.jsb.main()?.string() ?? "");
+        return React.createElement("div", { className: "group".concat(this.state.selected ? " selected" : ""), onMouseDown: this.mouseDown }, this.props.group.main()?.string() ?? "");
     }
 }
 class Note extends React.Component {
     constructor(props) {
         super(props);
-        selectedNote = props;
+        this.mouseDown = () => {
+            selectedNote.setState({ selected: false });
+            this.setState({ selected: true });
+            selectedNote = this;
+            selectedNoteIndex = this.props.index;
+        };
+        this.state = { selected: props.selected };
+        if (props.selected) {
+            selectedNote = this;
+        }
     }
     render() {
-        return React.createElement("span", { className: "note".concat(this.props.selected ? " selected" : "") }, this.props.jsb.string());
+        return React.createElement("span", { className: "note".concat(this.state.selected ? " selected" : ""), onMouseDown: this.mouseDown }, selectedGroupProps.group.getNotes()[this.props.index].string());
     }
 }
 function display(piece) {
-    ReactDOM.render(React.createElement(Piece, { jsb: piece }), document.getElementById("piece-box"));
+    ReactDOM.render(React.createElement(Piece, null), document.getElementById("piece-box"));
 }
-let selectedGroup;
-let selectedNote;
 const anthem = new JSB.Piece().setKey("G major").parse("[(G4/,F#4/) G4 A4|F#4. G4/ A4|B4@ B4 C5|B4. A4/ G4|A4 G4 F#4|G4_.@]", "s").harmonise();
 const bach = new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise();
+let selectedGroup;
+let selectedGroupProps = {
+    bar: 0,
+    event: 0,
+    part: "s",
+    group: bach.getInput()[0][0].getS(),
+    selected: false
+};
+let selectedNote;
+let selectedNoteIndex;
 class Tonality extends React.Component {
     constructor(props) {
         super(props);
@@ -58,60 +80,67 @@ class Tonality extends React.Component {
 }
 ReactDOM.render(React.createElement(Tonality, null), document.getElementById("tonality-box"));
 document.addEventListener("keydown", e => {
+    const note = selectedGroupProps.group.getNotes()[selectedNoteIndex];
+    if (note) {
+        switch (e.key) {
+            case "a":
+            case "A":
+                note.getPitch().getTone().setLetter(5);
+                break;
+            case "b":
+            case "B":
+                note.getPitch().getTone().setLetter(6);
+                break;
+            case "c":
+            case "C":
+                note.getPitch().getTone().setLetter(0);
+                break;
+            case "d":
+            case "D":
+                note.getPitch().getTone().setLetter(1);
+                break;
+            case "e":
+            case "E":
+                note.getPitch().getTone().setLetter(2);
+                break;
+            case "f":
+            case "F":
+                note.getPitch().getTone().setLetter(3);
+                break;
+            case "g":
+            case "G":
+                note.getPitch().getTone().setLetter(4);
+                break;
+            case "1":
+                note.getPitch().setOctave(1);
+                break;
+            case "2":
+                note.getPitch().setOctave(2);
+                break;
+            case "3":
+                note.getPitch().setOctave(3);
+                break;
+            case "4":
+                note.getPitch().setOctave(4);
+                break;
+            case "5":
+                note.getPitch().setOctave(5);
+                break;
+            case "#":
+                note.getPitch().getTone().alterAccidental(1);
+                break;
+            case "'":
+                note.getPitch().getTone().alterAccidental(-1);
+                break;
+        }
+    }
     switch (e.key) {
-        case "a":
-        case "A":
-            selectedNote.jsb.getPitch().getTone().setLetter(5);
-            break;
-        case "b":
-        case "B":
-            selectedNote.jsb.getPitch().getTone().setLetter(6);
-            break;
-        case "c":
-        case "C":
-            selectedNote.jsb.getPitch().getTone().setLetter(0);
-            break;
-        case "d":
-        case "D":
-            selectedNote.jsb.getPitch().getTone().setLetter(1);
-            break;
-        case "e":
-        case "E":
-            selectedNote.jsb.getPitch().getTone().setLetter(2);
-            break;
-        case "f":
-        case "F":
-            selectedNote.jsb.getPitch().getTone().setLetter(3);
-            break;
-        case "g":
-        case "G":
-            selectedNote.jsb.getPitch().getTone().setLetter(4);
-            break;
-        case "1":
-            selectedNote.jsb.getPitch().setOctave(1);
-            break;
-        case "2":
-            selectedNote.jsb.getPitch().setOctave(2);
-            break;
-        case "3":
-            selectedNote.jsb.getPitch().setOctave(3);
-            break;
-        case "4":
-            selectedNote.jsb.getPitch().setOctave(4);
-            break;
-        case "5":
-            selectedNote.jsb.getPitch().setOctave(5);
-            break;
-        case "6":
-            selectedNote.jsb.getPitch().setOctave(6);
-            break;
-        case "#":
-            selectedNote.jsb.getPitch().getTone().alterAccidental(1);
-            break;
-        case "'":
-            selectedNote.jsb.getPitch().getTone().alterAccidental(-1);
+        case "Tab":
+            e.preventDefault();
+            ++selectedGroupProps.bar;
             break;
     }
+    console.log(selectedGroupProps);
     display(bach);
     render(bach.harmonise());
 });

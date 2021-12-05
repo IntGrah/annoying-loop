@@ -17,7 +17,7 @@ function convert(note, part) {
         stem_direction: part === "s" || part === "t" ? 1 : -1
     });
     if (note.getPitch().getTone().getAccidental() !== 0) {
-        vfNote.addAccidental(0, new VF.Accidental(JSB.Tone.ACCIDENTALS[note.getPitch().getTone().getAccidental()]));
+        vfNote.addAccidental(0, new VF.Accidental(JSB.Tone.ACCIDENTALS[note.getPitch().getTone().getAccidental()].replace("x", "##")));
     }
     if ([0.75, 1.5, 3].includes(note.getDuration())) {
         vfNote.addDot(0);
@@ -32,7 +32,7 @@ const factory = new Vex.Flow.Factory({
 export default function render(piece) {
     let x = 40;
     factory.getContext().clear();
-    factory.getContext().resize(100000, 240);
+    factory.getContext().resize(100000, 300);
     const bars = piece.getStatus() ? piece.getOutput() : piece.getInput();
     for (let i = 0; i < bars.length; ++i) {
         const s = bars[i].map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
@@ -73,5 +73,5 @@ export default function render(piece) {
         system.addConnector(i === bars.length - 1 ? "boldDoubleRight" : "singleRight");
         factory.draw();
     }
-    factory.getContext().resize(x + 40, 240);
+    factory.getContext().resize(x + 40, 300);
 }

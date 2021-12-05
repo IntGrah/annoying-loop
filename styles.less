@@ -58,7 +58,6 @@ body {
 
       #piece {
         display: flex;
-        cursor: pointer;
 
         .bar {
           display: flex;
@@ -121,12 +120,12 @@ body {
       }
     }
 
-    #bottom {
+    #output-box {
       overflow-x: auto;
 
       #output {
         width: 100%;
-        height: 240px;
+        height: 300px;
       }
     }
   }
@@ -182,6 +181,7 @@ body {
   width: 40px;
   height: 40px;
   line-height: 40px;
+  cursor: pointer;
   transition: background-color @fast;
 
   &:hover {
