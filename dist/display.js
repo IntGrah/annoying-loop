@@ -1,4 +1,4 @@
-import { JSB } from "./index.js";
+import * as JSB from "../node_modules/jsb-js/dist/index.js";
 import render from "./render.js";
 function display(piece) {
     const barsHtml = piece.getInput().map((bar, barIndex) => {
