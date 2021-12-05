@@ -3,8 +3,6 @@
     <script src="https://cdn.jsdelivr.net/npm/less@4.1.1"></script>
     <script src="https://unpkg.com/vexflow@4.0.0/build/vexflow.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
 </head>
 
 <body>
@@ -12,7 +10,6 @@
     <div id="left">
         <div id="edit" class="section">
             <span id="mirror"></span>
-
         </div>
         <div id="piece-box" class="section"></div>
         <div id="options" class="section">
@@ -25,7 +22,9 @@
                 <span id="F"></span>
                 <span id="G"></span>
             </span>
-            <span id="tonality-box"></span>
+            <span id="tonality-box">
+                <span id="tonality">Major</span>
+            </span>
         </div>
         <div id="output-box" class="section">
             <div id="output"></div>
