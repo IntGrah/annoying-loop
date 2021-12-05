@@ -4,15 +4,19 @@
 import { JSB } from "./index.js";
 import render from "./render.js";
 
-class Piece extends React.Component {
+interface PieceProps {
+    piece: JSB.Piece;
+}
+
+class Piece extends React.Component<PieceProps> {
     render() {
         return <div id="piece">
-            {piece.getInput().map((bar, i) => <Bar key={i} bar={i} />)}
+            {piece.getInput().map((bar, i) => <Bar key={i} {...this.props} bar={i} />)}
         </div>;
     }
 }
 
-interface BarProps {
+interface BarProps extends PieceProps {
     bar: number;
 }
 
@@ -58,25 +62,25 @@ class Group extends React.Component<GroupProps, Selectable> {
             selectedGroup = this;
         }
     }
-    mouseDown = () => {
+    select = (index: number) => {
         selectedGroup.setState({ selected: false });
         this.setState({ selected: true });
         selectedGroup = this;
         selected.bar = this.props.bar;
         selected.event = this.props.event;
         selected.part = this.props.part;
-        selected.index = 0;
+        selected.index = index;
         ReactDOM.render(
-        this.props.group.getNotes().map((note, i) => <Note key={i} {...this.props} selected={
-            this.props.bar === selected.bar && this.props.event === selected.event && this.props.part === selected.part && i === selected.index
-        } index={i} />),
+            this.props.group.getNotes().map((note, i) => <Note key={i} {...this.props} selected={
+                this.props.bar === selected.bar && this.props.event === selected.event && this.props.part === selected.part && i === selected.index
+            } index={i} />),
             document.getElementById("mirror")
         );
     }
 
-render() {
-    return <div className={"group".concat(this.state.selected ? " selected" : "")} onMouseDown={this.mouseDown}>{this.props.group.main()?.string() ?? ""}</div>;
-}
+    render() {
+        return <div className={"group".concat(this.state.selected ? " selected" : "")} onMouseDown={() => this.select(0)}>{this.props.group.main()?.string() ?? ""}</div>;
+    }
 }
 
 interface NoteProps extends GroupProps {
@@ -107,8 +111,8 @@ class Note extends React.Component<NoteProps, Selectable> {
 const piece = new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise();
 
 let selectedGroup: Group;
-
-let selected = {
+let selectedNote: Note;
+const selected = {
     bar: 0,
     event: 0,
     part: "s" as JSB.Util.Part,
@@ -122,7 +126,6 @@ let selected = {
         return this.group().getNotes()[this.index];
     }
 };
-let selectedNote: Note;
 
 class Tonality extends React.Component<{}, { tonality: boolean }> {
     constructor(props: {}) {
@@ -133,7 +136,7 @@ class Tonality extends React.Component<{}, { tonality: boolean }> {
     onMouseDown = () => {
         piece.getKey().setTonality(!this.state.tonality);
         this.setState({ tonality: !this.state.tonality });
-        display();
+        display(piece);
         render(piece.harmonise());
     }
 
@@ -163,19 +166,19 @@ document.addEventListener("keydown", e => {
         }
     }
     switch (e.key) {
-        case "Tab": e.preventDefault(); ++selected.bar; break;
+        case "Tab": e.preventDefault(); ++selected.bar; selected.group().getNotes()[selected.index].setPitch(JSB.Pitch.parse("C4")); break;
     }
-    console.log(selected);
-    display();
+    display(piece);
+    selectedGroup.select(selected.index);
     render(piece.harmonise());
 });
 
-display();
-selectedGroup.mouseDown();
+display(piece);
+selectedGroup.select(0);
 render(piece);
 
-function display() {
-    ReactDOM.render(<Piece />, document.getElementById("piece-box"));
+function display(piece: JSB.Piece) {
+    ReactDOM.render(<Piece piece={piece} />, document.getElementById("piece-box"));
 }
 
 ReactDOM.render(<Tonality />, document.getElementById("tonality-box"));

@@ -2,7 +2,7 @@ import { JSB } from "./index.js";
 import render from "./render.js";
 class Piece extends React.Component {
     render() {
-        return React.createElement("div", { id: "piece" }, piece.getInput().map((bar, i) => React.createElement(Bar, { key: i, bar: i })));
+        return React.createElement("div", { id: "piece" }, piece.getInput().map((bar, i) => React.createElement(Bar, { key: i, ...this.props, bar: i })));
     }
 }
 class Bar extends React.Component {
@@ -19,14 +19,14 @@ class Event extends React.Component {
 class Group extends React.Component {
     constructor(props) {
         super(props);
-        this.mouseDown = () => {
+        this.select = (index) => {
             selectedGroup.setState({ selected: false });
             this.setState({ selected: true });
             selectedGroup = this;
             selected.bar = this.props.bar;
             selected.event = this.props.event;
             selected.part = this.props.part;
-            selected.index = 0;
+            selected.index = index;
             ReactDOM.render(this.props.group.getNotes().map((note, i) => React.createElement(Note, { key: i, ...this.props, selected: this.props.bar === selected.bar && this.props.event === selected.event && this.props.part === selected.part && i === selected.index, index: i })), document.getElementById("mirror"));
         };
         this.state = { selected: props.selected };
@@ -35,7 +35,7 @@ class Group extends React.Component {
         }
     }
     render() {
-        return React.createElement("div", { className: "group".concat(this.state.selected ? " selected" : ""), onMouseDown: this.mouseDown }, this.props.group.main()?.string() ?? "");
+        return React.createElement("div", { className: "group".concat(this.state.selected ? " selected" : ""), onMouseDown: () => this.select(0) }, this.props.group.main()?.string() ?? "");
     }
 }
 class Note extends React.Component {
@@ -58,7 +58,8 @@ class Note extends React.Component {
 }
 const piece = new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise();
 let selectedGroup;
-let selected = {
+let selectedNote;
+const selected = {
     bar: 0,
     event: 0,
     part: "s",
@@ -70,14 +71,13 @@ let selected = {
         return this.group().getNotes()[this.index];
     }
 };
-let selectedNote;
 class Tonality extends React.Component {
     constructor(props) {
         super(props);
         this.onMouseDown = () => {
             piece.getKey().setTonality(!this.state.tonality);
             this.setState({ tonality: !this.state.tonality });
-            display();
+            display(piece);
             render(piece.harmonise());
         };
         this.state = { tonality: true };
@@ -145,16 +145,17 @@ document.addEventListener("keydown", e => {
         case "Tab":
             e.preventDefault();
             ++selected.bar;
+            selected.group().getNotes()[selected.index].setPitch(JSB.Pitch.parse("C4"));
             break;
     }
-    console.log(selected);
-    display();
+    display(piece);
+    selectedGroup.select(selected.index);
     render(piece.harmonise());
 });
-display();
-selectedGroup.mouseDown();
+display(piece);
+selectedGroup.select(0);
 render(piece);
-function display() {
-    ReactDOM.render(React.createElement(Piece, null), document.getElementById("piece-box"));
+function display(piece) {
+    ReactDOM.render(React.createElement(Piece, { piece: piece }), document.getElementById("piece-box"));
 }
 ReactDOM.render(React.createElement(Tonality, null), document.getElementById("tonality-box"));
