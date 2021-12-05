@@ -66,6 +66,12 @@ const state = {
     },
     note() {
         return this.group().getNotes()[this.noteIndex];
+    },
+    defaultNote() {
+        if (state.note() === undefined) {
+            state.group().setNotes([JSB.Note.parse("C4")]);
+        }
+        return state.note();
     }
 };
 const tonality = document.getElementById("tonality");
@@ -104,52 +110,52 @@ document.addEventListener("keydown", e => {
     switch (e.key) {
         case "a":
         case "A":
-            state.note()?.getPitch().setTone(JSB.Tone.parse("A"));
+            state.defaultNote().getPitch().setTone(JSB.Tone.parse("A"));
             break;
         case "b":
         case "B":
-            state.note()?.getPitch().setTone(JSB.Tone.parse("B"));
+            state.defaultNote().getPitch().setTone(JSB.Tone.parse("B"));
             break;
         case "c":
         case "C":
-            state.note()?.getPitch().setTone(JSB.Tone.parse("C"));
+            state.defaultNote().getPitch().setTone(JSB.Tone.parse("C"));
             break;
         case "d":
         case "D":
-            state.note()?.getPitch().setTone(JSB.Tone.parse("D"));
+            state.defaultNote().getPitch().setTone(JSB.Tone.parse("D"));
             break;
         case "e":
         case "E":
-            state.note()?.getPitch().setTone(JSB.Tone.parse("E"));
+            state.defaultNote().getPitch().setTone(JSB.Tone.parse("E"));
             break;
         case "f":
         case "F":
-            state.note()?.getPitch().setTone(JSB.Tone.parse("F"));
+            state.defaultNote().getPitch().setTone(JSB.Tone.parse("F"));
             break;
         case "g":
         case "G":
-            state.note()?.getPitch().setTone(JSB.Tone.parse("G"));
+            state.defaultNote().getPitch().setTone(JSB.Tone.parse("G"));
             break;
         case "1":
-            state.note()?.getPitch().setOctave(1);
+            state.defaultNote().getPitch().setOctave(1);
             break;
         case "2":
-            state.note()?.getPitch().setOctave(2);
+            state.defaultNote().getPitch().setOctave(2);
             break;
         case "3":
-            state.note()?.getPitch().setOctave(3);
+            state.defaultNote().getPitch().setOctave(3);
             break;
         case "4":
-            state.note()?.getPitch().setOctave(4);
+            state.defaultNote().getPitch().setOctave(4);
             break;
         case "5":
-            state.note()?.getPitch().setOctave(5);
+            state.defaultNote().getPitch().setOctave(5);
             break;
         case "#":
-            state.note()?.getPitch().getTone().alterAccidental(1);
+            state.defaultNote().getPitch().getTone().alterAccidental(1);
             break;
         case "'":
-            state.note()?.getPitch().getTone().alterAccidental(-1);
+            state.defaultNote().getPitch().getTone().alterAccidental(-1);
             break;
         case "Enter":
             if (e.shiftKey) {
@@ -194,6 +200,9 @@ document.addEventListener("keydown", e => {
                 ++state.noteIndex;
                 state.noteIndex %= length;
             }
+            break;
+        case "Backspace":
+            state.group().setIndex(0).setNotes([]);
             break;
     }
     display(state.piece);

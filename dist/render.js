@@ -19,7 +19,7 @@ function convert(note, part) {
     if (note.getPitch().getTone().getAccidental() !== 0) {
         vfNote.addAccidental(0, new VF.Accidental(JSB.Tone.ACCIDENTALS[note.getPitch().getTone().getAccidental()].replace("x", "##")));
     }
-    if ([0.75, 1.5, 3].includes(note.getDuration())) {
+    if ([0.75, 1.5, 3, 6].includes(note.getDuration())) {
         vfNote.addDot(0);
     }
     return vfNote;
