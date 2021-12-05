@@ -54,7 +54,7 @@ class Note extends React.Component {
         return React.createElement("span", { className: "note".concat(this.state.selected ? " selected" : ""), onMouseDown: this.mouseDown }, selectedGroupProps.group.getNotes()[this.props.index].string());
     }
 }
-function display(piece) {
+function display() {
     ReactDOM.render(React.createElement(Piece, null), document.getElementById("piece-box"));
 }
 const anthem = new JSB.Piece().setKey("G major").parse("[(G4/,F#4/) G4 A4|F#4. G4/ A4|B4@ B4 C5|B4. A4/ G4|A4 G4 F#4|G4_.@]", "s").harmonise();
@@ -141,8 +141,8 @@ document.addEventListener("keydown", e => {
             break;
     }
     console.log(selectedGroupProps);
-    display(bach);
+    display();
     render(bach.harmonise());
 });
-display(bach);
+display();
 render(bach);

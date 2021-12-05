@@ -102,7 +102,7 @@ class Note extends React.Component<NoteProps, Selectable> {
     }
 }
 
-function display(piece: JSB.Piece) {
+function display() {
     ReactDOM.render(<Piece />, document.getElementById("piece-box"));
 }
 
@@ -156,9 +156,9 @@ document.addEventListener("keydown", e => {
         case "Tab": e.preventDefault(); ++selectedGroupProps.bar; break;
     }
     console.log(selectedGroupProps);
-    display(bach);
+    display();
     render(bach.harmonise());
 });
 
-display(bach);
+display();
 render(bach);
