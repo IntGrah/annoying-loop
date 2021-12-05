@@ -3,7 +3,7 @@ const VF = Vex.Flow;
 function convert(note, part) {
     const vfNote = new VF.StaveNote({
         clef: part === "s" || part === "a" ? "treble" : "bass",
-        keys: [`${note.getPitch().getTone().string()}/${note.getPitch().getOctave()}`],
+        keys: [`${note.getPitch().getTone().string().replace("x", "##")}/${note.getPitch().getOctave()}`],
         duration: {
             "0.25": "16",
             "0.5": "8",

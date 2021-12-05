@@ -4,7 +4,7 @@ const VF = Vex.Flow;
 function convert(note: JSB.Note, part: JSB.Util.Part) {
     const vfNote = new VF.StaveNote({
         clef: part === "s" || part === "a" ? "treble" : "bass",
-        keys: [`${note.getPitch().getTone().string()}/${note.getPitch().getOctave()}`],
+        keys: [`${note.getPitch().getTone().string().replace("x", "##")}/${note.getPitch().getOctave()}`],
         duration: {
             "0.25": "16",
             "0.5": "8",
@@ -38,7 +38,7 @@ export default function render(piece: JSB.Piece) {
     factory.getContext().clear();
     factory.getContext().resize(100000, 240);
 
-    const bars = piece.getStatus() ? piece.getOutput() : piece.getInput();
+    const bars = piece.getStatus() ? piece.getOutput() : piece.getInput()
 
     for (let i = 0; i < bars.length; ++i) {
         const s = bars[i].map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();

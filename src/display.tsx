@@ -31,8 +31,15 @@ class Event extends React.Component<{ jsb: JSB.Event, time: JSB.Util.Time }> {
     }
 }
 
+interface GroupProps {
+    jsb: JSB.Group;
+    time: JSB.Util.Time;
+    part: JSB.Util.Part;
+}
+
 class Group extends React.Component<{ jsb: JSB.Group, time: JSB.Util.Time, part: JSB.Util.Part }> {
-    mirror = () => {
+    mouseDown = () => {
+        selectedGroup = this.props;
         ReactDOM.render(
             this.props.jsb.getNotes().map((note, i) => <Note key={i} jsb={note} selected={i === 0} time={this.props.time} part={this.props.part} note={i} />),
             document.getElementById("mirror")
@@ -40,15 +47,37 @@ class Group extends React.Component<{ jsb: JSB.Group, time: JSB.Util.Time, part:
     }
 
     render() {
-        return <div className="group" onMouseDown={this.mirror}>{this.props.jsb.main()?.string() ?? ""}</div>;
+        return <div className="group" onMouseDown={this.mouseDown}>{this.props.jsb.main()?.string() ?? ""}</div>;
     }
 }
 
-class Note extends React.Component<{ jsb: JSB.Note, selected: boolean, time: JSB.Util.Time, part: JSB.Util.Part, note: number }> {
+interface NoteProps {
+    jsb: JSB.Note;
+    selected: boolean;
+    time: JSB.Util.Time;
+    part: JSB.Util.Part;
+    note: number;
+}
+
+class Note extends React.Component<NoteProps> {
+    constructor(props: NoteProps) {
+        super(props);
+        selectedNote = props;
+    }
     render() {
         return <span className={"note".concat(this.props.selected ? " selected" : "")}>{this.props.jsb.string()}</span>;
     }
 }
+
+function display(piece: JSB.Piece) {
+    ReactDOM.render(<Piece jsb={piece} />, document.getElementById("piece-box"));
+}
+
+let selectedGroup: GroupProps;
+let selectedNote: NoteProps;
+
+const anthem = new JSB.Piece().setKey("G major").parse("[(G4/,F#4/) G4 A4|F#4. G4/ A4|B4@ B4 C5|B4. A4/ G4|A4 G4 F#4|G4_.@]", "s").harmonise();
+const bach = new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise();
 
 class Tonality extends React.Component<{}, { tonality: boolean }> {
     constructor(props: {}) {
@@ -60,15 +89,36 @@ class Tonality extends React.Component<{}, { tonality: boolean }> {
     }
 }
 
-export default function display(piece: JSB.Piece) {
-    ReactDOM.render(<Piece jsb={piece} />, document.getElementById("piece-box"));
-}
-
 ReactDOM.render(<Tonality />, document.getElementById("tonality-box"));
 
-let selected: Note;
-const anthem = new JSB.Piece().setKey("G major").parse("[(G4/,F#4/) G4 A4|F#4. G4/ A4|B4@ B4 C5|B4. A4/ G4|A4 G4 F#4|G4_.@]", "s").harmonise();
-const bach = new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise();
+document.addEventListener("keydown", e => {
+    switch (e.key) {
+        case "a":
+        case "A": selectedNote.jsb.getPitch().getTone().setLetter(5); break;
+        case "b":
+        case "B": selectedNote.jsb.getPitch().getTone().setLetter(6); break;
+        case "c":
+        case "C": selectedNote.jsb.getPitch().getTone().setLetter(0); break;
+        case "d":
+        case "D": selectedNote.jsb.getPitch().getTone().setLetter(1); break;
+        case "e":
+        case "E": selectedNote.jsb.getPitch().getTone().setLetter(2); break;
+        case "f":
+        case "F": selectedNote.jsb.getPitch().getTone().setLetter(3); break;
+        case "g":
+        case "G": selectedNote.jsb.getPitch().getTone().setLetter(4); break;
+        case "1": selectedNote.jsb.getPitch().setOctave(1); break;
+        case "2": selectedNote.jsb.getPitch().setOctave(2); break;
+        case "3": selectedNote.jsb.getPitch().setOctave(3); break;
+        case "4": selectedNote.jsb.getPitch().setOctave(4); break;
+        case "5": selectedNote.jsb.getPitch().setOctave(5); break;
+        case "6": selectedNote.jsb.getPitch().setOctave(6); break;
+        case "#": selectedNote.jsb.getPitch().getTone().alterAccidental(1); break;
+        case "'": selectedNote.jsb.getPitch().getTone().alterAccidental(-1); break;
+    }
+    display(bach);
+    render(bach.harmonise());
+});
 
-render(bach);
 display(bach);
+render(bach);
