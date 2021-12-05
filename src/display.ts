@@ -56,9 +56,8 @@ function display(piece: JSB.Piece) {
     mirror.append(...notesHtml);
 }
 
-const piece = new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise();
-
 const state = {
+    piece: new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise(),
     barIndex: 0,
     eventIndex: 0,
     part: "s" as JSB.Util.Part,
@@ -70,19 +69,15 @@ const state = {
         this.eventIndex = eventIndex;
         this.part = part;
         this.noteIndex = noteIndex;
-        display(piece);
+        display(this.piece);
     },
 
     group() {
-        return piece.getInput()[this.barIndex][this.eventIndex][this.part] as JSB.Group;
+        return this.piece.getInput()[this.barIndex][this.eventIndex][this.part] as JSB.Group;
     },
 
     note() {
         return this.group().getNotes()[this.noteIndex];
-    },
-
-    setLetter(letter: number) {
-        this.note()?.getPitch().getTone().setLetter(letter);
     },
 
     setOctave(octave: number) {
@@ -94,20 +89,26 @@ const tonality = document.getElementById("tonality") as HTMLElement;
 tonality.addEventListener("mousedown", () => {
     state.tonality = !state.tonality;
     tonality.innerText = state.tonality ? "Major" : "Minor";
-    piece.getKey().setTonality(state.tonality);
-    display(piece);
-    render(piece.harmonise());
+    state.piece.getKey().setTonality(state.tonality);
+    display(state.piece);
+    render(state.piece.harmonise());
+});
+
+document.getElementById("new-bar")?.addEventListener("mousedown", () => {
+    state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+    display(state.piece);
+    render(state.piece.harmonise());
 });
 
 document.addEventListener("keydown", e => {
     switch (e.key) {
-        case "a": case "A": state.setLetter(5); break;
-        case "b": case "B": state.setLetter(6); break;
-        case "c": case "C": state.setLetter(0); break;
-        case "d": case "D": state.setLetter(1); break;
-        case "e": case "E": state.setLetter(2); break;
-        case "f": case "F": state.setLetter(3); break;
-        case "g": case "G": state.setLetter(4); break;
+        case "a": case "A": state.note().getPitch().setTone(JSB.Tone.parse("A")); break;
+        case "b": case "B": state.note().getPitch().setTone(JSB.Tone.parse("B")); break;
+        case "c": case "C": state.note().getPitch().setTone(JSB.Tone.parse("C")); break;
+        case "d": case "D": state.note().getPitch().setTone(JSB.Tone.parse("D")); break;
+        case "e": case "E": state.note().getPitch().setTone(JSB.Tone.parse("E")); break;
+        case "f": case "F": state.note().getPitch().setTone(JSB.Tone.parse("F")); break;
+        case "g": case "G": state.note().getPitch().setTone(JSB.Tone.parse("G")); break;
         case "1": state.setOctave(1); break;
         case "2": state.setOctave(2); break;
         case "3": state.setOctave(3); break;
@@ -122,15 +123,15 @@ document.addEventListener("keydown", e => {
                         state.barIndex = 0;
                         state.eventIndex = 0;
                     } else {
-                        state.eventIndex = piece.getInput()[state.barIndex].length - 1;
+                        state.eventIndex = state.piece.getInput()[state.barIndex].length - 1;
                         state.noteIndex = 0;
                     }
                 } else {
                     state.noteIndex = 0;
                 }
             } else {
-                if (++state.eventIndex === piece.getInput()[state.barIndex].length) {
-                    if (++state.barIndex === piece.getInput().length) {
+                if (++state.eventIndex === state.piece.getInput()[state.barIndex].length) {
+                    if (++state.barIndex === state.piece.getInput().length) {
                         --state.barIndex;
                         --state.eventIndex;
                     } else {
@@ -154,9 +155,9 @@ document.addEventListener("keydown", e => {
             }
             break;
     }
-    display(piece);
-    render(piece.harmonise());
+    display(state.piece);
+    render(state.piece.harmonise());
 });
 
-display(piece);
-render(piece);
+display(state.piece);
+render(state.piece);

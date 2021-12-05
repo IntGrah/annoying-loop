@@ -21,7 +21,7 @@ body {
   background-color: @grey2;
   font-family: sans-serif;
   color: @grey5;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
   user-select: none;
 
@@ -57,6 +57,7 @@ body {
     float: left;
 
     #edit {
+      display: flex;
       width: fit-content;
       max-width: calc(100% - 40px);
       background-color: @grey1;
@@ -68,6 +69,14 @@ body {
         .note {
           .box();
         }
+      }
+
+      #new-event {
+        .box();
+      }
+
+      #new-bar {
+        .box();
       }
     }
 
