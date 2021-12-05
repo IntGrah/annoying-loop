@@ -21,6 +21,6 @@
   },
   "dependencies": {
     "@types/vexflow": "^3.0.1",
-    "jsb-js": "^1.4.12"
+    "jsb-js": "^1.5.0"
   }
 }
