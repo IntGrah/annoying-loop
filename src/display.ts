@@ -78,10 +78,6 @@ const state = {
 
     note() {
         return this.group().getNotes()[this.noteIndex];
-    },
-
-    setOctave(octave: number) {
-        this.note()?.getPitch().setOctave(octave);
     }
 };
 
@@ -94,26 +90,48 @@ tonality.addEventListener("mousedown", () => {
     render(state.piece.harmonise());
 });
 
-document.getElementById("new-bar")?.addEventListener("mousedown", () => {
-    state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+document.getElementById("new-event")?.addEventListener("mousedown", () => {
+    state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(new JSB.Group([new JSB.Note(new JSB.Pitch(state.piece.getKey().getTone(), 4), 1)], 0), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
     display(state.piece);
     render(state.piece.harmonise());
 });
 
+document.getElementById("new-bar")?.addEventListener("mousedown", () => {
+    state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(new JSB.Group([new JSB.Note(new JSB.Pitch(state.piece.getKey().getTone(), 4), 1)], 0), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+    display(state.piece);
+    render(state.piece.harmonise());
+});
+
+document.getElementById("delete-event")?.addEventListener("mousedown", () => {
+    if (state.piece.getInput()[state.barIndex].length > 1) {
+        state.piece.getInput()[state.barIndex].splice(state.eventIndex, 1);
+        display(state.piece);
+        render(state.piece.harmonise());
+    }
+});
+
+document.getElementById("delete-bar")?.addEventListener("mousedown", () => {
+    if (state.piece.getInput().length > 1) {
+        state.piece.getInput().splice(state.barIndex, 1);
+        display(state.piece);
+        render(state.piece.harmonise());
+    }
+});
+
 document.addEventListener("keydown", e => {
     switch (e.key) {
-        case "a": case "A": state.note().getPitch().setTone(JSB.Tone.parse("A")); break;
-        case "b": case "B": state.note().getPitch().setTone(JSB.Tone.parse("B")); break;
-        case "c": case "C": state.note().getPitch().setTone(JSB.Tone.parse("C")); break;
-        case "d": case "D": state.note().getPitch().setTone(JSB.Tone.parse("D")); break;
-        case "e": case "E": state.note().getPitch().setTone(JSB.Tone.parse("E")); break;
-        case "f": case "F": state.note().getPitch().setTone(JSB.Tone.parse("F")); break;
-        case "g": case "G": state.note().getPitch().setTone(JSB.Tone.parse("G")); break;
-        case "1": state.setOctave(1); break;
-        case "2": state.setOctave(2); break;
-        case "3": state.setOctave(3); break;
-        case "4": state.setOctave(4); break;
-        case "5": state.setOctave(5); break;
+        case "a": case "A": state.note()?.getPitch().setTone(JSB.Tone.parse("A")); break;
+        case "b": case "B": state.note()?.getPitch().setTone(JSB.Tone.parse("B")); break;
+        case "c": case "C": state.note()?.getPitch().setTone(JSB.Tone.parse("C")); break;
+        case "d": case "D": state.note()?.getPitch().setTone(JSB.Tone.parse("D")); break;
+        case "e": case "E": state.note()?.getPitch().setTone(JSB.Tone.parse("E")); break;
+        case "f": case "F": state.note()?.getPitch().setTone(JSB.Tone.parse("F")); break;
+        case "g": case "G": state.note()?.getPitch().setTone(JSB.Tone.parse("G")); break;
+        case "1": state.note()?.getPitch().setOctave(1); break;
+        case "2": state.note()?.getPitch().setOctave(2); break;
+        case "3": state.note()?.getPitch().setOctave(3); break;
+        case "4": state.note()?.getPitch().setOctave(4); break;
+        case "5": state.note()?.getPitch().setOctave(5); break;
         case "#": state.note()?.getPitch().getTone().alterAccidental(1); break;
         case "'": state.note()?.getPitch().getTone().alterAccidental(-1); break;
         case "Enter":
