@@ -107,6 +107,7 @@ document.getElementById("delete-bar")?.addEventListener("mousedown", () => {
     }
 });
 document.addEventListener("keydown", e => {
+    let harmonise = true;
     switch (e.key) {
         case "a":
         case "A":
@@ -158,6 +159,7 @@ document.addEventListener("keydown", e => {
             state.defaultNote().getPitch().getTone().alterAccidental(-1);
             break;
         case "Enter":
+            harmonise = false;
             if (e.shiftKey) {
                 if (state.eventIndex-- === 0) {
                     if (state.barIndex-- === 0) {
@@ -191,6 +193,7 @@ document.addEventListener("keydown", e => {
             break;
         case "Tab":
             e.preventDefault();
+            harmonise = false;
             const length = state.group().getNotes().length;
             if (e.shiftKey) {
                 state.noteIndex += length - 1;
@@ -205,8 +208,11 @@ document.addEventListener("keydown", e => {
             state.group().setIndex(0).setNotes([]);
             break;
     }
+    if (harmonise) {
+        state.piece.harmonise();
+    }
     display(state.piece);
-    render(state.piece.harmonise());
+    render(state.piece);
 });
 display(state.piece);
 render(state.piece);

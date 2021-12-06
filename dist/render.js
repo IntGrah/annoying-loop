@@ -52,16 +52,22 @@ export default function render(piece) {
         x += width;
         const score = factory.EasyScore();
         const vfKey = piece.getKey().getTonality() ? piece.getKey().getTone().string() : piece.getKey().degree(2).string();
+        const vfTime = {
+            time: {
+                num_beats: bars[i].map(event => event.duration()).reduce((l, r) => l + r),
+                beat_value: 4,
+            }
+        };
         let upper = system.addStave({
             voices: [
-                score.voice(s, {}).setStrict(false),
-                score.voice(a, {}).setStrict(false)
+                score.voice(s, vfTime).setStrict(false),
+                score.voice(a, vfTime).setStrict(false)
             ]
         });
         let lower = system.addStave({
             voices: [
-                score.voice(t, {}).setStrict(false),
-                score.voice(b, {}).setStrict(false)
+                score.voice(t, vfTime).setStrict(false),
+                score.voice(b, vfTime).setStrict(false)
             ]
         });
         if (i === 0) {
