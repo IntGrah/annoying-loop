@@ -53,6 +53,7 @@ const state = {
     eventIndex: 0,
     part: "s",
     noteIndex: 0,
+    keyAccidentals: 3,
     tonality: true,
     select(barIndex, eventIndex, part, noteIndex = 0) {
         this.barIndex = barIndex;
@@ -62,7 +63,7 @@ const state = {
         update();
     },
     group() {
-        return this.piece.getInput()[this.barIndex][this.eventIndex][this.part];
+        return this.piece.getInput()[this.barIndex][this.eventIndex].getPart(this.part);
     },
     note() {
         return this.group().getNotes()[this.noteIndex];
@@ -74,13 +75,6 @@ const state = {
         return state.note();
     }
 };
-const tonality = document.getElementById("tonality");
-tonality.addEventListener("mousedown", () => {
-    state.tonality = !state.tonality;
-    tonality.innerText = state.tonality ? "Major" : "Minor";
-    state.piece.getKey().setTonality(state.tonality);
-    update();
-});
 document.getElementById("new-event")?.addEventListener("mousedown", () => {
     state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
     update();
@@ -92,17 +86,25 @@ document.getElementById("new-bar")?.addEventListener("mousedown", () => {
 document.getElementById("delete-event")?.addEventListener("mousedown", () => {
     if (state.piece.getInput()[state.barIndex].length > 1) {
         state.piece.getInput()[state.barIndex].splice(state.eventIndex, 1);
+        if (--state.eventIndex < 0) {
+            state.eventIndex = 0;
+        }
+        state.noteIndex = 0;
         update();
     }
 });
 document.getElementById("delete-bar")?.addEventListener("mousedown", () => {
     if (state.piece.getInput().length > 1) {
         state.piece.getInput().splice(state.barIndex, 1);
+        if (--state.barIndex < 0) {
+            state.barIndex = 0;
+        }
+        state.eventIndex = 0;
+        state.noteIndex = 0;
         update();
     }
 });
 document.addEventListener("keydown", e => {
-    let harmonise = true;
     switch (e.key) {
         case "a":
         case "A":
@@ -154,7 +156,6 @@ document.addEventListener("keydown", e => {
             state.defaultNote().getPitch().getTone().alterAccidental(-1);
             break;
         case "Enter":
-            harmonise = false;
             if (e.shiftKey) {
                 if (state.eventIndex-- === 0) {
                     if (state.barIndex-- === 0) {
@@ -188,7 +189,6 @@ document.addEventListener("keydown", e => {
             break;
         case "Tab":
             e.preventDefault();
-            harmonise = false;
             const length = state.group().getNotes().length;
             if (e.shiftKey) {
                 state.noteIndex += length - 1;
@@ -202,33 +202,106 @@ document.addEventListener("keydown", e => {
         case "Backspace":
             state.group().setIndex(0).setNotes([]);
             break;
+        default: return;
     }
     update();
 });
+document.getElementById("flatten")?.addEventListener("mousedown", () => {
+    if (--state.keyAccidentals < -7) {
+        state.keyAccidentals = -7;
+    }
+    updateKey();
+    update();
+});
+const keyHtml = document.getElementById("key");
+keyHtml.addEventListener("mousedown", () => {
+    state.tonality = !state.tonality;
+    updateKey();
+    update();
+});
+document.getElementById("sharpen")?.addEventListener("mousedown", () => {
+    if (++state.keyAccidentals > 7) {
+        state.keyAccidentals = 7;
+    }
+    updateKey();
+    update();
+});
+function updateKey() {
+    let keyTone;
+    switch (state.keyAccidentals) {
+        case -7:
+            keyTone = "Cb";
+            break;
+        case -6:
+            keyTone = "Gb";
+            break;
+        case -5:
+            keyTone = "Db";
+            break;
+        case -4:
+            keyTone = "Ab";
+            break;
+        case -3:
+            keyTone = "Eb";
+            break;
+        case -2:
+            keyTone = "Bb";
+            break;
+        case -1:
+            keyTone = "F";
+            break;
+        case 0:
+            keyTone = "C";
+            break;
+        case 1:
+            keyTone = "G";
+            break;
+        case 2:
+            keyTone = "D";
+            break;
+        case 3:
+            keyTone = "A";
+            break;
+        case 4:
+            keyTone = "E";
+            break;
+        case 5:
+            keyTone = "B";
+            break;
+        case 6:
+            keyTone = "F#";
+            break;
+        case 7:
+            keyTone = "C#";
+            break;
+        default: throw "Invalid key";
+    }
+    let key = new JSB.Key(JSB.Tone.parse(keyTone), true);
+    if (!state.tonality) {
+        key = new JSB.Key(key.degree(5), false);
+    }
+    state.piece.setKey(key.string());
+    keyHtml.innerText = key.string();
+}
 function update() {
     renderInput(state.piece);
     try {
         state.piece.harmonise();
-        renderOutput(state.piece);
+        renderOutput(state.piece, state.keyAccidentals);
     }
-    catch (e) {
+    catch (error) {
         const piece = document.getElementById("piece");
-        let time;
-        let event;
-        switch (e) {
+        let time = state.piece.getMaxTime();
+        let event = piece.children[time.bar].children[time.event];
+        switch (error) {
             case "Failed to harmonise.":
-                time = state.piece.getMaxTime();
-                event = piece.children[time.bar].children[time.event];
-                console.log(time, event);
-                event.style.backgroundColor = "#ffffff";
+                event.style.backgroundColor = "#ed5858";
                 break;
             case "Soprano line is not defined.":
-                time = state.piece.getMaxTime();
-                event = piece.children[time.bar].children[time.event];
-                event.style.backgroundColor = "red";
+                event.children[0].style.backgroundColor = "#ed5858";
                 break;
-            default:
-                console.log(e);
+            case "Not all parts have the same duration.":
+                event.style.backgroundColor = "#ed5858";
                 break;
         }
     }

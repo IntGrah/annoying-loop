@@ -32,8 +32,8 @@ const factory = new Vex.Flow.Factory({
     }
 });
 
-export default function renderOutput(piece: JSB.Piece) {
-    let x = 40;
+export default function renderOutput(piece: JSB.Piece, keyAccidentals: number) {
+    let x = 10 * Math.abs(keyAccidentals);
 
     factory.getContext().clear();
     factory.getContext().resize(100000, 240);

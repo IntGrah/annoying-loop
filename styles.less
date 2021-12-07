@@ -126,35 +126,21 @@ body {
       padding: 10px;
       height: 20px;
 
-      #key {
+      #flatten {
         width: 20px;
-        height: 20px;
-        border-radius: 10px;
-        background-color: @grey3;
-        z-index: 1;
-        transition: width @slow, background-color @slow, box-shadow @slow;
-
-        &:hover {
-          width: 160px;
-          background-color: @grey1;
-          box-shadow: @shadow;
-        }
+        .button();
       }
 
-      #tonality-box {
-        margin-left: 10px;
-        width: 48px;
-        height: 20px;
-        line-height: 20px;
-        border-radius: 10px;
-        background-color: @grey3;
-        transition: background-color @slow, box-shadow @slow;
+      #key {
+        margin-left: 5px;
+        width: 60px;
+        .button();
+      }
 
-        &:hover {
-          background-color: @grey1;
-          box-shadow: @shadow;
-          cursor: pointer;
-        }
+      #sharpen {
+        margin-left: 5px;
+        width: 20px;
+        .button();
       }
     }
 
@@ -228,5 +214,19 @@ body {
 
   &.selected {
     background-color: @purple4;
+  }
+}
+
+.button() {
+  height: 20px;
+  line-height: 20px;
+  border-radius: 10px;
+  background-color: @grey3;
+  transition: background-color @slow, box-shadow @slow;
+
+  &:hover {
+    background-color: @grey1;
+    box-shadow: @shadow;
+    cursor: pointer;
   }
 }
