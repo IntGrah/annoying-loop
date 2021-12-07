@@ -5,33 +5,45 @@ function renderInput(piece) {
         const eventsHtml = bar.map((event, eventIndex) => {
             const group = state.group();
             const sHtml = document.createElement("div");
-            sHtml.setAttribute("class", "group".concat(event.getS() === group ? " selected" : ""));
+            sHtml.classList.add("group");
+            if (event.getS() === group) {
+                sHtml.classList.add("selected");
+            }
             sHtml.appendChild(document.createTextNode(event.getS().main()?.string() ?? ""));
             sHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "s"));
             const aHtml = document.createElement("div");
-            aHtml.setAttribute("class", "group".concat(event.getA() === group ? " selected" : ""));
+            aHtml.classList.add("group");
+            if (event.getA() === group) {
+                aHtml.classList.add("selected");
+            }
             aHtml.appendChild(document.createTextNode(event.getA().main()?.string() ?? ""));
             aHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "a"));
             const tHtml = document.createElement("div");
-            tHtml.setAttribute("class", "group".concat(event.getT() === group ? " selected" : ""));
+            tHtml.classList.add("group");
+            if (event.getT() === group) {
+                tHtml.classList.add("selected");
+            }
             tHtml.appendChild(document.createTextNode(event.getT().main()?.string() ?? ""));
             tHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "t"));
             const bHtml = document.createElement("div");
-            bHtml.setAttribute("class", "group".concat(event.getB() === group ? " selected" : ""));
+            bHtml.classList.add("group");
+            if (event.getB() === group) {
+                bHtml.classList.add("selected");
+            }
             bHtml.appendChild(document.createTextNode(event.getB().main()?.string() ?? ""));
             bHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "b"));
             const eventHtml = document.createElement("div");
-            eventHtml.setAttribute("class", "event");
+            eventHtml.classList.add("event");
             eventHtml.append(sHtml, aHtml, tHtml, bHtml);
             return eventHtml;
         });
         const barHtml = document.createElement("span");
-        barHtml.setAttribute("class", "bar");
+        barHtml.classList.add("bar");
         barHtml.append(...eventsHtml);
         return barHtml;
     });
     const pieceHtml = document.createElement("div");
-    pieceHtml.setAttribute("id", "piece");
+    pieceHtml.id = "piece";
     pieceHtml.append(...barsHtml);
     const pieceBox = document.getElementById("piece-box");
     pieceBox.innerHTML = "";
@@ -39,7 +51,10 @@ function renderInput(piece) {
     const mirror = document.getElementById("mirror");
     const notesHtml = state.group().getNotes().map((note, noteIndex) => {
         const noteHtml = document.createElement("span");
-        noteHtml.setAttribute("class", "note".concat(note === state.note() ? " selected" : ""));
+        noteHtml.classList.add("note");
+        if (note === state.note()) {
+            noteHtml.classList.add("selected");
+        }
         noteHtml.appendChild(document.createTextNode(note.string()));
         noteHtml.addEventListener("mousedown", () => state.select(state.barIndex, state.eventIndex, state.part, noteIndex));
         return noteHtml;
