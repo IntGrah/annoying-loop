@@ -11,6 +11,9 @@ function renderInput(piece: JSB.Piece) {
             if (event.getS() === group) {
                 sHtml.classList.add("selected");
             }
+            if (event.getS().getNotes().length > 1) {
+                sHtml.classList.add("multi");
+            }
             sHtml.appendChild(document.createTextNode(event.getS().main()?.string() ?? ""));
             sHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "s"));
 
@@ -18,6 +21,9 @@ function renderInput(piece: JSB.Piece) {
             aHtml.classList.add("group");
             if (event.getA() === group) {
                 aHtml.classList.add("selected");
+            }
+            if (event.getA().getNotes().length > 1) {
+                sHtml.classList.add("multi");
             }
             aHtml.appendChild(document.createTextNode(event.getA().main()?.string() ?? ""));
             aHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "a"));
@@ -27,6 +33,9 @@ function renderInput(piece: JSB.Piece) {
             if (event.getT() === group) {
                 tHtml.classList.add("selected");
             }
+            if (event.getT().getNotes().length > 1) {
+                sHtml.classList.add("multi");
+            }
             tHtml.appendChild(document.createTextNode(event.getT().main()?.string() ?? ""));
             tHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "t"));
 
@@ -34,6 +43,9 @@ function renderInput(piece: JSB.Piece) {
             bHtml.classList.add("group");
             if (event.getB() === group) {
                 bHtml.classList.add("selected");
+            }
+            if (event.getB().getNotes().length > 1) {
+                sHtml.classList.add("multi");
             }
             bHtml.appendChild(document.createTextNode(event.getB().main()?.string() ?? ""));
             bHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "b"));

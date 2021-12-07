@@ -143,7 +143,11 @@ body {
             }
 
             .group {
-              .box()
+              .box();
+
+              &.multi {
+                box-shadow: @shadow;
+              }
             }
           }
         }
