@@ -213,6 +213,7 @@ function update(harmonise) {
             renderOutput(state.piece);
         }
         catch (e) {
+            console.log(e);
             const piece = document.getElementById("piece");
             const time = state.piece.getTime();
             console.log(time);

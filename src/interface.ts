@@ -192,6 +192,7 @@ function update(harmonise: boolean) {
             state.piece.harmonise();
             renderOutput(state.piece);
         } catch (e) {
+            console.log(e);
             const piece = document.getElementById("piece") as HTMLDivElement;
             const time = state.piece.getTime();
             console.log(time);

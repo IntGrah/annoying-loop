@@ -6,7 +6,6 @@
         "strict": true,
         "importHelpers": true,
         "noUnusedLocals": false,
-        "noImplicitAny": true,
         "noImplicitReturns": true,
         "removeComments": true,
         "module": "ES6",
