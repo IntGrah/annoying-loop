@@ -1,4 +1,4 @@
-import * as JSB from "jsb-js";
+import * as JSB from "../node_modules/jsb-js/dist/index.js";
 import renderOutput from "./output.js";
 
 function renderInput(piece: JSB.Piece) {

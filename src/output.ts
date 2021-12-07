@@ -1,4 +1,4 @@
-import * as JSB from "jsb-js";
+import * as JSB from "../node_modules/jsb-js/dist/index.js";
 const VF = Vex.Flow;
 
 function convert(note: JSB.Note, part: JSB.Util.Part) {
