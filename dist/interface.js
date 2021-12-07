@@ -184,13 +184,82 @@ document.addEventListener("keydown", e => {
             state.defaultNote().getPitch().getTone().alterAccidental(-1);
             break;
         case ",":
-            state.defaultNote().setDuration(2);
+            switch (state.defaultNote().getDuration()) {
+                case 0.25:
+                    state.defaultNote().setDuration(0.5);
+                    break;
+                case 0.5:
+                    state.defaultNote().setDuration(1);
+                    break;
+                case 0.75:
+                    state.defaultNote().setDuration(1.5);
+                    break;
+                case 1:
+                    state.defaultNote().setDuration(2);
+                    break;
+                case 1.5:
+                    state.defaultNote().setDuration(3);
+                    break;
+                case 2:
+                    state.defaultNote().setDuration(4);
+                    break;
+                case 3:
+                    state.defaultNote().setDuration(6);
+                    break;
+            }
             break;
         case ".":
-            state.defaultNote().setDuration(1.5);
+            switch (state.defaultNote().getDuration()) {
+                case 0.5:
+                    state.defaultNote().setDuration(0.75);
+                    break;
+                case 0.75:
+                    state.defaultNote().setDuration(0.5);
+                    break;
+                case 1:
+                    state.defaultNote().setDuration(1.5);
+                    break;
+                case 1.5:
+                    state.defaultNote().setDuration(1);
+                    break;
+                case 2:
+                    state.defaultNote().setDuration(3);
+                    break;
+                case 3:
+                    state.defaultNote().setDuration(2);
+                    break;
+                case 4:
+                    state.defaultNote().setDuration(6);
+                    break;
+                case 6:
+                    state.defaultNote().setDuration(4);
+                    break;
+            }
             break;
         case "/":
-            state.defaultNote().setDuration(0.5);
+            switch (state.defaultNote().getDuration()) {
+                case 0.5:
+                    state.defaultNote().setDuration(0.25);
+                    break;
+                case 1:
+                    state.defaultNote().setDuration(0.5);
+                    break;
+                case 1.5:
+                    state.defaultNote().setDuration(0.75);
+                    break;
+                case 2:
+                    state.defaultNote().setDuration(1);
+                    break;
+                case 3:
+                    state.defaultNote().setDuration(1.5);
+                    break;
+                case 4:
+                    state.defaultNote().setDuration(2);
+                    break;
+                case 6:
+                    state.defaultNote().setDuration(3);
+                    break;
+            }
             break;
         case "Enter":
             if (e.shiftKey) {
@@ -355,16 +424,16 @@ function harmonise() {
 renderInput(state.piece);
 renderOutput(state.piece.harmonise(), state.keyAccidentals);
 consoleHtml.innerText = `The soprano line is required. Other parts are optional.
-Press A-G to enter a note.
+Press [A-G] to enter a note.
 
-Press 1-5 to set the octave of a note.
+Press [1-5] to set the octave of a note.
 
-Press ' to flatten or # to sharpen an accidental.
+Press ['] to flatten or [#] to sharpen an accidental.
 
-Press , to double or / to halve the duration of a note.
+Press [,] to double or [/] to halve the duration of a note.
 
-Press . to dot/undot a note.
+Press [.] to dot/undot a note.
 
-Press BACKSPACE to delete a note.
+Press [BACKSPACE] to delete a note.
 
 The buttons located above can create, delete, extend, or shorten bars.`;

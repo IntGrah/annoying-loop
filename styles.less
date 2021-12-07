@@ -60,7 +60,7 @@ body {
     #edit {
       display: flex;
       padding: 10px;
-      width: fit-content;
+      width: 650px;
       max-width: calc(100% - 40px);
       height: 20px;
       background-color: @grey1;
@@ -68,27 +68,27 @@ body {
       overflow-y: hidden;
 
       #prepend-bar {
-        width: 60px;
+        min-width: 120px;
         .button();
       }
 
       #prepend-event {
-        width: 60px;
+        min-width: 120px;
         .button();
       }
 
       #delete-event {
-        width: 60px;
+        min-width: 120px;
         .button();
       }
 
       #append-event {
-        width: 60px;
+        min-width: 120px;
         .button();
       }
 
       #append-bar {
-        width: 60px;
+        min-width: 120px;
         .button();
       }
     }
@@ -100,6 +100,16 @@ body {
 
       .note {
         .box();
+
+        &:first-child {
+          border-top-left-radius: 10px;
+          border-bottom-left-radius: 10px;
+        }
+
+        &:last-child {
+          border-top-right-radius: 10px;
+          border-bottom-right-radius: 10px;
+        }
       }
     }
 
@@ -129,6 +139,7 @@ body {
 
             &.error {
               background-color: @red;
+              width: 60px;
             }
 
             .group {
