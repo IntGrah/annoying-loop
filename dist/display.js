@@ -83,12 +83,12 @@ tonality.addEventListener("mousedown", () => {
     render(state.piece.harmonise());
 });
 document.getElementById("new-event")?.addEventListener("mousedown", () => {
-    state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(new JSB.Group([new JSB.Note(new JSB.Pitch(state.piece.getKey().getTone(), 4), 1)], 0), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+    state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
     display(state.piece);
     render(state.piece.harmonise());
 });
 document.getElementById("new-bar")?.addEventListener("mousedown", () => {
-    state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(new JSB.Group([new JSB.Note(new JSB.Pitch(state.piece.getKey().getTone(), 4), 1)], 0), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+    state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
     display(state.piece);
     render(state.piece.harmonise());
 });
