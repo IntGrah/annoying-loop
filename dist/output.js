@@ -1,4 +1,4 @@
-import * as JSB from "../node_modules/jsb-js/dist/index.js";
+import * as JSB from "jsb-js";
 const VF = Vex.Flow;
 function convert(note, part) {
     const vfNote = new VF.StaveNote({
@@ -29,7 +29,7 @@ const factory = new Vex.Flow.Factory({
         elementId: "output",
     }
 });
-export default function render(piece) {
+export default function renderOutput(piece) {
     let x = 40;
     factory.getContext().clear();
     factory.getContext().resize(100000, 240);

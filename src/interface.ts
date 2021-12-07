@@ -1,7 +1,7 @@
-import * as JSB from "../node_modules/jsb-js/dist/index.js";
-import render from "./render.js";
+import * as JSB from "jsb-js";
+import renderOutput from "./output.js";
 
-function display(piece: JSB.Piece) {
+function renderInput(piece: JSB.Piece) {
     const barsHtml = piece.getInput().map((bar, barIndex) => {
         const eventsHtml = bar.map((event, eventIndex) => {
             const group = state.group();
@@ -69,7 +69,7 @@ const state = {
         this.eventIndex = eventIndex;
         this.part = part;
         this.noteIndex = noteIndex;
-        display(this.piece);
+        update(false);
     },
 
     group() {
@@ -89,39 +89,35 @@ const state = {
 };
 
 const tonality = document.getElementById("tonality") as HTMLElement;
+
 tonality.addEventListener("mousedown", () => {
     state.tonality = !state.tonality;
     tonality.innerText = state.tonality ? "Major" : "Minor";
     state.piece.getKey().setTonality(state.tonality);
-    display(state.piece);
-    render(state.piece.harmonise());
+    update(true);
 });
 
 document.getElementById("new-event")?.addEventListener("mousedown", () => {
     state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
-    display(state.piece);
-    render(state.piece.harmonise());
+    update(true);
 });
 
 document.getElementById("new-bar")?.addEventListener("mousedown", () => {
     state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
-    display(state.piece);
-    render(state.piece.harmonise());
+    update(true);
 });
 
 document.getElementById("delete-event")?.addEventListener("mousedown", () => {
     if (state.piece.getInput()[state.barIndex].length > 1) {
         state.piece.getInput()[state.barIndex].splice(state.eventIndex, 1);
-        display(state.piece);
-        render(state.piece.harmonise());
+        update(true);
     }
 });
 
 document.getElementById("delete-bar")?.addEventListener("mousedown", () => {
     if (state.piece.getInput().length > 1) {
         state.piece.getInput().splice(state.barIndex, 1);
-        display(state.piece);
-        render(state.piece.harmonise());
+        update(true);
     }
 });
 
@@ -186,12 +182,22 @@ document.addEventListener("keydown", e => {
             state.group().setIndex(0).setNotes([]);
             break;
     }
-    if (harmonise) {
-        state.piece.harmonise();
-    }
-    display(state.piece);
-    render(state.piece);
+    update(harmonise);
 });
 
-display(state.piece);
-render(state.piece);
+function update(harmonise: boolean) {
+    renderInput(state.piece);
+    if (harmonise) {
+        try {
+            state.piece.harmonise();
+            renderOutput(state.piece);
+        } catch (e) {
+            const piece = document.getElementById("piece") as HTMLDivElement;
+            const time = state.piece.getTime();
+            console.log(time);
+            console.log(piece.children[time.bar].children[time.event]);
+        }
+    }
+}
+
+update(true);
