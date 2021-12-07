@@ -59,7 +59,7 @@ const state = {
         this.eventIndex = eventIndex;
         this.part = part;
         this.noteIndex = noteIndex;
-        update(false);
+        update();
     },
     group() {
         return this.piece.getInput()[this.barIndex][this.eventIndex][this.part];
@@ -79,26 +79,26 @@ tonality.addEventListener("mousedown", () => {
     state.tonality = !state.tonality;
     tonality.innerText = state.tonality ? "Major" : "Minor";
     state.piece.getKey().setTonality(state.tonality);
-    update(true);
+    update();
 });
 document.getElementById("new-event")?.addEventListener("mousedown", () => {
     state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
-    update(true);
+    update();
 });
 document.getElementById("new-bar")?.addEventListener("mousedown", () => {
     state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
-    update(true);
+    update();
 });
 document.getElementById("delete-event")?.addEventListener("mousedown", () => {
     if (state.piece.getInput()[state.barIndex].length > 1) {
         state.piece.getInput()[state.barIndex].splice(state.eventIndex, 1);
-        update(true);
+        update();
     }
 });
 document.getElementById("delete-bar")?.addEventListener("mousedown", () => {
     if (state.piece.getInput().length > 1) {
         state.piece.getInput().splice(state.barIndex, 1);
-        update(true);
+        update();
     }
 });
 document.addEventListener("keydown", e => {
@@ -203,22 +203,34 @@ document.addEventListener("keydown", e => {
             state.group().setIndex(0).setNotes([]);
             break;
     }
-    update(harmonise);
+    update();
 });
-function update(harmonise) {
+function update() {
     renderInput(state.piece);
-    if (harmonise) {
-        try {
-            state.piece.harmonise();
-            renderOutput(state.piece);
-        }
-        catch (e) {
-            console.log(e);
-            const piece = document.getElementById("piece");
-            const time = state.piece.getTime();
-            console.log(time);
-            console.log(piece.children[time.bar].children[time.event]);
+    try {
+        state.piece.harmonise();
+        renderOutput(state.piece);
+    }
+    catch (e) {
+        const piece = document.getElementById("piece");
+        let time;
+        let event;
+        switch (e) {
+            case "Failed to harmonise.":
+                time = state.piece.getMaxTime();
+                event = piece.children[time.bar].children[time.event];
+                console.log(time, event);
+                event.style.backgroundColor = "#ffffff";
+                break;
+            case "Soprano line is not defined.":
+                time = state.piece.getMaxTime();
+                event = piece.children[time.bar].children[time.event];
+                event.style.backgroundColor = "red";
+                break;
+            default:
+                console.log(e);
+                break;
         }
     }
 }
-update(true);
+update();
