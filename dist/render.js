@@ -33,7 +33,7 @@ export default function render(piece) {
     let x = 40;
     factory.getContext().clear();
     factory.getContext().resize(100000, 240);
-    const bars = piece.getStatus() ? piece.getOutput() : piece.getInput();
+    const bars = piece.getOutput();
     for (let i = 0; i < bars.length; ++i) {
         const s = bars[i].map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
         const a = bars[i].map(e => e.getA().getNotes().map(note => convert(note, "a"))).flat();
