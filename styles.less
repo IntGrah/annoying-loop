@@ -13,6 +13,7 @@
 @purple4: #b28cda;
 @purple5: #bc7eff;
 @purple6: #9d5ee0;
+@red: #fadbe5;
 
 @shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
 
@@ -58,32 +59,46 @@ body {
 
     #edit {
       display: flex;
+      padding: 10px;
       width: fit-content;
       max-width: calc(100% - 40px);
+      height: 20px;
       background-color: @grey1;
       overflow-x: auto;
+      overflow-y: hidden;
 
-      #mirror {
-        display: flex;
-
-        .note {
-          .box();
-        }
+      #prepend-bar {
+        width: 60px;
+        .button();
       }
 
-      #new-event {
-        .box();
+      #prepend-event {
+        width: 60px;
+        .button();
       }
 
       #delete-event {
-        .box();
+        width: 60px;
+        .button();
       }
 
-      #new-bar {
-        .box();
+      #append-event {
+        width: 60px;
+        .button();
       }
 
-      #delete-bar {
+      #append-bar {
+        width: 60px;
+        .button();
+      }
+    }
+
+    #mirror {
+      display: flex;
+      width: fit-content;
+      max-width: calc(100% - 40px);
+
+      .note {
         .box();
       }
     }
@@ -112,6 +127,10 @@ body {
             display: flex;
             flex-direction: column;
 
+            &.error {
+              background-color: @red;
+            }
+
             .group {
               .box()
             }
@@ -132,14 +151,22 @@ body {
       }
 
       #key {
-        margin-left: 5px;
-        width: 60px;
+        width: 70px;
         .button();
       }
 
       #sharpen {
-        margin-left: 5px;
         width: 20px;
+        .button();
+      }
+
+      #harmonise {
+        width: 90px;
+        .button();
+      }
+
+      #auto {
+        width: 70px;
         .button();
       }
     }
@@ -159,20 +186,22 @@ body {
     min-width: 120px;
     float: right;
 
-    #info {
-      height: calc(100% - 200px); // TO DO
+    #console-box {
+      height: calc(100% - 200px);
 
-      #info-header {
+      #console-header {
         height: 40px;
         line-height: 40px;
         border-radius: 10px 10px 0 0;
         background-color: @grey1;
         text-align: center;
       }
-    }
 
-    #console {
-      padding: 20px;
+      #console {
+        padding: 20px;
+        font-family: monospace;
+        user-select: text;
+      }
     }
   }
 }
@@ -218,6 +247,7 @@ body {
 }
 
 .button() {
+  margin: 0 5px;
   height: 20px;
   line-height: 20px;
   border-radius: 10px;

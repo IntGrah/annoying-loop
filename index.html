@@ -20,26 +20,29 @@
     </header>
     <div id="left">
         <div id="edit" class="section">
-            <span id="mirror"></span>
-            <span id="new-event">+ E</span>
-            <span id="delete-event">- E</span>
-            <span id="new-bar">+ B</span>
-            <span id="delete-bar">-B</span>
+            <span id="prepend-bar">+Bar</span>
+            <span id="prepend-event">+Chord</span>
+            <span id="delete-event">-Chord</span>
+            <span id="append-event">+Chord</span>
+            <span id="append-bar">+Bar</span>
         </div>
+        <div id="mirror" class="section"></div>
         <div id="piece-box" class="section"></div>
         <div id="options" class="section">
             <span id="flatten">b</span>
             <span id="key">A Major</span>
             <span id="sharpen">#</span>
+            <span id="harmonise">Harmonise</span>
+            <span id="auto">Auto: off</span>
         </div>
         <div id="output-box" class="section">
             <div id="output"></div>
         </div>
     </div>
     <div id="right">
-        <div id="info" class="section">
-            <div id="info-header">Console</div>
-            <div id="console">Text</div>
+        <div id="console-box" class="section">
+            <div id="console-header">Info</div>
+            <div id="console"></div>
         </div>
     </div>
     <script type="module" src="dist/output.js"></script>

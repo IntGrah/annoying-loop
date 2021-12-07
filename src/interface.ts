@@ -79,6 +79,7 @@ const state = {
     noteIndex: 0,
     keyAccidentals: 3,
     tonality: true,
+    auto: false,
 
     select(barIndex: number, eventIndex: number, part: JSB.Util.Part, noteIndex = 0) {
         this.barIndex = barIndex;
@@ -104,13 +105,16 @@ const state = {
     }
 };
 
-document.getElementById("new-event")?.addEventListener("mousedown", () => {
-    state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+document.getElementById("prepend-bar")?.addEventListener("mousedown", () => {
+    state.piece.getInput().splice(state.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+    state.eventIndex = 0;
+    state.noteIndex = 0;
     update();
 });
 
-document.getElementById("new-bar")?.addEventListener("mousedown", () => {
-    state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+document.getElementById("prepend-event")?.addEventListener("mousedown", () => {
+    state.piece.getInput()[state.barIndex].splice(state.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+    state.noteIndex = 0;
     update();
 });
 
@@ -122,11 +126,7 @@ document.getElementById("delete-event")?.addEventListener("mousedown", () => {
         }
         state.noteIndex = 0;
         update();
-    }
-});
-
-document.getElementById("delete-bar")?.addEventListener("mousedown", () => {
-    if (state.piece.getInput().length > 1) {
+    } else if (state.piece.getInput().length > 1) {
         state.piece.getInput().splice(state.barIndex, 1);
         if (--state.barIndex < 0) {
             state.barIndex = 0;
@@ -135,6 +135,19 @@ document.getElementById("delete-bar")?.addEventListener("mousedown", () => {
         state.noteIndex = 0;
         update();
     }
+});
+
+document.getElementById("append-event")?.addEventListener("mousedown", () => {
+    state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+    update();
+});
+
+document.getElementById("append-bar")?.addEventListener("mousedown", () => {
+    state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+    ++state.barIndex;
+    state.eventIndex = 0;
+    state.noteIndex = 0;
+    update();
 });
 
 document.addEventListener("keydown", e => {
@@ -153,6 +166,9 @@ document.addEventListener("keydown", e => {
         case "5": state.defaultNote().getPitch().setOctave(5); break;
         case "#": state.defaultNote().getPitch().getTone().alterAccidental(1); break;
         case "'": state.defaultNote().getPitch().getTone().alterAccidental(-1); break;
+        case ",": state.defaultNote().setDuration(2); break;
+        case ".": state.defaultNote().setDuration(1.5); break;
+        case "/": state.defaultNote().setDuration(0.5); break;
         case "Enter":
             if (e.shiftKey) {
                 if (state.eventIndex-- === 0) {
@@ -251,29 +267,57 @@ function updateKey() {
     keyHtml.innerText = key.string();
 }
 
+document.getElementById("harmonise")?.addEventListener("mousedown", () => {
+    harmonise();
+});
+
+const auto = document.getElementById("auto") as HTMLSpanElement;
+
+auto.addEventListener("mousedown", () => {
+    state.auto = !state.auto;
+    auto.innerText = "Auto: " + (state.auto ? "on" : "off");
+    if (state.auto) {
+        update();
+    }
+});
+
+const consoleHtml = document.getElementById("console") as HTMLDivElement;
+
 function update() {
     renderInput(state.piece);
-    try {
-        state.piece.harmonise();
-        renderOutput(state.piece, state.keyAccidentals);
-    } catch (error) {
-        const piece = document.getElementById("piece") as HTMLDivElement;
-        let time = state.piece.getMaxTime();
-        let event = piece.children[time.bar].children[time.event] as HTMLSpanElement;
-
-        switch (error) {
-            case "Failed to harmonise.":
-                event.style.backgroundColor = "#ed5858";
-                break;
-            case "Soprano line is not defined.":
-                (event.children[0] as HTMLDivElement).style.backgroundColor = "#ed5858";
-                break;
-            case "Not all parts have the same duration.":
-                event.style.backgroundColor = "#ed5858";
-                break;
-
-        }
+    if (state.auto) {
+        harmonise();
     }
 }
 
-update();
+function harmonise() {
+    try {
+        state.piece.harmonise();
+        renderOutput(state.piece, state.keyAccidentals);
+        consoleHtml.innerText = "Success!";
+    } catch (error) {
+        const piece = document.getElementById("piece") as HTMLDivElement;
+        const time = state.piece.getMaxTime();
+        const event = piece.children[time.bar].children[time.event] as HTMLSpanElement;
+        event.classList.add("error");
+        consoleHtml.innerText = `${error as string} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
+    }
+}
+
+renderInput(state.piece);
+renderOutput(state.piece.harmonise(), state.keyAccidentals);
+
+consoleHtml.innerText = `The soprano line is required. Other parts are optional.
+Press A-G to enter a note.
+
+Press 1-5 to set the octave of a note.
+
+Press ' to flatten or # to sharpen an accidental.
+
+Press , to double or / to halve the duration of a note.
+
+Press . to dot/undot a note.
+
+Press BACKSPACE to delete a note.
+
+The buttons located above can create, delete, extend, or shorten bars.`
