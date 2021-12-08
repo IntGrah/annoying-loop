@@ -1,3 +1,5 @@
+import * as JSB from "https://unpkg.com/jsb-js";
+
 const VF = Vex.Flow;
 
 const factory = new Vex.Flow.Factory({
