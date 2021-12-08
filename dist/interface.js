@@ -9,6 +9,9 @@ const state = {
     part: "s",
     noteIndex: 0,
     auto: false,
+    keyElement: document.getElementById("key"),
+    autoElement: document.getElementById("auto"),
+    consoleElement: document.getElementById("console"),
     renderInput() {
         const barsHtml = this.piece.getInput().map((bar, barIndex) => {
             const eventsHtml = bar.map((event, eventIndex) => {
@@ -22,7 +25,7 @@ const state = {
                     sHtml.classList.add("multi");
                 }
                 sHtml.appendChild(document.createTextNode(event.getS().main()?.string() ?? ""));
-                sHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "s"));
+                sHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "s", 0));
                 const aHtml = document.createElement("div");
                 aHtml.classList.add("group");
                 if (event.getA() === group) {
@@ -32,7 +35,7 @@ const state = {
                     sHtml.classList.add("multi");
                 }
                 aHtml.appendChild(document.createTextNode(event.getA().main()?.string() ?? ""));
-                aHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "a"));
+                aHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "a", 0));
                 const tHtml = document.createElement("div");
                 tHtml.classList.add("group");
                 if (event.getT() === group) {
@@ -42,7 +45,7 @@ const state = {
                     sHtml.classList.add("multi");
                 }
                 tHtml.appendChild(document.createTextNode(event.getT().main()?.string() ?? ""));
-                tHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "t"));
+                tHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "t", 0));
                 const bHtml = document.createElement("div");
                 bHtml.classList.add("group");
                 if (event.getB() === group) {
@@ -52,7 +55,7 @@ const state = {
                     sHtml.classList.add("multi");
                 }
                 bHtml.appendChild(document.createTextNode(event.getB().main()?.string() ?? ""));
-                bHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "b"));
+                bHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "b", 0));
                 const eventHtml = document.createElement("div");
                 eventHtml.classList.add("event");
                 eventHtml.append(sHtml, aHtml, tHtml, bHtml);
@@ -91,7 +94,7 @@ const state = {
         mirror.innerHTML = "";
         mirror.append(...notesHtml);
     },
-    select(barIndex, eventIndex, part, noteIndex = 0) {
+    select(barIndex, eventIndex, part, noteIndex) {
         this.barIndex = barIndex;
         this.eventIndex = eventIndex;
         this.part = part;
@@ -120,14 +123,14 @@ const state = {
         try {
             this.piece.harmonise();
             renderOutput(this.piece);
-            consoleElement.innerText = "Success!";
+            this.consoleElement.innerText = "Success!";
         }
         catch (error) {
             const piece = document.getElementById("piece");
             const time = this.piece.getMaxTime();
             const event = piece.children[time.bar].children[time.event];
             event.classList.add("error");
-            consoleElement.innerText = `${error} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
+            this.consoleElement.innerText = `${error} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
         }
     },
     prependBar() {
@@ -175,7 +178,7 @@ const state = {
         if (this.piece.getKey().accidentals() > -7) {
             this.piece.getKey().setTone(this.piece.getKey().degree(3));
         }
-        keyElement.innerText = this.piece.getKey().string();
+        this.keyElement.innerText = this.piece.getKey().string();
         this.update();
     },
     toggleTonality() {
@@ -185,19 +188,19 @@ const state = {
         else {
             this.piece.setKey(new JSB.Key(this.piece.getKey().degree(2), true));
         }
-        keyElement.innerText = this.piece.getKey().string();
+        this.keyElement.innerText = this.piece.getKey().string();
         this.update();
     },
     sharpen() {
         if (this.piece.getKey().accidentals() < 7) {
             this.piece.getKey().setTone(this.piece.getKey().degree(4));
         }
-        keyElement.innerText = this.piece.getKey().string();
+        this.keyElement.innerText = this.piece.getKey().string();
         this.update();
     },
     toggleAuto() {
         this.auto = !this.auto;
-        autoElement.innerText = "Auto: " + (this.auto ? "on" : "off");
+        this.autoElement.innerText = "Auto: " + (this.auto ? "on" : "off");
         if (this.auto) {
             this.update();
         }
@@ -392,18 +395,18 @@ const state = {
         }
     },
     init() {
-        document.getElementById("prepend-bar")?.addEventListener("mousedown", state.prependBar);
-        document.getElementById("prepend-event")?.addEventListener("mousedown", state.prependEvent);
-        document.getElementById("delete-event")?.addEventListener("mousedown", state.deleteEvent);
-        document.getElementById("append-event")?.addEventListener("mousedown", state.appendEvent);
-        document.getElementById("append-bar")?.addEventListener("mousedown", state.appendBar);
-        document.addEventListener("keydown", state.keydown);
-        document.getElementById("flatten")?.addEventListener("mousedown", state.flatten);
-        keyElement.addEventListener("mousedown", state.toggleTonality);
-        document.getElementById("sharpen")?.addEventListener("mousedown", state.sharpen);
-        document.getElementById("harmonise")?.addEventListener("mousedown", state.harmonise);
-        autoElement.addEventListener("mousedown", state.toggleAuto);
-        consoleElement.innerText = `The soprano line is required. Other parts are optional.
+        document.getElementById("prepend-bar")?.addEventListener("mousedown", this.prependBar);
+        document.getElementById("prepend-event")?.addEventListener("mousedown", this.prependEvent);
+        document.getElementById("delete-event")?.addEventListener("mousedown", this.deleteEvent);
+        document.getElementById("append-event")?.addEventListener("mousedown", this.appendEvent);
+        document.getElementById("append-bar")?.addEventListener("mousedown", this.appendBar);
+        document.addEventListener("keydown", this.keydown);
+        document.getElementById("flatten")?.addEventListener("mousedown", this.flatten);
+        this.keyElement.addEventListener("mousedown", this.toggleTonality);
+        document.getElementById("sharpen")?.addEventListener("mousedown", this.sharpen);
+        document.getElementById("harmonise")?.addEventListener("mousedown", this.harmonise);
+        this.autoElement.addEventListener("mousedown", this.toggleAuto);
+        this.consoleElement.innerText = `The soprano line is required. Other parts are optional.
 [A-G] to enter a note.
 
 [1-5] to set the octave of a note.
@@ -419,7 +422,4 @@ const state = {
         renderOutput(this.piece.harmonise());
     }
 };
-const keyElement = document.getElementById("key");
-const autoElement = document.getElementById("auto");
-const consoleElement = document.getElementById("console");
 state.init();
