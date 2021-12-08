@@ -21,6 +21,6 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
-    "jsb-js": "^1.6.6"
+    "jsb-js": "^1.6.7"
   }
 }

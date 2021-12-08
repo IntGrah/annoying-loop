@@ -83,7 +83,7 @@ function renderInput(piece) {
     mirror.append(...notesHtml);
 }
 const state = {
-    piece: new JSB.Piece().setKey("A major").parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise(),
+    piece: new JSB.Piece().setKey(JSB.Key.parse("A major")).parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise(),
     barIndex: 0,
     eventIndex: 0,
     part: "s",
@@ -333,82 +333,30 @@ document.addEventListener("keydown", e => {
     update();
 });
 document.getElementById("flatten")?.addEventListener("mousedown", () => {
-    if (--state.keyAccidentals < -7) {
-        state.keyAccidentals = -7;
+    if (state.piece.getKey().accidentals() > -7) {
+        state.piece.getKey().setTone(state.piece.getKey().degree(3));
     }
-    updateKey();
+    keyHtml.innerText = state.piece.getKey().string();
     update();
 });
 const keyHtml = document.getElementById("key");
 keyHtml.addEventListener("mousedown", () => {
-    state.tonality = !state.tonality;
-    updateKey();
+    if (state.piece.getKey().getTonality()) {
+        state.piece.setKey(new JSB.Key(state.piece.getKey().degree(5), false));
+    }
+    else {
+        state.piece.setKey(new JSB.Key(state.piece.getKey().degree(2), true));
+    }
+    keyHtml.innerText = state.piece.getKey().string();
     update();
 });
 document.getElementById("sharpen")?.addEventListener("mousedown", () => {
-    if (++state.keyAccidentals > 7) {
-        state.keyAccidentals = 7;
+    if (state.piece.getKey().accidentals() < 7) {
+        state.piece.getKey().setTone(state.piece.getKey().degree(4));
     }
-    updateKey();
+    keyHtml.innerText = state.piece.getKey().string();
     update();
 });
-function updateKey() {
-    let keyTone;
-    switch (state.keyAccidentals) {
-        case -7:
-            keyTone = "Cb";
-            break;
-        case -6:
-            keyTone = "Gb";
-            break;
-        case -5:
-            keyTone = "Db";
-            break;
-        case -4:
-            keyTone = "Ab";
-            break;
-        case -3:
-            keyTone = "Eb";
-            break;
-        case -2:
-            keyTone = "Bb";
-            break;
-        case -1:
-            keyTone = "F";
-            break;
-        case 0:
-            keyTone = "C";
-            break;
-        case 1:
-            keyTone = "G";
-            break;
-        case 2:
-            keyTone = "D";
-            break;
-        case 3:
-            keyTone = "A";
-            break;
-        case 4:
-            keyTone = "E";
-            break;
-        case 5:
-            keyTone = "B";
-            break;
-        case 6:
-            keyTone = "F#";
-            break;
-        case 7:
-            keyTone = "C#";
-            break;
-        default: throw "Invalid key";
-    }
-    let key = new JSB.Key(JSB.Tone.parse(keyTone), true);
-    if (!state.tonality) {
-        key = new JSB.Key(key.degree(5), false);
-    }
-    state.piece.setKey(key.string());
-    keyHtml.innerText = key.string();
-}
 document.getElementById("harmonise")?.addEventListener("mousedown", () => {
     harmonise();
 });
