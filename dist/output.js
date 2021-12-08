@@ -43,7 +43,7 @@ export default function renderOutput(piece) {
                 return vfNote;
             });
         });
-        width = 50 * Math.max(...vfNotes.map(notes => notes.length));
+        width = 40 * Math.max(...vfNotes.map(notes => notes.length));
         if (i === 0) {
             width += 40 + 20 * Math.abs(piece.getKey().accidentals());
         }
