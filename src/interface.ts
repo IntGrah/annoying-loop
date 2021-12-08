@@ -375,14 +375,3 @@ Press [BACKSPACE] to delete a note.
 The buttons located above can create, delete, extend, or shorten bars.
 
 In a chord, a part can have multiple notes, but only one is used for harmonisation, while others are considered non-harmony notes.`
-
-// let key = n => [
-//     Math.floor((n + 5) / 7),
-//     Math.floor((n + 3) / 7),
-//     Math.floor((n + 1) / 7),
-//     Math.floor((n + 6) / 7),
-//     Math.floor((n + 4) / 7),
-//     Math.floor((n + 2) / 7),
-//     Math.floor(n / 7)
-//     ]
-// TODO Improve key class.
