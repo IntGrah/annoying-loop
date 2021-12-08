@@ -229,107 +229,105 @@ const state = {
     },
 
     keydown(e: KeyboardEvent) {
-        {
-            if (!e.ctrlKey && !e.shiftKey) {
-                switch (e.key) {
-                    case "a": case "A": this.defaultNote().getPitch().setTone(JSB.Tone.parse("A")); break;
-                    case "b": case "B": this.defaultNote().getPitch().setTone(JSB.Tone.parse("B")); break;
-                    case "c": case "C": this.defaultNote().getPitch().setTone(JSB.Tone.parse("C")); break;
-                    case "d": case "D": this.defaultNote().getPitch().setTone(JSB.Tone.parse("D")); break;
-                    case "e": case "E": this.defaultNote().getPitch().setTone(JSB.Tone.parse("E")); break;
-                    case "f": case "F": this.defaultNote().getPitch().setTone(JSB.Tone.parse("F")); break;
-                    case "g": case "G": this.defaultNote().getPitch().setTone(JSB.Tone.parse("G")); break;
-                    case "1": this.defaultNote().getPitch().setOctave(1); break;
-                    case "2": this.defaultNote().getPitch().setOctave(2); break;
-                    case "3": this.defaultNote().getPitch().setOctave(3); break;
-                    case "4": this.defaultNote().getPitch().setOctave(4); break;
-                    case "5": this.defaultNote().getPitch().setOctave(5); break;
-                    case "#": this.defaultNote().getPitch().getTone().alterAccidental(1); break;
-                    case "'": this.defaultNote().getPitch().getTone().alterAccidental(-1); break;
-                    case ",":
-                        switch (this.defaultNote().getDuration()) {
-                            case 0.25: this.defaultNote().setDuration(0.5); break;
-                            case 0.5: this.defaultNote().setDuration(1); break;
-                            case 0.75: this.defaultNote().setDuration(1.5); break;
-                            case 1: this.defaultNote().setDuration(2); break;
-                            case 1.5: this.defaultNote().setDuration(3); break;
-                            case 2: this.defaultNote().setDuration(4); break;
-                            case 3: this.defaultNote().setDuration(6); break;
-                        }
-                        break;
-                    case ".":
-                        switch (this.defaultNote().getDuration()) {
-                            case 0.5: this.defaultNote().setDuration(0.75); break;
-                            case 0.75: this.defaultNote().setDuration(0.5); break;
-                            case 1: this.defaultNote().setDuration(1.5); break;
-                            case 1.5: this.defaultNote().setDuration(1); break;
-                            case 2: this.defaultNote().setDuration(3); break;
-                            case 3: this.defaultNote().setDuration(2); break;
-                            case 4: this.defaultNote().setDuration(6); break;
-                            case 6: this.defaultNote().setDuration(4); break;
-                        }
-                        break;
-                    case "/":
-                        switch (this.defaultNote().getDuration()) {
-                            case 0.5: this.defaultNote().setDuration(0.25); break;
-                            case 1: this.defaultNote().setDuration(0.5); break;
-                            case 1.5: this.defaultNote().setDuration(0.75); break;
-                            case 2: this.defaultNote().setDuration(1); break;
-                            case 3: this.defaultNote().setDuration(1.5); break;
-                            case 4: this.defaultNote().setDuration(2); break;
-                            case 6: this.defaultNote().setDuration(3); break;
-                        }
-                        break;
-                    case "Enter":
-                        if (e.shiftKey) {
-                            if (this.eventIndex-- === 0) {
-                                if (this.barIndex-- === 0) {
-                                    this.barIndex = 0;
-                                    this.eventIndex = 0;
-                                } else {
-                                    this.eventIndex = this.piece.getInput()[this.barIndex].length - 1;
-                                    this.noteIndex = 0;
-                                }
+        if (!e.ctrlKey && !e.shiftKey) {
+            switch (e.key) {
+                case "a": case "A": this.defaultNote().getPitch().setTone(JSB.Tone.parse("A")); break;
+                case "b": case "B": this.defaultNote().getPitch().setTone(JSB.Tone.parse("B")); break;
+                case "c": case "C": this.defaultNote().getPitch().setTone(JSB.Tone.parse("C")); break;
+                case "d": case "D": this.defaultNote().getPitch().setTone(JSB.Tone.parse("D")); break;
+                case "e": case "E": this.defaultNote().getPitch().setTone(JSB.Tone.parse("E")); break;
+                case "f": case "F": this.defaultNote().getPitch().setTone(JSB.Tone.parse("F")); break;
+                case "g": case "G": this.defaultNote().getPitch().setTone(JSB.Tone.parse("G")); break;
+                case "1": this.defaultNote().getPitch().setOctave(1); break;
+                case "2": this.defaultNote().getPitch().setOctave(2); break;
+                case "3": this.defaultNote().getPitch().setOctave(3); break;
+                case "4": this.defaultNote().getPitch().setOctave(4); break;
+                case "5": this.defaultNote().getPitch().setOctave(5); break;
+                case "#": this.defaultNote().getPitch().getTone().alterAccidental(1); break;
+                case "'": this.defaultNote().getPitch().getTone().alterAccidental(-1); break;
+                case ",":
+                    switch (this.defaultNote().getDuration()) {
+                        case 0.25: this.defaultNote().setDuration(0.5); break;
+                        case 0.5: this.defaultNote().setDuration(1); break;
+                        case 0.75: this.defaultNote().setDuration(1.5); break;
+                        case 1: this.defaultNote().setDuration(2); break;
+                        case 1.5: this.defaultNote().setDuration(3); break;
+                        case 2: this.defaultNote().setDuration(4); break;
+                        case 3: this.defaultNote().setDuration(6); break;
+                    }
+                    break;
+                case ".":
+                    switch (this.defaultNote().getDuration()) {
+                        case 0.5: this.defaultNote().setDuration(0.75); break;
+                        case 0.75: this.defaultNote().setDuration(0.5); break;
+                        case 1: this.defaultNote().setDuration(1.5); break;
+                        case 1.5: this.defaultNote().setDuration(1); break;
+                        case 2: this.defaultNote().setDuration(3); break;
+                        case 3: this.defaultNote().setDuration(2); break;
+                        case 4: this.defaultNote().setDuration(6); break;
+                        case 6: this.defaultNote().setDuration(4); break;
+                    }
+                    break;
+                case "/":
+                    switch (this.defaultNote().getDuration()) {
+                        case 0.5: this.defaultNote().setDuration(0.25); break;
+                        case 1: this.defaultNote().setDuration(0.5); break;
+                        case 1.5: this.defaultNote().setDuration(0.75); break;
+                        case 2: this.defaultNote().setDuration(1); break;
+                        case 3: this.defaultNote().setDuration(1.5); break;
+                        case 4: this.defaultNote().setDuration(2); break;
+                        case 6: this.defaultNote().setDuration(3); break;
+                    }
+                    break;
+                case "Enter":
+                    if (e.shiftKey) {
+                        if (this.eventIndex-- === 0) {
+                            if (this.barIndex-- === 0) {
+                                this.barIndex = 0;
+                                this.eventIndex = 0;
                             } else {
+                                this.eventIndex = this.piece.getInput()[this.barIndex].length - 1;
                                 this.noteIndex = 0;
                             }
                         } else {
-                            if (++this.eventIndex === this.piece.getInput()[this.barIndex].length) {
-                                if (++this.barIndex === this.piece.getInput().length) {
-                                    --this.barIndex;
-                                    --this.eventIndex;
-                                } else {
-                                    this.eventIndex = 0;
-                                    this.noteIndex = 0;
-                                }
+                            this.noteIndex = 0;
+                        }
+                    } else {
+                        if (++this.eventIndex === this.piece.getInput()[this.barIndex].length) {
+                            if (++this.barIndex === this.piece.getInput().length) {
+                                --this.barIndex;
+                                --this.eventIndex;
                             } else {
+                                this.eventIndex = 0;
                                 this.noteIndex = 0;
                             }
-                        }
-                        break;
-                    case "Tab":
-                        e.preventDefault();
-                        const length = this.group().getNotes().length;
-                        if (e.shiftKey) {
-                            this.noteIndex += length - 1;
-                            this.noteIndex %= length;
                         } else {
-                            ++this.noteIndex;
-                            this.noteIndex %= length;
+                            this.noteIndex = 0;
                         }
-                        break;
-                    case "Backspace":
-                        this.group().setIndex(0).setNotes([]);
-                        break;
-                    default: return;
-                }
-            } else if (e.ctrlKey && !e.shiftKey) {
-                switch (e.key) {
-                    case "b": ;
-                }
+                    }
+                    break;
+                case "Tab":
+                    e.preventDefault();
+                    const length = this.group().getNotes().length;
+                    if (e.shiftKey) {
+                        this.noteIndex += length - 1;
+                        this.noteIndex %= length;
+                    } else {
+                        ++this.noteIndex;
+                        this.noteIndex %= length;
+                    }
+                    break;
+                case "Backspace":
+                    this.group().setIndex(0).setNotes([]);
+                    break;
+                default: return;
             }
-            this.update();
+        } else if (e.ctrlKey && !e.shiftKey) {
+            switch (e.key) {
+                case "b": ;
+            }
         }
+        this.update();
     },
 
     init() {
