@@ -9,7 +9,7 @@ const factory = new Vex.Flow.Factory({
 });
 const score = factory.EasyScore();
 
-export default function renderOutput(piece: JSB.Piece) {
+function renderOutput(piece: JSB.Piece) {
     let x = 40;
 
     factory.getContext().clear();
@@ -96,3 +96,5 @@ export default function renderOutput(piece: JSB.Piece) {
     }
     factory.getContext().resize(x + 40, 240);
 }
+
+export { JSB, renderOutput };
