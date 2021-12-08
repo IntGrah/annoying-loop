@@ -83,20 +83,20 @@ function renderInput(piece) {
     mirror.append(...notesHtml);
 }
 const state = {
-    piece: new JSB.Piece().setKey(JSB.Key.parse("A major")).parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s").parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b").harmonise(),
+    piece: new JSB.Piece().setKey(JSB.Key.parse("A major"))
+        .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s")
+        .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b"),
     barIndex: 0,
     eventIndex: 0,
     part: "s",
     noteIndex: 0,
-    keyAccidentals: 3,
-    tonality: true,
     auto: false,
     select(barIndex, eventIndex, part, noteIndex = 0) {
         this.barIndex = barIndex;
         this.eventIndex = eventIndex;
         this.part = part;
         this.noteIndex = noteIndex;
-        update();
+        state.update();
     },
     group() {
         return this.piece.getInput()[this.barIndex][this.eventIndex].getPart(this.part);
@@ -109,18 +109,38 @@ const state = {
             state.group().setNotes([JSB.Note.parse("C4")]);
         }
         return state.note();
+    },
+    update() {
+        renderInput(this.piece);
+        if (this.auto) {
+            this.harmonise();
+        }
+    },
+    harmonise() {
+        try {
+            this.piece.harmonise();
+            renderOutput(this.piece);
+            consoleHtml.innerText = "Success!";
+        }
+        catch (error) {
+            const piece = document.getElementById("piece");
+            const time = this.piece.getMaxTime();
+            const event = piece.children[time.bar].children[time.event];
+            event.classList.add("error");
+            consoleHtml.innerText = `${error} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
+        }
     }
 };
 document.getElementById("prepend-bar")?.addEventListener("mousedown", () => {
     state.piece.getInput().splice(state.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
     state.eventIndex = 0;
     state.noteIndex = 0;
-    update();
+    state.update();
 });
 document.getElementById("prepend-event")?.addEventListener("mousedown", () => {
     state.piece.getInput()[state.barIndex].splice(state.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
     state.noteIndex = 0;
-    update();
+    state.update();
 });
 document.getElementById("delete-event")?.addEventListener("mousedown", () => {
     if (state.piece.getInput()[state.barIndex].length > 1) {
@@ -129,7 +149,7 @@ document.getElementById("delete-event")?.addEventListener("mousedown", () => {
             state.eventIndex = 0;
         }
         state.noteIndex = 0;
-        update();
+        state.update();
     }
     else if (state.piece.getInput().length > 1) {
         state.piece.getInput().splice(state.barIndex, 1);
@@ -138,19 +158,19 @@ document.getElementById("delete-event")?.addEventListener("mousedown", () => {
         }
         state.eventIndex = 0;
         state.noteIndex = 0;
-        update();
+        state.update();
     }
 });
 document.getElementById("append-event")?.addEventListener("mousedown", () => {
     state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
-    update();
+    state.update();
 });
 document.getElementById("append-bar")?.addEventListener("mousedown", () => {
     state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
     ++state.barIndex;
     state.eventIndex = 0;
     state.noteIndex = 0;
-    update();
+    state.update();
 });
 document.addEventListener("keydown", e => {
     switch (e.key) {
@@ -330,67 +350,46 @@ document.addEventListener("keydown", e => {
             break;
         default: return;
     }
-    update();
+    state.update();
 });
 document.getElementById("flatten")?.addEventListener("mousedown", () => {
     if (state.piece.getKey().accidentals() > -7) {
         state.piece.getKey().setTone(state.piece.getKey().degree(3));
     }
-    keyHtml.innerText = state.piece.getKey().string();
-    update();
+    key.innerText = state.piece.getKey().string();
+    state.update();
 });
-const keyHtml = document.getElementById("key");
-keyHtml.addEventListener("mousedown", () => {
+const key = document.getElementById("key");
+key.addEventListener("mousedown", () => {
     if (state.piece.getKey().getTonality()) {
         state.piece.setKey(new JSB.Key(state.piece.getKey().degree(5), false));
     }
     else {
         state.piece.setKey(new JSB.Key(state.piece.getKey().degree(2), true));
     }
-    keyHtml.innerText = state.piece.getKey().string();
-    update();
+    key.innerText = state.piece.getKey().string();
+    state.update();
 });
 document.getElementById("sharpen")?.addEventListener("mousedown", () => {
     if (state.piece.getKey().accidentals() < 7) {
         state.piece.getKey().setTone(state.piece.getKey().degree(4));
     }
-    keyHtml.innerText = state.piece.getKey().string();
-    update();
+    key.innerText = state.piece.getKey().string();
+    state.update();
 });
 document.getElementById("harmonise")?.addEventListener("mousedown", () => {
-    harmonise();
+    state.harmonise();
 });
-const auto = document.getElementById("auto");
-auto.addEventListener("mousedown", () => {
+document.getElementById("auto")?.addEventListener("mousedown", function () {
     state.auto = !state.auto;
-    auto.innerText = "Auto: " + (state.auto ? "on" : "off");
+    this.innerText = "Auto: " + (state.auto ? "on" : "off");
     if (state.auto) {
-        update();
+        state.update();
     }
 });
 const consoleHtml = document.getElementById("console");
-function update() {
-    renderInput(state.piece);
-    if (state.auto) {
-        harmonise();
-    }
-}
-function harmonise() {
-    try {
-        state.piece.harmonise();
-        renderOutput(state.piece, state.keyAccidentals);
-        consoleHtml.innerText = "Success!";
-    }
-    catch (error) {
-        const piece = document.getElementById("piece");
-        const time = state.piece.getMaxTime();
-        const event = piece.children[time.bar].children[time.event];
-        event.classList.add("error");
-        consoleHtml.innerText = `${error} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
-    }
-}
 renderInput(state.piece);
-renderOutput(state.piece.harmonise(), state.keyAccidentals);
+renderOutput(state.piece.harmonise());
 consoleHtml.innerText = `The soprano line is required. Other parts are optional.
 Press [A-G] to enter a note.
 

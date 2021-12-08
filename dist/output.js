@@ -1,56 +1,53 @@
 import * as JSB from "../node_modules/jsb-js/dist/index.js";
 const VF = Vex.Flow;
-function convert(note, part) {
-    const vfNote = new VF.StaveNote({
-        clef: part === "s" || part === "a" ? "treble" : "bass",
-        keys: [`${note.getPitch().getTone().string().replace("x", "##")}/${note.getPitch().getOctave()}`],
-        duration: {
-            "0.25": "16",
-            "0.5": "8",
-            "0.75": "8",
-            "1": "q",
-            "1.5": "q",
-            "2": "h",
-            "3": "h",
-            "4": "1"
-        }[note.getDuration()],
-        stem_direction: part === "s" || part === "t" ? 1 : -1
-    });
-    if (note.getPitch().getTone().getAccidental() !== 0) {
-        vfNote.addAccidental(0, new VF.Accidental(JSB.Tone.ACCIDENTALS[note.getPitch().getTone().getAccidental()].replace("x", "##")));
-    }
-    if ([0.75, 1.5, 3, 6].includes(note.getDuration())) {
-        vfNote.addDot(0);
-    }
-    return vfNote;
-}
 const factory = new Vex.Flow.Factory({
     renderer: {
         elementId: "output",
     }
 });
-export default function renderOutput(piece, keyAccidentals) {
-    let x = 10 * Math.abs(keyAccidentals);
+const score = factory.EasyScore();
+export default function renderOutput(piece) {
+    let x = 40;
     factory.getContext().clear();
     factory.getContext().resize(100000, 240);
     const bars = piece.getOutput();
-    bars.forEach((event, i) => {
-        const s = event.map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
-        const a = event.map(e => e.getA().getNotes().map(note => convert(note, "a"))).flat();
-        const t = event.map(e => e.getT().getNotes().map(note => convert(note, "t"))).flat();
-        const b = event.map(e => e.getB().getNotes().map(note => convert(note, "b"))).flat();
-        let width = 60 * event.map(event => event.duration()).reduce((l, r) => l + r);
-        if (i === 0) {
-            width += 80;
-        }
-        const system = factory.System({
-            x: x,
-            y: 0,
-            width: width,
-            spaceBetweenStaves: 10
+    for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
+        const event = bars[i];
+        const vfNotes = ["s", "a", "t", "b"].map(part => {
+            const accidentals = Array(6).fill(piece.getKey().signature());
+            const notes = event.map(e => e.getPart(part).getNotes()).flat();
+            return notes.map(note => {
+                const vfNote = new VF.StaveNote({
+                    clef: part === "s" || part === "a" ? "treble" : "bass",
+                    keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
+                    duration: {
+                        "0.25": "16",
+                        "0.5": "8",
+                        "0.75": "8",
+                        "1": "4",
+                        "1.5": "4",
+                        "2": "2",
+                        "3": "2",
+                        "4": "1",
+                        "6": "1"
+                    }[note.getDuration()],
+                    stem_direction: part === "s" || part === "t" ? 1 : -1
+                });
+                if (accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] !== note.getPitch().getTone().getAccidental()) {
+                    accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] = note.getPitch().getTone().getAccidental();
+                    vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", "0": "n", "1": "#", "2": "##" }[note.getPitch().getTone().getAccidental()]));
+                }
+                if ([0.75, 1.5, 3, 6].includes(note.getDuration())) {
+                    vfNote.addDot(0);
+                }
+                return vfNote;
+            });
         });
-        x += width;
-        const score = factory.EasyScore();
+        width = 50 * Math.max(...vfNotes.map(notes => notes.length));
+        if (i === 0) {
+            width += 40 + 20 * Math.abs(piece.getKey().accidentals());
+        }
+        const system = factory.System({ x: x, y: 0, width: width, spaceBetweenStaves: 10 });
         const vfKey = piece.getKey().getTonality() ? piece.getKey().getTone().string() : piece.getKey().degree(2).string();
         const vfTime = {
             time: {
@@ -60,14 +57,14 @@ export default function renderOutput(piece, keyAccidentals) {
         };
         let upper = system.addStave({
             voices: [
-                score.voice(s, vfTime).setStrict(false),
-                score.voice(a, vfTime).setStrict(false)
+                score.voice(vfNotes[0], vfTime).setStrict(false),
+                score.voice(vfNotes[1], vfTime).setStrict(false)
             ]
         });
         let lower = system.addStave({
             voices: [
-                score.voice(t, vfTime).setStrict(false),
-                score.voice(b, vfTime).setStrict(false)
+                score.voice(vfNotes[2], vfTime).setStrict(false),
+                score.voice(vfNotes[3], vfTime).setStrict(false)
             ]
         });
         if (i === 0) {
@@ -78,6 +75,6 @@ export default function renderOutput(piece, keyAccidentals) {
         }
         system.addConnector(i === bars.length - 1 ? "boldDoubleRight" : "singleRight");
         factory.draw();
-    });
+    }
     factory.getContext().resize(x + 40, 240);
 }
