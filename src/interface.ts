@@ -1,4 +1,3 @@
-import * as JSB from "https://unpkg.com/jsb-js" // "../node_modules/jsb-js/dist/index.js";
 import renderOutput from "./output.js";
 
 const state = {
