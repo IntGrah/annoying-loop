@@ -1,4 +1,4 @@
-import renderOutput, JSB from "./output.js";
+import { renderOutput, JSB } from "./output.js";
 
 const state = {
     piece: new JSB.Piece().setKey(JSB.Key.parse("A major"))
