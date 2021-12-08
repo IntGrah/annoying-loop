@@ -110,6 +110,11 @@ body {
           border-top-right-radius: 10px;
           border-bottom-right-radius: 10px;
         }
+
+        &.empty {
+          font-size: 10px;
+          font-style: italic;
+        }
       }
     }
 
@@ -138,15 +143,14 @@ body {
             flex-direction: column;
 
             &.error {
-              background-color: @red;
-              width: 60px;
+              box-shadow: @shadow;
             }
 
             .group {
               .box();
 
               &.multi {
-                box-shadow: @shadow;
+                text-decoration: underline;
               }
             }
           }
@@ -214,8 +218,11 @@ body {
 
       #console {
         padding: 20px;
+        height: calc(100% - 80px);
         font-family: monospace;
         user-select: text;
+        overflow-y: auto;
+        .scrollbar();
       }
     }
   }
@@ -226,23 +233,7 @@ body {
   border-radius: 10px;
   background-color: @white;
   box-shadow: @shadow;
-
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  &::-webkit-scrollbar-track {
-    border-radius: 0 0 10px 10px;
-    background: @grey1;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: @grey3;
-
-    &:hover {
-      background-color: @grey4;
-    }
-  }
+  .scrollbar();
 }
 
 .box() {
@@ -273,5 +264,24 @@ body {
     background-color: @grey1;
     box-shadow: @shadow;
     cursor: pointer;
+  }
+}
+
+.scrollbar() {
+  &::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: @grey1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: @grey3;
+
+    &:hover {
+      background-color: @grey4;
+    }
   }
 }

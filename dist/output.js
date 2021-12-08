@@ -34,12 +34,12 @@ export default function renderOutput(piece, keyAccidentals) {
     factory.getContext().clear();
     factory.getContext().resize(100000, 240);
     const bars = piece.getOutput();
-    for (let i = 0; i < bars.length; ++i) {
-        const s = bars[i].map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
-        const a = bars[i].map(e => e.getA().getNotes().map(note => convert(note, "a"))).flat();
-        const t = bars[i].map(e => e.getT().getNotes().map(note => convert(note, "t"))).flat();
-        const b = bars[i].map(e => e.getB().getNotes().map(note => convert(note, "b"))).flat();
-        let width = 60 * bars[i].map(event => event.duration()).reduce((l, r) => l + r);
+    bars.forEach((event, i) => {
+        const s = event.map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
+        const a = event.map(e => e.getA().getNotes().map(note => convert(note, "a"))).flat();
+        const t = event.map(e => e.getT().getNotes().map(note => convert(note, "t"))).flat();
+        const b = event.map(e => e.getB().getNotes().map(note => convert(note, "b"))).flat();
+        let width = 60 * event.map(event => event.duration()).reduce((l, r) => l + r);
         if (i === 0) {
             width += 80;
         }
@@ -54,7 +54,7 @@ export default function renderOutput(piece, keyAccidentals) {
         const vfKey = piece.getKey().getTonality() ? piece.getKey().getTone().string() : piece.getKey().degree(2).string();
         const vfTime = {
             time: {
-                num_beats: bars[i].map(event => event.duration()).reduce((l, r) => l + r),
+                num_beats: event.map(event => event.duration()).reduce((l, r) => l + r),
                 beat_value: 4,
             }
         };
@@ -78,6 +78,6 @@ export default function renderOutput(piece, keyAccidentals) {
         }
         system.addConnector(i === bars.length - 1 ? "boldDoubleRight" : "singleRight");
         factory.draw();
-    }
+    });
     factory.getContext().resize(x + 40, 240);
 }

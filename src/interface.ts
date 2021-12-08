@@ -79,6 +79,15 @@ function renderInput(piece: JSB.Piece) {
         noteHtml.addEventListener("mousedown", () => state.select(state.barIndex, state.eventIndex, state.part, noteIndex));
         return noteHtml;
     });
+    if (notesHtml.length === 0) {
+        const emptyNote = document.createElement("span");
+        emptyNote.classList.add("note");
+        emptyNote.classList.add("empty");
+        emptyNote.appendChild(document.createTextNode("(empty)"));
+        emptyNote.style;
+        notesHtml[0] = emptyNote;
+    }
+
     mirror.innerHTML = "";
     mirror.append(...notesHtml);
 }
@@ -363,4 +372,6 @@ Press [.] to dot/undot a note.
 
 Press [BACKSPACE] to delete a note.
 
-The buttons located above can create, delete, extend, or shorten bars.`
+The buttons located above can create, delete, extend, or shorten bars.
+
+In a chord, a part can have multiple notes, but only one is used for harmonisation, while others are considered non-harmony notes.`

@@ -40,13 +40,13 @@ export default function renderOutput(piece: JSB.Piece, keyAccidentals: number) {
 
     const bars = piece.getOutput();
 
-    for (let i = 0; i < bars.length; ++i) {
-        const s = bars[i].map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
-        const a = bars[i].map(e => e.getA().getNotes().map(note => convert(note, "a"))).flat();
-        const t = bars[i].map(e => e.getT().getNotes().map(note => convert(note, "t"))).flat();
-        const b = bars[i].map(e => e.getB().getNotes().map(note => convert(note, "b"))).flat();
+    bars.forEach((event, i) => {
+        const s = event.map(e => e.getS().getNotes().map(note => convert(note, "s"))).flat();
+        const a = event.map(e => e.getA().getNotes().map(note => convert(note, "a"))).flat();
+        const t = event.map(e => e.getT().getNotes().map(note => convert(note, "t"))).flat();
+        const b = event.map(e => e.getB().getNotes().map(note => convert(note, "b"))).flat();
 
-        let width = 60 * bars[i].map(event => event.duration()).reduce((l, r) => l + r);
+        let width = 60 * event.map(event => event.duration()).reduce((l, r) => l + r);
 
         if (i === 0) {
             width += 80;
@@ -67,7 +67,7 @@ export default function renderOutput(piece: JSB.Piece, keyAccidentals: number) {
 
         const vfTime = {
             time: {
-                num_beats: bars[i].map(event => event.duration()).reduce((l, r) => l + r),
+                num_beats: event.map(event => event.duration()).reduce((l, r) => l + r),
                 beat_value: 4,
             }
         };
@@ -97,6 +97,6 @@ export default function renderOutput(piece: JSB.Piece, keyAccidentals: number) {
         system.addConnector(i === bars.length - 1 ? "boldDoubleRight" : "singleRight");
 
         factory.draw();
-    }
+    });
     factory.getContext().resize(x + 40, 240);
 }
