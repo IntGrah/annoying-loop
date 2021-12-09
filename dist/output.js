@@ -1,4 +1,4 @@
-const JSB = require("jsb-js");
+import { Tone } from "../node_modules/jsb-js/dist/index.js";
 const VF = Vex.Flow;
 const factory = new Vex.Flow.Factory({
     renderer: {
@@ -19,7 +19,7 @@ export default function renderOutput(piece) {
             return notes.map(note => {
                 const vfNote = new VF.StaveNote({
                     clef: part === "s" || part === "a" ? "treble" : "bass",
-                    keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
+                    keys: [`${Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
                     duration: {
                         "0.25": "16",
                         "0.5": "8",

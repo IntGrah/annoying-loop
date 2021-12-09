@@ -1,6 +1,7 @@
+import { Event, Group, Key, Note, Piece, Tone } from "../node_modules/jsb-js/dist/index.js";
 import renderOutput from "./output.js";
 const state = {
-    piece: new JSB.Piece().setKey(JSB.Key.parse("A major"))
+    piece: new Piece().setKey(Key.parse("A major"))
         .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s")
         .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b"),
     barIndex: 0,
@@ -108,7 +109,7 @@ const state = {
     },
     defaultNote() {
         if (this.note() === undefined) {
-            this.group().setNotes([JSB.Note.parse("C4")]);
+            this.group().setNotes([Note.parse("C4")]);
         }
         return this.note();
     },
@@ -133,13 +134,13 @@ const state = {
         }
     },
     prependBar() {
-        this.piece.getInput().splice(this.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+        this.piece.getInput().splice(this.barIndex, 0, [new Event(Group.empty(), Group.empty(), Group.empty(), Group.empty(), false)]);
         this.eventIndex = 0;
         this.noteIndex = 0;
         this.update();
     },
     prependEvent() {
-        this.piece.getInput()[this.barIndex].splice(this.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+        this.piece.getInput()[this.barIndex].splice(this.eventIndex, 0, new Event(Group.empty(), Group.empty(), Group.empty(), Group.empty(), false));
         this.noteIndex = 0;
         this.update();
     },
@@ -163,11 +164,11 @@ const state = {
         }
     },
     appendEvent() {
-        this.piece.getInput()[this.barIndex].splice(this.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+        this.piece.getInput()[this.barIndex].splice(this.eventIndex + 1, 0, new Event(Group.empty(), Group.empty(), Group.empty(), Group.empty(), false));
         this.update();
     },
     appendBar() {
-        this.piece.getInput().splice(this.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+        this.piece.getInput().splice(this.barIndex + 1, 0, [new Event(Group.empty(), Group.empty(), Group.empty(), Group.empty(), false)]);
         ++this.barIndex;
         this.eventIndex = 0;
         this.noteIndex = 0;
@@ -182,10 +183,10 @@ const state = {
     },
     toggleTonality() {
         if (this.piece.getKey().getTonality()) {
-            this.piece.setKey(new JSB.Key(this.piece.getKey().degree(5), false));
+            this.piece.setKey(new Key(this.piece.getKey().degree(5), false));
         }
         else {
-            this.piece.setKey(new JSB.Key(this.piece.getKey().degree(2), true));
+            this.piece.setKey(new Key(this.piece.getKey().degree(2), true));
         }
         this.keyElement.innerText = this.piece.getKey().string();
         this.update();
@@ -209,31 +210,31 @@ const state = {
             switch (e.key) {
                 case "a":
                 case "A":
-                    this.defaultNote().getPitch().setTone(JSB.Tone.parse("A"));
+                    this.defaultNote().getPitch().setTone(Tone.parse("A"));
                     break;
                 case "b":
                 case "B":
-                    this.defaultNote().getPitch().setTone(JSB.Tone.parse("B"));
+                    this.defaultNote().getPitch().setTone(Tone.parse("B"));
                     break;
                 case "c":
                 case "C":
-                    this.defaultNote().getPitch().setTone(JSB.Tone.parse("C"));
+                    this.defaultNote().getPitch().setTone(Tone.parse("C"));
                     break;
                 case "d":
                 case "D":
-                    this.defaultNote().getPitch().setTone(JSB.Tone.parse("D"));
+                    this.defaultNote().getPitch().setTone(Tone.parse("D"));
                     break;
                 case "e":
                 case "E":
-                    this.defaultNote().getPitch().setTone(JSB.Tone.parse("E"));
+                    this.defaultNote().getPitch().setTone(Tone.parse("E"));
                     break;
                 case "f":
                 case "F":
-                    this.defaultNote().getPitch().setTone(JSB.Tone.parse("F"));
+                    this.defaultNote().getPitch().setTone(Tone.parse("F"));
                     break;
                 case "g":
                 case "G":
-                    this.defaultNote().getPitch().setTone(JSB.Tone.parse("G"));
+                    this.defaultNote().getPitch().setTone(Tone.parse("G"));
                     break;
                 case "1":
                     this.defaultNote().getPitch().setOctave(1);
