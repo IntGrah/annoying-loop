@@ -7,97 +7,6 @@ const factory = new Vex.Flow.Factory({
 });
 const score = factory.EasyScore();
 
-export default function renderOutput(piece) {
-    let x = 40;
-
-    factory.getContext().clear();
-    factory.getContext().resize(100000, 240);
-
-    const bars = piece.getOutput();
-
-    for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
-        const event = bars[i];
-
-        const vfNotes = (["s", "a", "t", "b"]).map(part => {
-            const accidentals = Array(6).fill(piece.getKey().signature());
-            const notes = event.map(e => e.getPart(part).getNotes()).flat();
-            return notes.map(note => {
-                const vfNote = new VF.StaveNote({
-                    clef: part === "s" || part === "a" ? "treble" : "bass",
-                    keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
-                    duration: {
-                        "0.25": "16",
-                        "0.5": "8",
-                        "0.75": "8",
-                        "1": "4",
-                        "1.5": "4",
-                        "2": "2",
-                        "3": "2",
-                        "4": "1",
-                        "6": "1"
-                    }[note.getDuration()],
-                    stem_direction: part === "s" || part === "t" ? 1 : -1
-                });
-                if (accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] !== note.getPitch().getTone().getAccidental()) {
-                    accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] = note.getPitch().getTone().getAccidental();
-                    vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", "0": "n", "1": "#", "2": "##" }[note.getPitch().getTone().getAccidental()]));
-                }
-                if ([0.75, 1.5, 3, 6].includes(note.getDuration())) {
-                    vfNote.addDot(0);
-                }
-                return vfNote;
-            });
-        });
-
-        width = 40 * Math.max(...vfNotes.map(notes => notes.length));
-
-        if (i === 0) {
-            width += 40 + 20 * Math.abs(piece.getKey().accidentals());
-        }
-
-        const system = factory.System({ x: x, y: 0, width: width, spaceBetweenStaves: 10 });
-
-        const vfKey = piece.getKey().getTonality() ? piece.getKey().getTone().string() : piece.getKey().degree(2).string();
-
-        const vfTime = {
-            time: {
-                num_beats: event.map(event => event.duration()).reduce((l, r) => l + r),
-                beat_value: 4,
-            }
-        };
-
-
-        let upper = system.addStave({
-            voices: [
-                score.voice(vfNotes[0], vfTime).setStrict(false),
-                score.voice(vfNotes[1], vfTime).setStrict(false)
-            ]
-        });
-
-        let lower = system.addStave({
-            voices: [
-                score.voice(vfNotes[2], vfTime).setStrict(false),
-                score.voice(vfNotes[3], vfTime).setStrict(false)
-            ]
-        });
-
-        if (i === 0) {
-            upper.addClef("treble").addKeySignature(vfKey);
-            lower.addClef("bass").addKeySignature(vfKey);
-            system.addConnector("brace");
-            system.addConnector("singleLeft");
-        }
-
-        system.addConnector(i === bars.length - 1 ? "boldDoubleRight" : "singleRight");
-
-        factory.draw();
-    }
-    factory.getContext().resize(x + 40, 240);
-}
-
-
-
-
 const state = {
     piece: new JSB.Piece().setKey(JSB.Key.parse("A major"))
         .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s")
@@ -112,9 +21,9 @@ const state = {
     consoleElement: document.getElementById("console"),
 
     renderInput() {
-        const barsHtml = this.piece.getInput().map((bar, barIndex) => {
+        const barsHtml = state.piece.getInput().map((bar, barIndex) => {
             const eventsHtml = bar.map((event, eventIndex) => {
-                const group = this.group();
+                const group = state.group();
 
                 const sHtml = document.createElement("div");
                 sHtml.classList.add("group");
@@ -125,7 +34,7 @@ const state = {
                     sHtml.classList.add("multi");
                 }
                 sHtml.appendChild(document.createTextNode(event.getS().main()?.string() ?? ""));
-                sHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "s", 0));
+                sHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "s", 0));
 
                 const aHtml = document.createElement("div");
                 aHtml.classList.add("group");
@@ -136,7 +45,7 @@ const state = {
                     sHtml.classList.add("multi");
                 }
                 aHtml.appendChild(document.createTextNode(event.getA().main()?.string() ?? ""));
-                aHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "a", 0));
+                aHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "a", 0));
 
                 const tHtml = document.createElement("div");
                 tHtml.classList.add("group");
@@ -147,7 +56,7 @@ const state = {
                     sHtml.classList.add("multi");
                 }
                 tHtml.appendChild(document.createTextNode(event.getT().main()?.string() ?? ""));
-                tHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "t", 0));
+                tHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "t", 0));
 
                 const bHtml = document.createElement("div");
                 bHtml.classList.add("group");
@@ -158,7 +67,7 @@ const state = {
                     sHtml.classList.add("multi");
                 }
                 bHtml.appendChild(document.createTextNode(event.getB().main()?.string() ?? ""));
-                bHtml.addEventListener("mousedown", () => this.select(barIndex, eventIndex, "b", 0));
+                bHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "b", 0));
 
                 const eventHtml = document.createElement("div");
                 eventHtml.classList.add("event");
@@ -179,14 +88,14 @@ const state = {
         pieceBox.appendChild(pieceHtml);
 
         const mirror = document.getElementById("mirror");
-        const notesHtml = this.group().getNotes().map((note, noteIndex) => {
+        const notesHtml = state.group().getNotes().map((note, noteIndex) => {
             const noteHtml = document.createElement("span");
             noteHtml.classList.add("note");
-            if (note === this.note()) {
+            if (note === state.note()) {
                 noteHtml.classList.add("selected");
             }
             noteHtml.appendChild(document.createTextNode(note.string()));
-            noteHtml.addEventListener("mousedown", () => this.select(this.barIndex, this.eventIndex, this.part, noteIndex));
+            noteHtml.addEventListener("mousedown", () => state.select(state.barIndex, state.eventIndex, state.part, noteIndex));
             return noteHtml;
         });
         if (notesHtml.length === 0) {
@@ -202,220 +111,308 @@ const state = {
         mirror.append(...notesHtml);
     },
 
+    renderOutput() {
+        let x = 40;
+    
+        factory.getContext().clear();
+        factory.getContext().resize(100000, 240);
+    
+        const bars = state.piece.getOutput();
+    
+        for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
+            const event = bars[i];
+    
+            const vfNotes = (["s", "a", "t", "b"]).map(part => {
+                const accidentals = Array(6).fill(state.piece.getKey().signature());
+                const notes = event.map(e => e.getPart(part).getNotes()).flat();
+                return notes.map(note => {
+                    const vfNote = new VF.StaveNote({
+                        clef: part === "s" || part === "a" ? "treble" : "bass",
+                        keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
+                        duration: {
+                            "0.25": "16",
+                            "0.5": "8",
+                            "0.75": "8",
+                            "1": "4",
+                            "1.5": "4",
+                            "2": "2",
+                            "3": "2",
+                            "4": "1",
+                            "6": "1"
+                        }[note.getDuration()],
+                        stem_direction: part === "s" || part === "t" ? 1 : -1
+                    });
+                    if (accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] !== note.getPitch().getTone().getAccidental()) {
+                        accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] = note.getPitch().getTone().getAccidental();
+                        vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", "0": "n", "1": "#", "2": "##" }[note.getPitch().getTone().getAccidental()]));
+                    }
+                    if ([0.75, 1.5, 3, 6].includes(note.getDuration())) {
+                        vfNote.addDot(0);
+                    }
+                    return vfNote;
+                });
+            });
+    
+            width = 40 * Math.max(...vfNotes.map(notes => notes.length));
+    
+            if (i === 0) {
+                width += 40 + 20 * Math.abs(state.piece.getKey().accidentals());
+            }
+    
+            const system = factory.System({ x: x, y: 0, width: width, spaceBetweenStaves: 10 });
+    
+            const vfKey = state.piece.getKey().getTonality() ? state.piece.getKey().getTone().string() : state.piece.getKey().degree(2).string();
+    
+            const vfTime = {
+                time: {
+                    num_beats: event.map(event => event.duration()).reduce((l, r) => l + r),
+                    beat_value: 4,
+                }
+            };
+    
+    
+            let upper = system.addStave({
+                voices: [
+                    score.voice(vfNotes[0], vfTime).setStrict(false),
+                    score.voice(vfNotes[1], vfTime).setStrict(false)
+                ]
+            });
+    
+            let lower = system.addStave({
+                voices: [
+                    score.voice(vfNotes[2], vfTime).setStrict(false),
+                    score.voice(vfNotes[3], vfTime).setStrict(false)
+                ]
+            });
+    
+            if (i === 0) {
+                upper.addClef("treble").addKeySignature(vfKey);
+                lower.addClef("bass").addKeySignature(vfKey);
+                system.addConnector("brace");
+                system.addConnector("singleLeft");
+            }
+    
+            system.addConnector(i === bars.length - 1 ? "boldDoubleRight" : "singleRight");
+    
+            factory.draw();
+        }
+        factory.getContext().resize(x + 40, 240);
+    },
+
     select(barIndex, eventIndex, part, noteIndex) {
-        this.barIndex = barIndex;
-        this.eventIndex = eventIndex;
-        this.part = part;
-        this.noteIndex = noteIndex;
-        this.update();
+        state.barIndex = barIndex;
+        state.eventIndex = eventIndex;
+        state.part = part;
+        state.noteIndex = noteIndex;
+        state.update();
     },
 
     group() {
-        return this.piece.getInput()[this.barIndex][this.eventIndex].getPart(this.part);
+        return state.piece.getInput()[state.barIndex][state.eventIndex].getPart(state.part);
     },
 
     note() {
-        return this.group().getNotes()[this.noteIndex];
+        return state.group().getNotes()[state.noteIndex];
     },
 
     defaultNote() {
-        if (this.note() === undefined) {
-            this.group().setNotes([JSB.Note.parse("C4")]);
+        if (state.note() === undefined) {
+            state.group().setNotes([JSB.Note.parse("C4")]);
         }
-        return this.note();
+        return state.note();
     },
 
     update() {
-        this.renderInput();
-        if (this.auto) {
-            this.harmonise();
+        state.renderInput();
+        if (state.auto) {
+            state.harmonise();
         }
     },
 
     harmonise() {
         try {
-            this.piece.harmonise();
-            renderOutput(this.piece);
-            this.consoleElement.innerText = "Success!";
+            state.piece.harmonise();
+            state.renderOutput(state.piece);
+            state.consoleElement.innerText = "Success!";
         } catch (error) {
             const piece = document.getElementById("piece");
-            const time = this.piece.getMaxTime();
+            const time = state.piece.getMaxTime();
             const event = piece.children[time.bar].children[time.event];
             event.classList.add("error");
-            this.consoleElement.innerText = `${error} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
+            state.consoleElement.innerText = `${error} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
         }
     },
 
     prependBar() {
-        this.piece.getInput().splice(this.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
-        this.eventIndex = 0;
-        this.noteIndex = 0;
-        this.update();
+        state.piece.getInput().splice(state.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+        state.eventIndex = 0;
+        state.noteIndex = 0;
+        state.update();
     },
 
     prependEvent() {
-        this.piece.getInput()[this.barIndex].splice(this.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
-        this.noteIndex = 0;
-        this.update();
+        state.piece.getInput()[state.barIndex].splice(state.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+        state.noteIndex = 0;
+        state.update();
     },
 
     deleteEvent() {
-        if (this.piece.getInput()[this.barIndex].length > 1) {
-            this.piece.getInput()[this.barIndex].splice(this.eventIndex, 1);
-            if (--this.eventIndex < 0) {
-                this.eventIndex = 0;
+        if (state.piece.getInput()[state.barIndex].length > 1) {
+            state.piece.getInput()[state.barIndex].splice(state.eventIndex, 1);
+            if (--state.eventIndex < 0) {
+                state.eventIndex = 0;
             }
-            this.noteIndex = 0;
-            this.update();
-        } else if (this.piece.getInput().length > 1) {
-            this.piece.getInput().splice(this.barIndex, 1);
-            if (--this.barIndex < 0) {
-                this.barIndex = 0;
+            state.noteIndex = 0;
+            state.update();
+        } else if (state.piece.getInput().length > 1) {
+            state.piece.getInput().splice(state.barIndex, 1);
+            if (--state.barIndex < 0) {
+                state.barIndex = 0;
             }
-            this.eventIndex = 0;
-            this.noteIndex = 0;
-            this.update();
+            state.eventIndex = 0;
+            state.noteIndex = 0;
+            state.update();
         }
     },
 
     appendEvent() {
-        this.piece.getInput()[this.barIndex].splice(this.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
-        this.update();
+        state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+        state.update();
     },
 
     appendBar() {
-        this.piece.getInput().splice(this.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
-        ++this.barIndex;
-        this.eventIndex = 0;
-        this.noteIndex = 0;
-        this.update();
+        state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+        ++state.barIndex;
+        state.eventIndex = 0;
+        state.noteIndex = 0;
+        state.update();
     },
 
     flatten() {
-        if (this.piece.getKey().accidentals() > -7) {
-            this.piece.getKey().setTone(this.piece.getKey().degree(3));
+        if (state.piece.getKey().accidentals() > -7) {
+            state.piece.getKey().setTone(state.piece.getKey().degree(3));
         }
-        this.keyElement.innerText = this.piece.getKey().string();
-        this.update();
+        state.keyElement.innerText = state.piece.getKey().string();
+        state.update();
     },
 
     toggleTonality() {
-        if (this.piece.getKey().getTonality()) {
-            this.piece.setKey(new JSB.Key(this.piece.getKey().degree(5), false));
+        if (state.piece.getKey().getTonality()) {
+            state.piece.setKey(new JSB.Key(state.piece.getKey().degree(5), false));
         } else {
-            this.piece.setKey(new JSB.Key(this.piece.getKey().degree(2), true));
+            state.piece.setKey(new JSB.Key(state.piece.getKey().degree(2), true));
         }
-        this.keyElement.innerText = this.piece.getKey().string();
-        this.update();
+        state.keyElement.innerText = state.piece.getKey().string();
+        state.update();
     },
 
     sharpen() {
-        if (this.piece.getKey().accidentals() < 7) {
-            this.piece.getKey().setTone(this.piece.getKey().degree(4));
+        if (state.piece.getKey().accidentals() < 7) {
+            state.piece.getKey().setTone(state.piece.getKey().degree(4));
         }
-        this.keyElement.innerText = this.piece.getKey().string();
-        this.update();
+        state.keyElement.innerText = state.piece.getKey().string();
+        state.update();
     },
 
     toggleAuto() {
-        this.auto = !this.auto;
-        this.autoElement.innerText = "Auto: " + (this.auto ? "on" : "off");
-        if (this.auto) {
-            this.update();
+        state.auto = !state.auto;
+        state.autoElement.innerText = "Auto: " + (state.auto ? "on" : "off");
+        if (state.auto) {
+            state.update();
         }
     },
 
     keydown(e) {
         if (!e.ctrlKey && !e.shiftKey) {
             switch (e.key) {
-                case "a": case "A": this.defaultNote().getPitch().setTone(JSB.Tone.parse("A")); break;
-                case "b": case "B": this.defaultNote().getPitch().setTone(JSB.Tone.parse("B")); break;
-                case "c": case "C": this.defaultNote().getPitch().setTone(JSB.Tone.parse("C")); break;
-                case "d": case "D": this.defaultNote().getPitch().setTone(JSB.Tone.parse("D")); break;
-                case "e": case "E": this.defaultNote().getPitch().setTone(JSB.Tone.parse("E")); break;
-                case "f": case "F": this.defaultNote().getPitch().setTone(JSB.Tone.parse("F")); break;
-                case "g": case "G": this.defaultNote().getPitch().setTone(JSB.Tone.parse("G")); break;
-                case "1": this.defaultNote().getPitch().setOctave(1); break;
-                case "2": this.defaultNote().getPitch().setOctave(2); break;
-                case "3": this.defaultNote().getPitch().setOctave(3); break;
-                case "4": this.defaultNote().getPitch().setOctave(4); break;
-                case "5": this.defaultNote().getPitch().setOctave(5); break;
-                case "#": this.defaultNote().getPitch().getTone().alterAccidental(1); break;
-                case "'": this.defaultNote().getPitch().getTone().alterAccidental(-1); break;
+                case "a": case "A": state.defaultNote().getPitch().setTone(JSB.Tone.parse("A")); break;
+                case "b": case "B": state.defaultNote().getPitch().setTone(JSB.Tone.parse("B")); break;
+                case "c": case "C": state.defaultNote().getPitch().setTone(JSB.Tone.parse("C")); break;
+                case "d": case "D": state.defaultNote().getPitch().setTone(JSB.Tone.parse("D")); break;
+                case "e": case "E": state.defaultNote().getPitch().setTone(JSB.Tone.parse("E")); break;
+                case "f": case "F": state.defaultNote().getPitch().setTone(JSB.Tone.parse("F")); break;
+                case "g": case "G": state.defaultNote().getPitch().setTone(JSB.Tone.parse("G")); break;
+                case "1": state.defaultNote().getPitch().setOctave(1); break;
+                case "2": state.defaultNote().getPitch().setOctave(2); break;
+                case "3": state.defaultNote().getPitch().setOctave(3); break;
+                case "4": state.defaultNote().getPitch().setOctave(4); break;
+                case "5": state.defaultNote().getPitch().setOctave(5); break;
+                case "#": state.defaultNote().getPitch().getTone().alterAccidental(1); break;
+                case "'": state.defaultNote().getPitch().getTone().alterAccidental(-1); break;
                 case ",":
-                    switch (this.defaultNote().getDuration()) {
-                        case 0.25: this.defaultNote().setDuration(0.5); break;
-                        case 0.5: this.defaultNote().setDuration(1); break;
-                        case 0.75: this.defaultNote().setDuration(1.5); break;
-                        case 1: this.defaultNote().setDuration(2); break;
-                        case 1.5: this.defaultNote().setDuration(3); break;
-                        case 2: this.defaultNote().setDuration(4); break;
-                        case 3: this.defaultNote().setDuration(6); break;
+                    switch (state.defaultNote().getDuration()) {
+                        case 0.25: state.defaultNote().setDuration(0.5); break;
+                        case 0.5: state.defaultNote().setDuration(1); break;
+                        case 0.75: state.defaultNote().setDuration(1.5); break;
+                        case 1: state.defaultNote().setDuration(2); break;
+                        case 1.5: state.defaultNote().setDuration(3); break;
+                        case 2: state.defaultNote().setDuration(4); break;
+                        case 3: state.defaultNote().setDuration(6); break;
                     }
                     break;
                 case ".":
-                    switch (this.defaultNote().getDuration()) {
-                        case 0.5: this.defaultNote().setDuration(0.75); break;
-                        case 0.75: this.defaultNote().setDuration(0.5); break;
-                        case 1: this.defaultNote().setDuration(1.5); break;
-                        case 1.5: this.defaultNote().setDuration(1); break;
-                        case 2: this.defaultNote().setDuration(3); break;
-                        case 3: this.defaultNote().setDuration(2); break;
-                        case 4: this.defaultNote().setDuration(6); break;
-                        case 6: this.defaultNote().setDuration(4); break;
+                    switch (state.defaultNote().getDuration()) {
+                        case 0.5: state.defaultNote().setDuration(0.75); break;
+                        case 0.75: state.defaultNote().setDuration(0.5); break;
+                        case 1: state.defaultNote().setDuration(1.5); break;
+                        case 1.5: state.defaultNote().setDuration(1); break;
+                        case 2: state.defaultNote().setDuration(3); break;
+                        case 3: state.defaultNote().setDuration(2); break;
+                        case 4: state.defaultNote().setDuration(6); break;
+                        case 6: state.defaultNote().setDuration(4); break;
                     }
                     break;
                 case "/":
-                    switch (this.defaultNote().getDuration()) {
-                        case 0.5: this.defaultNote().setDuration(0.25); break;
-                        case 1: this.defaultNote().setDuration(0.5); break;
-                        case 1.5: this.defaultNote().setDuration(0.75); break;
-                        case 2: this.defaultNote().setDuration(1); break;
-                        case 3: this.defaultNote().setDuration(1.5); break;
-                        case 4: this.defaultNote().setDuration(2); break;
-                        case 6: this.defaultNote().setDuration(3); break;
+                    switch (state.defaultNote().getDuration()) {
+                        case 0.5: state.defaultNote().setDuration(0.25); break;
+                        case 1: state.defaultNote().setDuration(0.5); break;
+                        case 1.5: state.defaultNote().setDuration(0.75); break;
+                        case 2: state.defaultNote().setDuration(1); break;
+                        case 3: state.defaultNote().setDuration(1.5); break;
+                        case 4: state.defaultNote().setDuration(2); break;
+                        case 6: state.defaultNote().setDuration(3); break;
                     }
                     break;
                 case "Enter":
                     if (e.shiftKey) {
-                        if (this.eventIndex-- === 0) {
-                            if (this.barIndex-- === 0) {
-                                this.barIndex = 0;
-                                this.eventIndex = 0;
+                        if (state.eventIndex-- === 0) {
+                            if (state.barIndex-- === 0) {
+                                state.barIndex = 0;
+                                state.eventIndex = 0;
                             } else {
-                                this.eventIndex = this.piece.getInput()[this.barIndex].length - 1;
-                                this.noteIndex = 0;
+                                state.eventIndex = state.piece.getInput()[state.barIndex].length - 1;
+                                state.noteIndex = 0;
                             }
                         } else {
-                            this.noteIndex = 0;
+                            state.noteIndex = 0;
                         }
                     } else {
-                        if (++this.eventIndex === this.piece.getInput()[this.barIndex].length) {
-                            if (++this.barIndex === this.piece.getInput().length) {
-                                --this.barIndex;
-                                --this.eventIndex;
+                        if (++state.eventIndex === state.piece.getInput()[state.barIndex].length) {
+                            if (++state.barIndex === state.piece.getInput().length) {
+                                --state.barIndex;
+                                --state.eventIndex;
                             } else {
-                                this.eventIndex = 0;
-                                this.noteIndex = 0;
+                                state.eventIndex = 0;
+                                state.noteIndex = 0;
                             }
                         } else {
-                            this.noteIndex = 0;
+                            state.noteIndex = 0;
                         }
                     }
                     break;
                 case "Tab":
                     e.preventDefault();
-                    const length = this.group().getNotes().length;
+                    const length = state.group().getNotes().length;
                     if (e.shiftKey) {
-                        this.noteIndex += length - 1;
-                        this.noteIndex %= length;
+                        state.noteIndex += length - 1;
+                        state.noteIndex %= length;
                     } else {
-                        ++this.noteIndex;
-                        this.noteIndex %= length;
+                        ++state.noteIndex;
+                        state.noteIndex %= length;
                     }
                     break;
                 case "Backspace":
-                    this.group().setIndex(0).setNotes([]);
+                    state.group().setIndex(0).setNotes([]);
                     break;
                 default: return;
             }
@@ -424,22 +421,25 @@ const state = {
                 case "b": ;
             }
         }
-        this.update();
+        state.update();
     },
 
     init() {
-        document.getElementById("prepend-bar")?.addEventListener("mousedown", this.prependBar);
-        document.getElementById("prepend-event")?.addEventListener("mousedown", this.prependEvent);
-        document.getElementById("delete-event")?.addEventListener("mousedown", this.deleteEvent);
-        document.getElementById("append-event")?.addEventListener("mousedown", this.appendEvent);
-        document.getElementById("append-bar")?.addEventListener("mousedown", this.appendBar);
-        document.addEventListener("keydown", this.keydown);
-        document.getElementById("flatten")?.addEventListener("mousedown", this.flatten);
-        this.keyElement.addEventListener("mousedown", this.toggleTonality);
-        document.getElementById("sharpen")?.addEventListener("mousedown", this.sharpen);
-        document.getElementById("harmonise")?.addEventListener("mousedown", this.harmonise);
-        this.autoElement.addEventListener("mousedown", this.toggleAuto);
-        this.consoleElement.innerText = `The soprano line is required. Other parts are optional.
+        document.getElementById("prepend-bar")?.addEventListener("mousedown", state.prependBar);
+        document.getElementById("prepend-event")?.addEventListener("mousedown", state.prependEvent);
+        document.getElementById("delete-event")?.addEventListener("mousedown", state.deleteEvent);
+        document.getElementById("append-event")?.addEventListener("mousedown", state.appendEvent);
+        document.getElementById("append-bar")?.addEventListener("mousedown", state.appendBar);
+        document.addEventListener("keydown", state.keydown);
+        document.getElementById("flatten")?.addEventListener("mousedown", state.flatten);
+        state.keyElement.addEventListener("mousedown", state.toggleTonality);
+        document.getElementById("sharpen")?.addEventListener("mousedown", state.sharpen);
+        document.getElementById("harmonise")?.addEventListener("mousedown", state.harmonise);
+        state.autoElement.addEventListener("mousedown", state.toggleAuto);
+        state.renderInput();
+        state.harmonise();
+        state.renderOutput();
+        state.consoleElement.innerText = `The soprano line is required. Other parts are optional.
 [A-G] to enter a note.
 
 [1-5] to set the octave of a note.
@@ -451,8 +451,6 @@ const state = {
 [.] to dot/undot a note.
 
 [BACKSPACE] to delete a note.`
-        this.renderInput();
-        renderOutput(this.piece.harmonise());
     }
 };
 
