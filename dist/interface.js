@@ -1,4 +1,3 @@
-import { Event, Group, Key, Note, Piece, Tone } from "../node_modules/jsb-js/dist/index.js";
 import renderOutput from "./output.js";
 const state = {
     piece: new Piece().setKey(Key.parse("A major"))

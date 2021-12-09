@@ -1,4 +1,3 @@
-import { Tone } from "../node_modules/jsb-js/dist/index.js";
 const VF = Vex.Flow;
 const factory = new Vex.Flow.Factory({
     renderer: {
