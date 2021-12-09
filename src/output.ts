@@ -1,4 +1,4 @@
-import { Piece, Tone, Util } from "../node_modules/jsb-js/dist/index.js";
+import { Piece, Tone, Util } from "jsb-js/dist";
 
 const VF = Vex.Flow;
 
