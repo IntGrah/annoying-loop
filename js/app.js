@@ -1,6 +1,102 @@
-// import { Event, JSB.Group, Key, Note, Piece, Tone, Util } from "jsb-js/dist/index.js";
-import renderOutput from "./output.js";
-declare const JSB: any;
+const VF = Vex.Flow;
+
+const factory = new Vex.Flow.Factory({
+    renderer: {
+        elementId: "output",
+    }
+});
+const score = factory.EasyScore();
+
+export default function renderOutput(piece) {
+    let x = 40;
+
+    factory.getContext().clear();
+    factory.getContext().resize(100000, 240);
+
+    const bars = piece.getOutput();
+
+    for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
+        const event = bars[i];
+
+        const vfNotes = (["s", "a", "t", "b"]).map(part => {
+            const accidentals = Array(6).fill(piece.getKey().signature());
+            const notes = event.map(e => e.getPart(part).getNotes()).flat();
+            return notes.map(note => {
+                const vfNote = new VF.StaveNote({
+                    clef: part === "s" || part === "a" ? "treble" : "bass",
+                    keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
+                    duration: {
+                        "0.25": "16",
+                        "0.5": "8",
+                        "0.75": "8",
+                        "1": "4",
+                        "1.5": "4",
+                        "2": "2",
+                        "3": "2",
+                        "4": "1",
+                        "6": "1"
+                    }[note.getDuration()],
+                    stem_direction: part === "s" || part === "t" ? 1 : -1
+                });
+                if (accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] !== note.getPitch().getTone().getAccidental()) {
+                    accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] = note.getPitch().getTone().getAccidental();
+                    vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", "0": "n", "1": "#", "2": "##" }[note.getPitch().getTone().getAccidental()]));
+                }
+                if ([0.75, 1.5, 3, 6].includes(note.getDuration())) {
+                    vfNote.addDot(0);
+                }
+                return vfNote;
+            });
+        });
+
+        width = 40 * Math.max(...vfNotes.map(notes => notes.length));
+
+        if (i === 0) {
+            width += 40 + 20 * Math.abs(piece.getKey().accidentals());
+        }
+
+        const system = factory.System({ x: x, y: 0, width: width, spaceBetweenStaves: 10 });
+
+        const vfKey = piece.getKey().getTonality() ? piece.getKey().getTone().string() : piece.getKey().degree(2).string();
+
+        const vfTime = {
+            time: {
+                num_beats: event.map(event => event.duration()).reduce((l, r) => l + r),
+                beat_value: 4,
+            }
+        };
+
+
+        let upper = system.addStave({
+            voices: [
+                score.voice(vfNotes[0], vfTime).setStrict(false),
+                score.voice(vfNotes[1], vfTime).setStrict(false)
+            ]
+        });
+
+        let lower = system.addStave({
+            voices: [
+                score.voice(vfNotes[2], vfTime).setStrict(false),
+                score.voice(vfNotes[3], vfTime).setStrict(false)
+            ]
+        });
+
+        if (i === 0) {
+            upper.addClef("treble").addKeySignature(vfKey);
+            lower.addClef("bass").addKeySignature(vfKey);
+            system.addConnector("brace");
+            system.addConnector("singleLeft");
+        }
+
+        system.addConnector(i === bars.length - 1 ? "boldDoubleRight" : "singleRight");
+
+        factory.draw();
+    }
+    factory.getContext().resize(x + 40, 240);
+}
+
+
+
 
 const state = {
     piece: new JSB.Piece().setKey(JSB.Key.parse("A major"))
@@ -8,12 +104,12 @@ const state = {
         .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_@|G#2 F#2 E2 G#2/ A2/|B2 B2 E3@]", "b"),
     barIndex: 0,
     eventIndex: 0,
-    part: "s" as JSB.Util.Part,
+    part: "s",
     noteIndex: 0,
     auto: false,
-    keyElement: document.getElementById("key") as HTMLElement,
-    autoElement: document.getElementById("auto") as HTMLSpanElement,
-    consoleElement: document.getElementById("console") as HTMLDivElement,
+    keyElement: document.getElementById("key"),
+    autoElement: document.getElementById("auto"),
+    consoleElement: document.getElementById("console"),
 
     renderInput() {
         const barsHtml = this.piece.getInput().map((bar, barIndex) => {
@@ -78,11 +174,11 @@ const state = {
         pieceHtml.id = "piece";
         pieceHtml.append(...barsHtml);
 
-        const pieceBox = document.getElementById("piece-box") as HTMLElement;
+        const pieceBox = document.getElementById("piece-box");
         pieceBox.innerHTML = "";
         pieceBox.appendChild(pieceHtml);
 
-        const mirror = document.getElementById("mirror") as HTMLElement;
+        const mirror = document.getElementById("mirror");
         const notesHtml = this.group().getNotes().map((note, noteIndex) => {
             const noteHtml = document.createElement("span");
             noteHtml.classList.add("note");
@@ -106,7 +202,7 @@ const state = {
         mirror.append(...notesHtml);
     },
 
-    select(barIndex: number, eventIndex: number, part: JSB.Util.Part, noteIndex: number) {
+    select(barIndex, eventIndex, part, noteIndex) {
         this.barIndex = barIndex;
         this.eventIndex = eventIndex;
         this.part = part;
@@ -142,11 +238,11 @@ const state = {
             renderOutput(this.piece);
             this.consoleElement.innerText = "Success!";
         } catch (error) {
-            const piece = document.getElementById("piece") as HTMLDivElement;
+            const piece = document.getElementById("piece");
             const time = this.piece.getMaxTime();
-            const event = piece.children[time.bar].children[time.event] as HTMLSpanElement;
+            const event = piece.children[time.bar].children[time.event];
             event.classList.add("error");
-            this.consoleElement.innerText = `${error as string} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
+            this.consoleElement.innerText = `${error} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
         }
     },
 
@@ -229,7 +325,7 @@ const state = {
         }
     },
 
-    keydown(e: KeyboardEvent) {
+    keydown(e) {
         if (!e.ctrlKey && !e.shiftKey) {
             switch (e.key) {
                 case "a": case "A": this.defaultNote().getPitch().setTone(JSB.Tone.parse("A")); break;
