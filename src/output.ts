@@ -9,7 +9,7 @@ const factory = new Vex.Flow.Factory({
 });
 const score = factory.EasyScore();
 
-export default function renderOutput(piece: Piece) {
+export default function renderOutput(piece: JSB.Piece) {
     let x = 40;
 
     factory.getContext().clear();
@@ -20,13 +20,13 @@ export default function renderOutput(piece: Piece) {
     for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
         const event = bars[i];
 
-        const vfNotes = (["s", "a", "t", "b"] as Util.Part[]).map(part => {
+        const vfNotes = (["s", "a", "t", "b"] as JSB.Util.Part[]).map(part => {
             const accidentals = Array(6).fill(piece.getKey().signature());
             const notes = event.map(e => e.getPart(part).getNotes()).flat();
             return notes.map(note => {
                 const vfNote = new VF.StaveNote({
                     clef: part === "s" || part === "a" ? "treble" : "bass",
-                    keys: [`${Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
+                    keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
                     duration: {
                         "0.25": "16",
                         "0.5": "8",

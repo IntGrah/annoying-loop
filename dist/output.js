@@ -18,7 +18,7 @@ export default function renderOutput(piece) {
             return notes.map(note => {
                 const vfNote = new VF.StaveNote({
                     clef: part === "s" || part === "a" ? "treble" : "bass",
-                    keys: [`${Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
+                    keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
                     duration: {
                         "0.25": "16",
                         "0.5": "8",
