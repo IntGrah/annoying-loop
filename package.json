@@ -2,21 +2,14 @@
   "name": "intgrah.github.io",
   "version": "1.0.0",
   "description": "jsb-js app",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/IntGrah/IntGrah.github.io.git"
   },
-  "author": "",
+  "author": "Jeremy Chen",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/IntGrah/IntGrah.github.io/issues"
   },
-  "homepage": "https://github.com/IntGrah/IntGrah.github.io#readme",
-  "devDependencies": {
-    "@types/vexflow": "^3.0.1"
-  }
+  "homepage": "https://github.com/IntGrah/IntGrah.github.io#readme"
 }
