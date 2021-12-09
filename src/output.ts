@@ -1,4 +1,4 @@
-import * as JSB from "https://unpkg.com/jsb-js";
+import { Piece, Tone, Util } from "../node_modules/jsb-js/dist/index.js";
 
 const VF = Vex.Flow;
 
@@ -9,7 +9,7 @@ const factory = new Vex.Flow.Factory({
 });
 const score = factory.EasyScore();
 
-function renderOutput(piece: JSB.Piece) {
+export default function renderOutput(piece: Piece) {
     let x = 40;
 
     factory.getContext().clear();
@@ -20,13 +20,13 @@ function renderOutput(piece: JSB.Piece) {
     for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
         const event = bars[i];
 
-        const vfNotes = (["s", "a", "t", "b"] as JSB.Util.Part[]).map(part => {
+        const vfNotes = (["s", "a", "t", "b"] as Util.Part[]).map(part => {
             const accidentals = Array(6).fill(piece.getKey().signature());
             const notes = event.map(e => e.getPart(part).getNotes()).flat();
             return notes.map(note => {
                 const vfNote = new VF.StaveNote({
                     clef: part === "s" || part === "a" ? "treble" : "bass",
-                    keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
+                    keys: [`${Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
                     duration: {
                         "0.25": "16",
                         "0.5": "8",
@@ -96,5 +96,3 @@ function renderOutput(piece: JSB.Piece) {
     }
     factory.getContext().resize(x + 40, 240);
 }
-
-export { JSB, renderOutput };

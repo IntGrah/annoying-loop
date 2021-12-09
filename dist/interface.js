@@ -1,4 +1,4 @@
-import { renderOutput, JSB } from "./output.js";
+import renderOutput from "./output.js";
 const state = {
     piece: new JSB.Piece().setKey(JSB.Key.parse("A major"))
         .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_@|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4@]", "s")

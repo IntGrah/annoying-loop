@@ -1,4 +1,4 @@
-import * as JSB from "https://unpkg.com/jsb-js";
+const JSB = require("jsb-js");
 const VF = Vex.Flow;
 const factory = new Vex.Flow.Factory({
     renderer: {
@@ -6,7 +6,7 @@ const factory = new Vex.Flow.Factory({
     }
 });
 const score = factory.EasyScore();
-function renderOutput(piece) {
+export default function renderOutput(piece) {
     let x = 40;
     factory.getContext().clear();
     factory.getContext().resize(100000, 240);
@@ -78,4 +78,3 @@ function renderOutput(piece) {
     }
     factory.getContext().resize(x + 40, 240);
 }
-export { JSB, renderOutput };
