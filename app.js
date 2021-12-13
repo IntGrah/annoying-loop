@@ -21,7 +21,7 @@ const state = {
     consoleElement: document.getElementById("console"),
 
     renderInput() {
-        const barsHtml = state.piece.getBars().map((bar, barIndex) => {
+        const barsHtml = state.piece.getCache().map((bar, barIndex) => {
             const eventsHtml = bar.map((event, eventIndex) => {
                 const group = state.group();
 
@@ -117,14 +117,14 @@ const state = {
         factory.getContext().clear();
         factory.getContext().resize(100000, 240);
     
-        const bars = state.piece.getOutput();
+        const bars = state.piece.getBars();
     
         for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
             const event = bars[i];
     
             const vfNotes = (["s", "a", "t", "b"]).map(part => {
                 const accidentals = Array(6).fill(state.piece.getKey().signature());
-                const notes = event.map(e => e.getPart(part).getNotes()).flat();
+                const notes = event.map(e => e.get(part).getNotes()).flat();
                 return notes.map(note => {
                     const vfNote = new VF.StaveNote({
                         clef: part === "s" || part === "a" ? "treble" : "bass",
@@ -208,7 +208,7 @@ const state = {
     },
 
     group() {
-        return state.piece.getBars()[state.barIndex][state.eventIndex].getPart(state.part);
+        return state.piece.getCache()[state.barIndex][state.eventIndex].get(state.part);
     },
 
     note() {
@@ -237,35 +237,35 @@ const state = {
         } catch (error) {
             const piece = document.getElementById("piece");
             const time = state.piece.getMaxTime();
-            const event = piece.children[time.bar].children[time.event];
+            const event = piece.children[time.barIndex].children[time.eventIndex];
             event.classList.add("error");
-            state.consoleElement.innerText = `${error} (Bar ${time.bar + 1}, chord ${time.event + 1})`;
+            state.consoleElement.innerText = `${error} (Bar ${time.barIndex + 1}, chord ${time.eventIndex + 1})`;
         }
     },
 
     prependBar() {
-        state.piece.getInput().splice(state.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+        state.piece.getCache().splice(state.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
         state.eventIndex = 0;
         state.noteIndex = 0;
         state.update();
     },
 
     prependEvent() {
-        state.piece.getInput()[state.barIndex].splice(state.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+        state.piece.getCache()[state.barIndex].splice(state.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
         state.noteIndex = 0;
         state.update();
     },
 
     deleteEvent() {
-        if (state.piece.getInput()[state.barIndex].length > 1) {
-            state.piece.getInput()[state.barIndex].splice(state.eventIndex, 1);
+        if (state.piece.getCache()[state.barIndex].length > 1) {
+            state.piece.getCache()[state.barIndex].splice(state.eventIndex, 1);
             if (--state.eventIndex < 0) {
                 state.eventIndex = 0;
             }
             state.noteIndex = 0;
             state.update();
-        } else if (state.piece.getInput().length > 1) {
-            state.piece.getInput().splice(state.barIndex, 1);
+        } else if (state.piece.getCache().length > 1) {
+            state.piece.getCache().splice(state.barIndex, 1);
             if (--state.barIndex < 0) {
                 state.barIndex = 0;
             }
@@ -276,12 +276,12 @@ const state = {
     },
 
     appendEvent() {
-        state.piece.getInput()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+        state.piece.getCache()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
         state.update();
     },
 
     appendBar() {
-        state.piece.getInput().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+        state.piece.getCache().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
         ++state.barIndex;
         state.eventIndex = 0;
         state.noteIndex = 0;
@@ -380,15 +380,15 @@ const state = {
                                 state.barIndex = 0;
                                 state.eventIndex = 0;
                             } else {
-                                state.eventIndex = state.piece.getInput()[state.barIndex].length - 1;
+                                state.eventIndex = state.piece.getCache()[state.barIndex].length - 1;
                                 state.noteIndex = 0;
                             }
                         } else {
                             state.noteIndex = 0;
                         }
                     } else {
-                        if (++state.eventIndex === state.piece.getInput()[state.barIndex].length) {
-                            if (++state.barIndex === state.piece.getInput().length) {
+                        if (++state.eventIndex === state.piece.getCache()[state.barIndex].length) {
+                            if (++state.barIndex === state.piece.getCache().length) {
                                 --state.barIndex;
                                 --state.eventIndex;
                             } else {
