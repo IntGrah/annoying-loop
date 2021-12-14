@@ -15,58 +15,58 @@ const state = {
     eventIndex: 0,
     part: "s",
     noteIndex: 0,
-    auto: false,
+    auto: true,
     keyElement: document.getElementById("key"),
     autoElement: document.getElementById("auto"),
     consoleElement: document.getElementById("console"),
 
     renderInput() {
-        const barsHtml = state.piece.getCache().map((bar, barIndex) => {
+        const barsHtml = state.piece.cache.map((bar, barIndex) => {
             const eventsHtml = bar.map((event, eventIndex) => {
                 const group = state.group();
 
                 const sHtml = document.createElement("div");
                 sHtml.classList.add("group");
-                if (event.getS() === group) {
+                if (event.s === group) {
                     sHtml.classList.add("selected");
                 }
-                if (event.getS().getNotes().length > 1) {
+                if (event.s.notes.length > 1) {
                     sHtml.classList.add("multi");
                 }
-                sHtml.appendChild(document.createTextNode(event.getS().main()?.string() ?? ""));
+                sHtml.appendChild(document.createTextNode(event.s.main()?.string() ?? ""));
                 sHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "s", 0));
 
                 const aHtml = document.createElement("div");
                 aHtml.classList.add("group");
-                if (event.getA() === group) {
+                if (event.a === group) {
                     aHtml.classList.add("selected");
                 }
-                if (event.getA().getNotes().length > 1) {
+                if (event.a.notes.length > 1) {
                     sHtml.classList.add("multi");
                 }
-                aHtml.appendChild(document.createTextNode(event.getA().main()?.string() ?? ""));
+                aHtml.appendChild(document.createTextNode(event.a.main()?.string() ?? ""));
                 aHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "a", 0));
 
                 const tHtml = document.createElement("div");
                 tHtml.classList.add("group");
-                if (event.getT() === group) {
+                if (event.t === group) {
                     tHtml.classList.add("selected");
                 }
-                if (event.getT().getNotes().length > 1) {
+                if (event.t.notes.length > 1) {
                     sHtml.classList.add("multi");
                 }
-                tHtml.appendChild(document.createTextNode(event.getT().main()?.string() ?? ""));
+                tHtml.appendChild(document.createTextNode(event.t.main()?.string() ?? ""));
                 tHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "t", 0));
 
                 const bHtml = document.createElement("div");
                 bHtml.classList.add("group");
-                if (event.getB() === group) {
+                if (event.b === group) {
                     bHtml.classList.add("selected");
                 }
-                if (event.getB().getNotes().length > 1) {
+                if (event.b.notes.length > 1) {
                     sHtml.classList.add("multi");
                 }
-                bHtml.appendChild(document.createTextNode(event.getB().main()?.string() ?? ""));
+                bHtml.appendChild(document.createTextNode(event.b.main()?.string() ?? ""));
                 bHtml.addEventListener("mousedown", () => state.select(barIndex, eventIndex, "b", 0));
 
                 const eventHtml = document.createElement("div");
@@ -88,7 +88,7 @@ const state = {
         pieceBox.appendChild(pieceHtml);
 
         const mirror = document.getElementById("mirror");
-        const notesHtml = state.group().getNotes().map((note, noteIndex) => {
+        const notesHtml = state.group().notes.map((note, noteIndex) => {
             const noteHtml = document.createElement("span");
             noteHtml.classList.add("note");
             if (note === state.note()) {
@@ -117,18 +117,18 @@ const state = {
         factory.getContext().clear();
         factory.getContext().resize(100000, 240);
     
-        const bars = state.piece.getBars();
+        const bars = state.piece.bars;
     
         for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
             const event = bars[i];
     
             const vfNotes = (["s", "a", "t", "b"]).map(part => {
-                const accidentals = Array(6).fill(state.piece.getKey().signature());
-                const notes = event.map(e => e.get(part).getNotes()).flat();
+                const accidentals = Array(6).fill(state.piece.key.signature());
+                const notes = event.map(e => e.get(part).notes).flat();
                 return notes.map(note => {
                     const vfNote = new VF.StaveNote({
                         clef: part === "s" || part === "a" ? "treble" : "bass",
-                        keys: [`${JSB.Tone.LETTERS[note.getPitch().getTone().getLetter()]}/${note.getPitch().getOctave()}`],
+                        keys: [`${JSB.Tone.LETTERS[note.pitch.tone.letter]}/${note.pitch.octave}`],
                         duration: {
                             "0.25": "16",
                             "0.5": "8",
@@ -139,14 +139,14 @@ const state = {
                             "3": "2",
                             "4": "1",
                             "6": "1"
-                        }[note.getDuration()],
+                        }[note.duration],
                         stem_direction: part === "s" || part === "t" ? 1 : -1
                     });
-                    if (accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] !== note.getPitch().getTone().getAccidental()) {
-                        accidentals[note.getPitch().getOctave()][note.getPitch().getTone().getLetter()] = note.getPitch().getTone().getAccidental();
-                        vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", "0": "n", "1": "#", "2": "##" }[note.getPitch().getTone().getAccidental()]));
+                    if (accidentals[note.pitch.octave][note.pitch.tone.letter] !== note.pitch.tone.accidental) {
+                        accidentals[note.pitch.octave][note.pitch.tone.letter] = note.pitch.tone.accidental;
+                        vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", "0": "n", "1": "#", "2": "##" }[note.pitch.tone.accidental]));
                     }
-                    if ([0.75, 1.5, 3, 6].includes(note.getDuration())) {
+                    if ([0.75, 1.5, 3, 6].includes(note.duration)) {
                         vfNote.addDot(0);
                     }
                     return vfNote;
@@ -156,12 +156,12 @@ const state = {
             width = 40 * Math.max(...vfNotes.map(notes => notes.length));
     
             if (i === 0) {
-                width += 40 + 20 * Math.abs(state.piece.getKey().accidentals());
+                width += 40 + 20 * Math.abs(state.piece.key.accidentals());
             }
     
             const system = factory.System({ x: x, y: 0, width: width, spaceBetweenStaves: 10 });
     
-            const vfKey = state.piece.getKey().getTonality() ? state.piece.getKey().getTone().string() : state.piece.getKey().degree(2).string();
+            const vfKey = state.piece.key.tonality ? state.piece.key.tone.string() : state.piece.key.degree(2).string();
     
             const vfTime = {
                 time: {
@@ -208,11 +208,11 @@ const state = {
     },
 
     group() {
-        return state.piece.getCache()[state.barIndex][state.eventIndex].get(state.part);
+        return state.piece.cache[state.barIndex][state.eventIndex].get(state.part);
     },
 
     note() {
-        return state.group().getNotes()[state.noteIndex];
+        return state.group().notes[state.noteIndex];
     },
 
     defaultNote() {
@@ -236,7 +236,7 @@ const state = {
             state.consoleElement.innerText = "Success!";
         } catch (error) {
             const piece = document.getElementById("piece");
-            const time = state.piece.getMaxTime();
+            const time = state.piece.maxTime;
             const event = piece.children[time.barIndex].children[time.eventIndex];
             event.classList.add("error");
             state.consoleElement.innerText = `${error} (Bar ${time.barIndex + 1}, chord ${time.eventIndex + 1})`;
@@ -244,28 +244,28 @@ const state = {
     },
 
     prependBar() {
-        state.piece.getCache().splice(state.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+        state.piece.cache.splice(state.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
         state.eventIndex = 0;
         state.noteIndex = 0;
         state.update();
     },
 
     prependEvent() {
-        state.piece.getCache()[state.barIndex].splice(state.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+        state.piece.cache[state.barIndex].splice(state.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
         state.noteIndex = 0;
         state.update();
     },
 
     deleteEvent() {
-        if (state.piece.getCache()[state.barIndex].length > 1) {
-            state.piece.getCache()[state.barIndex].splice(state.eventIndex, 1);
+        if (state.piece.cache[state.barIndex].length > 1) {
+            state.piece.cache[state.barIndex].splice(state.eventIndex, 1);
             if (--state.eventIndex < 0) {
                 state.eventIndex = 0;
             }
             state.noteIndex = 0;
             state.update();
-        } else if (state.piece.getCache().length > 1) {
-            state.piece.getCache().splice(state.barIndex, 1);
+        } else if (state.piece.cache.length > 1) {
+            state.piece.cache.splice(state.barIndex, 1);
             if (--state.barIndex < 0) {
                 state.barIndex = 0;
             }
@@ -276,12 +276,12 @@ const state = {
     },
 
     appendEvent() {
-        state.piece.getCache()[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
+        state.piece.cache[state.barIndex].splice(state.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false));
         state.update();
     },
 
     appendBar() {
-        state.piece.getCache().splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
+        state.piece.cache.splice(state.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), false)]);
         ++state.barIndex;
         state.eventIndex = 0;
         state.noteIndex = 0;
@@ -289,28 +289,28 @@ const state = {
     },
 
     flatten() {
-        if (state.piece.getKey().accidentals() > -7) {
-            state.piece.getKey().setTone(state.piece.getKey().degree(3));
+        if (state.piece.key.accidentals() > -7) {
+            state.piece.key.setTone(state.piece.key.degree(3));
         }
-        state.keyElement.innerText = state.piece.getKey().string();
+        state.keyElement.innerText = state.piece.key.string();
         state.update();
     },
 
     toggleTonality() {
-        if (state.piece.getKey().getTonality()) {
-            state.piece.setKey(new JSB.Key(state.piece.getKey().degree(5), false));
+        if (state.piece.key.tonality) {
+            state.piece.setKey(new JSB.Key(state.piece.key.degree(5), false));
         } else {
-            state.piece.setKey(new JSB.Key(state.piece.getKey().degree(2), true));
+            state.piece.setKey(new JSB.Key(state.piece.key.degree(2), true));
         }
-        state.keyElement.innerText = state.piece.getKey().string();
+        state.keyElement.innerText = state.piece.key.string();
         state.update();
     },
 
     sharpen() {
-        if (state.piece.getKey().accidentals() < 7) {
-            state.piece.getKey().setTone(state.piece.getKey().degree(4));
+        if (state.piece.key.accidentals() < 7) {
+            state.piece.key.setTone(state.piece.key.degree(4));
         }
-        state.keyElement.innerText = state.piece.getKey().string();
+        state.keyElement.innerText = state.piece.key.string();
         state.update();
     },
 
@@ -325,22 +325,22 @@ const state = {
     keydown(e) {
         if (!e.ctrlKey && !e.shiftKey) {
             switch (e.key) {
-                case "a": case "A": state.defaultNote().getPitch().setTone(JSB.Tone.parse("A")); break;
-                case "b": case "B": state.defaultNote().getPitch().setTone(JSB.Tone.parse("B")); break;
-                case "c": case "C": state.defaultNote().getPitch().setTone(JSB.Tone.parse("C")); break;
-                case "d": case "D": state.defaultNote().getPitch().setTone(JSB.Tone.parse("D")); break;
-                case "e": case "E": state.defaultNote().getPitch().setTone(JSB.Tone.parse("E")); break;
-                case "f": case "F": state.defaultNote().getPitch().setTone(JSB.Tone.parse("F")); break;
-                case "g": case "G": state.defaultNote().getPitch().setTone(JSB.Tone.parse("G")); break;
-                case "1": state.defaultNote().getPitch().setOctave(1); break;
-                case "2": state.defaultNote().getPitch().setOctave(2); break;
-                case "3": state.defaultNote().getPitch().setOctave(3); break;
-                case "4": state.defaultNote().getPitch().setOctave(4); break;
-                case "5": state.defaultNote().getPitch().setOctave(5); break;
-                case "#": state.defaultNote().getPitch().getTone().alterAccidental(1); break;
-                case "'": state.defaultNote().getPitch().getTone().alterAccidental(-1); break;
+                case "a": case "A": state.defaultNote().pitch.setTone(JSB.Tone.parse("A")); break;
+                case "b": case "B": state.defaultNote().pitch.setTone(JSB.Tone.parse("B")); break;
+                case "c": case "C": state.defaultNote().pitch.setTone(JSB.Tone.parse("C")); break;
+                case "d": case "D": state.defaultNote().pitch.setTone(JSB.Tone.parse("D")); break;
+                case "e": case "E": state.defaultNote().pitch.setTone(JSB.Tone.parse("E")); break;
+                case "f": case "F": state.defaultNote().pitch.setTone(JSB.Tone.parse("F")); break;
+                case "g": case "G": state.defaultNote().pitch.setTone(JSB.Tone.parse("G")); break;
+                case "1": state.defaultNote().pitch.setOctave(1); break;
+                case "2": state.defaultNote().pitch.setOctave(2); break;
+                case "3": state.defaultNote().pitch.setOctave(3); break;
+                case "4": state.defaultNote().pitch.setOctave(4); break;
+                case "5": state.defaultNote().pitch.setOctave(5); break;
+                case "#": state.defaultNote().pitch.tone.alterAccidental(1); break;
+                case "'": state.defaultNote().pitch.tone.alterAccidental(-1); break;
                 case ",":
-                    switch (state.defaultNote().getDuration()) {
+                    switch (state.defaultNote().duration) {
                         case 0.25: state.defaultNote().setDuration(0.5); break;
                         case 0.5: state.defaultNote().setDuration(1); break;
                         case 0.75: state.defaultNote().setDuration(1.5); break;
@@ -351,7 +351,7 @@ const state = {
                     }
                     break;
                 case ".":
-                    switch (state.defaultNote().getDuration()) {
+                    switch (state.defaultNote().duration) {
                         case 0.5: state.defaultNote().setDuration(0.75); break;
                         case 0.75: state.defaultNote().setDuration(0.5); break;
                         case 1: state.defaultNote().setDuration(1.5); break;
@@ -363,7 +363,7 @@ const state = {
                     }
                     break;
                 case "/":
-                    switch (state.defaultNote().getDuration()) {
+                    switch (state.defaultNote().duration) {
                         case 0.5: state.defaultNote().setDuration(0.25); break;
                         case 1: state.defaultNote().setDuration(0.5); break;
                         case 1.5: state.defaultNote().setDuration(0.75); break;
@@ -380,15 +380,15 @@ const state = {
                                 state.barIndex = 0;
                                 state.eventIndex = 0;
                             } else {
-                                state.eventIndex = state.piece.getCache()[state.barIndex].length - 1;
+                                state.eventIndex = state.piece.cache[state.barIndex].length - 1;
                                 state.noteIndex = 0;
                             }
                         } else {
                             state.noteIndex = 0;
                         }
                     } else {
-                        if (++state.eventIndex === state.piece.getCache()[state.barIndex].length) {
-                            if (++state.barIndex === state.piece.getCache().length) {
+                        if (++state.eventIndex === state.piece.cache[state.barIndex].length) {
+                            if (++state.barIndex === state.piece.cache.length) {
                                 --state.barIndex;
                                 --state.eventIndex;
                             } else {
@@ -402,7 +402,7 @@ const state = {
                     break;
                 case "Tab":
                     e.preventDefault();
-                    const length = state.group().getNotes().length;
+                    const length = state.group().notes.length;
                     if (e.shiftKey) {
                         state.noteIndex += length - 1;
                         state.noteIndex %= length;
