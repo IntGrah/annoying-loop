@@ -217,7 +217,7 @@ const state = {
 
     defaultNote() {
         if (state.note() === undefined) {
-            state.group().setNotes([JSB.Note.parse("C4")]);
+            state.group().notes = [JSB.Note.parse("C4")];
         }
         return state.note();
     },
@@ -290,7 +290,7 @@ const state = {
 
     flatten() {
         if (state.piece.key.accidentals() > -7) {
-            state.piece.key.setTone(state.piece.key.degree(3));
+            state.piece.key.tone = state.piece.key.degree(3);
         }
         state.keyElement.innerText = state.piece.key.string();
         state.update();
@@ -298,9 +298,9 @@ const state = {
 
     toggleTonality() {
         if (state.piece.key.tonality) {
-            state.piece.setKey(new JSB.Key(state.piece.key.degree(5), false));
+            state.piece.key = new JSB.Key(state.piece.key.degree(5), false);
         } else {
-            state.piece.setKey(new JSB.Key(state.piece.key.degree(2), true));
+            state.piece.key = new JSB.Key(state.piece.key.degree(2), true);
         }
         state.keyElement.innerText = state.piece.key.string();
         state.update();
@@ -308,7 +308,7 @@ const state = {
 
     sharpen() {
         if (state.piece.key.accidentals() < 7) {
-            state.piece.key.setTone(state.piece.key.degree(4));
+            state.piece.key.tone = state.piece.key.degree(4);
         }
         state.keyElement.innerText = state.piece.key.string();
         state.update();
@@ -325,52 +325,52 @@ const state = {
     keydown(e) {
         if (!e.ctrlKey && !e.shiftKey) {
             switch (e.key) {
-                case "a": case "A": state.defaultNote().pitch.setTone(JSB.Tone.parse("A")); break;
-                case "b": case "B": state.defaultNote().pitch.setTone(JSB.Tone.parse("B")); break;
-                case "c": case "C": state.defaultNote().pitch.setTone(JSB.Tone.parse("C")); break;
-                case "d": case "D": state.defaultNote().pitch.setTone(JSB.Tone.parse("D")); break;
-                case "e": case "E": state.defaultNote().pitch.setTone(JSB.Tone.parse("E")); break;
-                case "f": case "F": state.defaultNote().pitch.setTone(JSB.Tone.parse("F")); break;
-                case "g": case "G": state.defaultNote().pitch.setTone(JSB.Tone.parse("G")); break;
-                case "1": state.defaultNote().pitch.setOctave(1); break;
-                case "2": state.defaultNote().pitch.setOctave(2); break;
-                case "3": state.defaultNote().pitch.setOctave(3); break;
-                case "4": state.defaultNote().pitch.setOctave(4); break;
-                case "5": state.defaultNote().pitch.setOctave(5); break;
+                case "a": case "A": state.defaultNote().pitch.tone = JSB.Tone.parse("A"); break;
+                case "b": case "B": state.defaultNote().pitch.tone = JSB.Tone.parse("B"); break;
+                case "c": case "C": state.defaultNote().pitch.tone = JSB.Tone.parse("C"); break;
+                case "d": case "D": state.defaultNote().pitch.tone = JSB.Tone.parse("D"); break;
+                case "e": case "E": state.defaultNote().pitch.tone = JSB.Tone.parse("E"); break;
+                case "f": case "F": state.defaultNote().pitch.tone = JSB.Tone.parse("F"); break;
+                case "g": case "G": state.defaultNote().pitch.tone = JSB.Tone.parse("G"); break;
+                case "1": state.defaultNote().pitch.octave = 1; break;
+                case "2": state.defaultNote().pitch.octave = 2; break;
+                case "3": state.defaultNote().pitch.octave = 3; break;
+                case "4": state.defaultNote().pitch.octave = 4; break;
+                case "5": state.defaultNote().pitch.octave = 5; break;
                 case "#": state.defaultNote().pitch.tone.alterAccidental(1); break;
                 case "'": state.defaultNote().pitch.tone.alterAccidental(-1); break;
                 case ",":
                     switch (state.defaultNote().duration) {
-                        case 0.25: state.defaultNote().setDuration(0.5); break;
-                        case 0.5: state.defaultNote().setDuration(1); break;
-                        case 0.75: state.defaultNote().setDuration(1.5); break;
-                        case 1: state.defaultNote().setDuration(2); break;
-                        case 1.5: state.defaultNote().setDuration(3); break;
-                        case 2: state.defaultNote().setDuration(4); break;
-                        case 3: state.defaultNote().setDuration(6); break;
+                        case 0.25: state.defaultNote().duration = 0.5; break;
+                        case 0.5: state.defaultNote().duration = 1; break;
+                        case 0.75: state.defaultNote().duration = 1.5; break;
+                        case 1: state.defaultNote().duration = 2; break;
+                        case 1.5: state.defaultNote().duration = 3; break;
+                        case 2: state.defaultNote().duration = 4; break;
+                        case 3: state.defaultNote().duration = 6; break;
                     }
                     break;
                 case ".":
                     switch (state.defaultNote().duration) {
-                        case 0.5: state.defaultNote().setDuration(0.75); break;
-                        case 0.75: state.defaultNote().setDuration(0.5); break;
-                        case 1: state.defaultNote().setDuration(1.5); break;
-                        case 1.5: state.defaultNote().setDuration(1); break;
-                        case 2: state.defaultNote().setDuration(3); break;
-                        case 3: state.defaultNote().setDuration(2); break;
-                        case 4: state.defaultNote().setDuration(6); break;
-                        case 6: state.defaultNote().setDuration(4); break;
+                        case 0.5: state.defaultNote().duration = 0.75; break;
+                        case 0.75: state.defaultNote().duration = 0.5; break;
+                        case 1: state.defaultNote().duration = 1.5; break;
+                        case 1.5: state.defaultNote().duration = 1; break;
+                        case 2: state.defaultNote().duration = 3; break;
+                        case 3: state.defaultNote().duration = 2; break;
+                        case 4: state.defaultNote().duration = 6; break;
+                        case 6: state.defaultNote().duration = 4; break;
                     }
                     break;
                 case "/":
                     switch (state.defaultNote().duration) {
-                        case 0.5: state.defaultNote().setDuration(0.25); break;
-                        case 1: state.defaultNote().setDuration(0.5); break;
-                        case 1.5: state.defaultNote().setDuration(0.75); break;
-                        case 2: state.defaultNote().setDuration(1); break;
-                        case 3: state.defaultNote().setDuration(1.5); break;
-                        case 4: state.defaultNote().setDuration(2); break;
-                        case 6: state.defaultNote().setDuration(3); break;
+                        case 0.5: state.defaultNote().duration = 0.25; break;
+                        case 1: state.defaultNote().duration = 0.5; break;
+                        case 1.5: state.defaultNote().duration = 0.75; break;
+                        case 2: state.defaultNote().duration = 1; break;
+                        case 3: state.defaultNote().duration = 1.5; break;
+                        case 4: state.defaultNote().duration = 2; break;
+                        case 6: state.defaultNote().duration = 3; break;
                     }
                     break;
                 case "Enter":
@@ -412,7 +412,8 @@ const state = {
                     }
                     break;
                 case "Backspace":
-                    state.group().setIndex(0).setNotes([]);
+                    state.group().index = 0;
+                    state.group().notes = [];
                     break;
                 default: return;
             }
