@@ -197,10 +197,10 @@ const state = {
         return vfNotes;
       });
 
-      width = 40 * Math.max(...vfParts.map(notes => notes.length));
+      width = 20 + 40 * bar.map(event => event.duration()).reduce((l, r) => l + r);
 
       if (i === 0) {
-        width += 40 + 20 * Math.abs(state.piece.key.accidentals());
+        width += 20 * Math.abs(state.piece.key.accidentals());
       }
 
       const system = factory.System({
