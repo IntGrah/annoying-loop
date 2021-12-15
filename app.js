@@ -32,6 +32,8 @@ const state = {
     3: "2",
     4: "1",
     6: "1",
+    8: "1/2",
+    12: "1/2"
   },
 
   renderInput() {
@@ -171,7 +173,7 @@ const state = {
                 note.pitch.tone.accidental;
               vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", 0: "n", 1: "#", 2: "##" }[note.pitch.tone.accidental]));
             }
-            if ([0.75, 1.5, 3, 6].includes(note.duration)) {
+            if ([0.75, 1.5, 3, 6, 12].includes(note.duration)) {
               vfNote.addDot(0);
             }
             return vfNote;
@@ -182,14 +184,14 @@ const state = {
           const difference = event.duration() - event.get(part).duration();
 
           if (difference > 0) {
-            const vfNote = new VF.StaveNote({
+            const vfRest = new VF.StaveNote({
               keys: [part === "s" || part === "t" ? "D/4" : "G/4"],
               duration: state.durations[difference] + "r",
             });
-            if ([0.75, 1.5, 3, 6].includes(difference)) {
-              vfNote.addDot(0);
+            if ([0.75, 1.5, 3, 6, 12].includes(difference)) {
+              vfRest.addDot(0);
             }
-            vfNotes.push(vfNote);
+            vfNotes.push(vfRest);
           }
         }
         return vfNotes;
@@ -290,8 +292,9 @@ const state = {
       const time = state.piece.maxTime;
       const event = piece.children[time.barIndex].children[time.eventIndex];
       event.classList.add("error");
-      console.log(`${error} (Bar ${time.barIndex + 1}, chord ${time.eventIndex + 1})`);
+      console.log(`(Bar ${time.barIndex + 1}, chord ${time.eventIndex + 1})`);
       state.renderOutput(state.piece.cache);
+      throw error;
     }
   },
 
@@ -460,6 +463,8 @@ const state = {
               case 1.5:
               case 2:
               case 3:
+              case 4:
+              case 6:
                 state.defaultNote().duration *= 2;
                 break;
             }
@@ -470,12 +475,14 @@ const state = {
               case 1:
               case 2:
               case 4:
+              case 8:
                 state.defaultNote().duration *= 1.5;
                 break;
               case 0.75:
               case 1.5:
               case 3:
               case 6:
+              case 12:
                 state.defaultNote().duration /= 1.5;
                 break;
             }
@@ -489,6 +496,8 @@ const state = {
               case 3:
               case 4:
               case 6:
+              case 8:
+              case 12:
                 state.defaultNote().duration *= 0.5;
                 break;
             }
