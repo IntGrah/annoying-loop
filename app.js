@@ -185,7 +185,8 @@ const state = {
 
           if (difference > 0) {
             const vfRest = new VF.StaveNote({
-              keys: [part === "s" || part === "t" ? "D/4" : "G/4"],
+              clef: part === "s" || part === "a" ? "treble" : "bass",
+              keys: [{"s": "A/5", "a": "C/4", "t": "C/4", "b": "E/2"}[part]],
               duration: state.durations[difference] + "r",
             });
             if ([0.75, 1.5, 3, 6, 12].includes(difference)) {
