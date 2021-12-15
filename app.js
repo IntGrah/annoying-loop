@@ -208,7 +208,7 @@ const state = {
         x: x,
         y: 0,
         width: width,
-        spaceBetweenStaves: 10
+        spaceBetweenStaves: 12
       });
 
       const vfKey = state.piece.key.tonality
@@ -293,8 +293,8 @@ const state = {
       const time = state.piece.maxTime;
       const event = piece.children[time.barIndex].children[time.eventIndex];
       event.classList.add("error");
-      console.log(`(Bar ${time.barIndex + 1}, chord ${time.eventIndex + 1})`);
       state.renderOutput(state.piece.cache);
+      console.log(error);
     }
   },
 
@@ -338,7 +338,7 @@ const state = {
         JSB.Group.empty(),
         JSB.Group.empty(),
         JSB.Group.empty(),
-        false
+        "normal"
       )
     );
     state.update();
@@ -351,7 +351,7 @@ const state = {
         JSB.Group.empty(),
         JSB.Group.empty(),
         JSB.Group.empty(),
-        false
+        "normal"
       ),
     ]);
     ++state.barIndex;
