@@ -22,7 +22,6 @@ const state = {
   auto: true,
   keyElement: document.getElementById("key"),
   autoElement: document.getElementById("auto"),
-  consoleElement: document.getElementById("console"),
   durations: {
     0.25: "16",
     0.5: "8",
@@ -158,46 +157,39 @@ const state = {
         const vfNotes = [];
         for (const event of bar) {
           const notes = event.get(part).notes;
-          if (notes.length === 0) {
-            const vfNote = new VF.GhostNote({
-              duration: state.durations[event.duration()] + "r",
+          const vfGroup = notes.map(note => {
+            const vfNote = new VF.StaveNote({
+              clef: part === "s" || part === "a" ? "treble" : "bass",
+              keys: [
+                `${JSB.Tone.LETTERS[note.pitch.tone.letter]}/${note.pitch.octave}`
+              ],
+              duration: state.durations[note.duration],
+              stem_direction: part === "s" || part === "t" ? 1 : -1
             });
-            if ([0.75, 1.5, 3, 6].includes(event.duration())) {
+            if (accidentals[note.pitch.octave][note.pitch.tone.letter] !== note.pitch.tone.accidental) {
+              accidentals[note.pitch.octave][note.pitch.tone.letter] =
+                note.pitch.tone.accidental;
+              vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", 0: "n", 1: "#", 2: "##" }[note.pitch.tone.accidental]));
+            }
+            if ([0.75, 1.5, 3, 6].includes(note.duration)) {
+              vfNote.addDot(0);
+            }
+            return vfNote;
+          });
+
+          vfNotes.push(...vfGroup);
+
+          const difference = event.duration() - event.get(part).duration();
+
+          if (difference > 0) {
+            const vfNote = new VF.StaveNote({
+              keys: [part === "s" || part === "t" ? "D/4" : "G/4"],
+              duration: state.durations[difference] + "r",
+            });
+            if ([0.75, 1.5, 3, 6].includes(difference)) {
               vfNote.addDot(0);
             }
             vfNotes.push(vfNote);
-          } else {
-            const vfGroup = notes.map(note => {
-              const vfNote = new VF.StaveNote({
-                clef: part === "s" || part === "a" ? "treble" : "bass",
-                keys: [
-                  `${JSB.Tone.LETTERS[note.pitch.tone.letter]}/${note.pitch.octave}`
-                ],
-                duration: state.durations[note.duration],
-                stem_direction: part === "s" || part === "t" ? 1 : -1,
-              });
-              if (
-                accidentals[note.pitch.octave][note.pitch.tone.letter] !==
-                note.pitch.tone.accidental
-              ) {
-                accidentals[note.pitch.octave][note.pitch.tone.letter] =
-                  note.pitch.tone.accidental;
-                vfNote.addAccidental(
-                  0,
-                  new VF.Accidental(
-                    { "-2": "bb", "-1": "b", 0: "n", 1: "#", 2: "##" }[
-                    note.pitch.tone.accidental
-                    ]
-                  )
-                );
-              }
-              if ([0.75, 1.5, 3, 6].includes(note.duration)) {
-                vfNote.addDot(0);
-              }
-              return vfNote;
-            });
-
-            vfNotes.push(...vfGroup);
           }
         }
         return vfNotes;
@@ -213,7 +205,7 @@ const state = {
         x: x,
         y: 0,
         width: width,
-        spaceBetweenStaves: 10,
+        spaceBetweenStaves: 10
       });
 
       const vfKey = state.piece.key.tonality
@@ -292,15 +284,13 @@ const state = {
   harmonise() {
     try {
       state.piece.harmonise();
-      state.consoleElement.innerText = "Success!";
       state.renderOutput(state.piece.bars);
     } catch (error) {
       const piece = document.getElementById("piece");
       const time = state.piece.maxTime;
       const event = piece.children[time.barIndex].children[time.eventIndex];
       event.classList.add("error");
-      state.consoleElement.innerText = `${error} (Bar ${time.barIndex + 1
-        }, chord ${time.eventIndex + 1})`;
+      console.log(`${error} (Bar ${time.barIndex + 1}, chord ${time.eventIndex + 1})`);
       state.renderOutput(state.piece.cache);
     }
   },
@@ -464,78 +454,42 @@ const state = {
           case ",":
             switch (state.defaultNote().duration) {
               case 0.25:
-                state.defaultNote().duration = 0.5;
-                break;
               case 0.5:
-                state.defaultNote().duration = 1;
-                break;
               case 0.75:
-                state.defaultNote().duration = 1.5;
-                break;
               case 1:
-                state.defaultNote().duration = 2;
-                break;
               case 1.5:
-                state.defaultNote().duration = 3;
-                break;
               case 2:
-                state.defaultNote().duration = 4;
-                break;
               case 3:
-                state.defaultNote().duration = 6;
+                state.defaultNote().duration *= 2;
                 break;
             }
             break;
           case ".":
             switch (state.defaultNote().duration) {
               case 0.5:
-                state.defaultNote().duration = 0.75;
+              case 1:
+              case 2:
+              case 4:
+                state.defaultNote().duration *= 1.5;
                 break;
               case 0.75:
-                state.defaultNote().duration = 0.5;
-                break;
-              case 1:
-                state.defaultNote().duration = 1.5;
-                break;
               case 1.5:
-                state.defaultNote().duration = 1;
-                break;
-              case 2:
-                state.defaultNote().duration = 3;
-                break;
               case 3:
-                state.defaultNote().duration = 2;
-                break;
-              case 4:
-                state.defaultNote().duration = 6;
-                break;
               case 6:
-                state.defaultNote().duration = 4;
+                state.defaultNote().duration /= 1.5;
                 break;
             }
             break;
           case "/":
             switch (state.defaultNote().duration) {
               case 0.5:
-                state.defaultNote().duration = 0.25;
-                break;
               case 1:
-                state.defaultNote().duration = 0.5;
-                break;
               case 1.5:
-                state.defaultNote().duration = 0.75;
-                break;
               case 2:
-                state.defaultNote().duration = 1;
-                break;
               case 3:
-                state.defaultNote().duration = 1.5;
-                break;
               case 4:
-                state.defaultNote().duration = 2;
-                break;
               case 6:
-                state.defaultNote().duration = 3;
+                state.defaultNote().duration *= 0.5;
                 break;
             }
             break;
@@ -650,19 +604,7 @@ const state = {
     state.renderInput();
     state.harmonise();
     state.renderOutput(state.piece.bars);
-    state.consoleElement.innerText = `The soprano line is required. Other parts are optional.
-[A-G] to enter a note.
-
-[1-5] to set the octave of a note.
-
-['] to flatten, [#] to sharpen an accidental.
-
-[,] to double, [/] to halve the duration of a note.
-
-[.] to dot/undot a note.
-
-[BACKSPACE] to delete a note.`;
-  },
+  }
 };
 
 state.init();
