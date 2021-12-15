@@ -294,7 +294,6 @@ const state = {
       event.classList.add("error");
       console.log(`(Bar ${time.barIndex + 1}, chord ${time.eventIndex + 1})`);
       state.renderOutput(state.piece.cache);
-      throw error;
     }
   },
 
