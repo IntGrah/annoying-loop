@@ -146,14 +146,15 @@ const $ = {
     for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
       const bar = bars[i];
 
-      let vfParts = ["s", "a", "t", "b"].map(part => {
+      const vfParts = ["s", "a", "t", "b"].map(part => {
+        const clef = part === "s" || part === "a" ? "treble" : "bass";
         const accidentals = Array(6).fill($.piece.key.signature());
         const vfNotes = [];
         for (const event of bar) {
           const notes = event.get(part).notes;
           const vfGroup = notes.map(note => {
             const vfNote = new VF.StaveNote({
-              clef: part === "s" || part === "a" ? "treble" : "bass",
+              clef: clef,
               keys: [
                 `${JSB.Tone.LETTERS[note.pitch.tone.letter]}/${note.pitch.octave}`
               ],
@@ -173,19 +174,24 @@ const $ = {
 
           vfNotes.push(...vfGroup);
 
-          const difference = event.duration() - event.get(part).duration();
+          let difference = event.duration() - event.get(part).duration();
 
-          if (difference > 0) {
+          const vfRests = [];
+
+          while (difference > 0) {
+            const duration = [12, 8, 6, 4, 3, 2, 1.5, 1, 0.75, 0.5, 0.25].filter(n => n <= difference)[0];
+            difference -= duration;
             const vfRest = new VF.StaveNote({
-              clef: part === "s" || part === "a" ? "treble" : "bass",
+              clef: clef,
               keys: [{ "s": "A/5", "a": "C/4", "t": "C/4", "b": "E/2" }[part]],
-              duration: $.durations[difference] + "r",
+              duration: $.durations[duration] + "r",
             });
-            if ([0.75, 1.5, 3, 6, 12].includes(difference)) {
+            if ([0.75, 1.5, 3, 6, 12].includes(duration)) {
               vfRest.addDot(0);
             }
-            vfNotes.push(vfRest);
+            vfRests.unshift(vfRest);
           }
+          vfNotes.push(...vfRests);
         }
         return vfNotes;
       });
@@ -203,10 +209,6 @@ const $ = {
         spaceBetweenStaves: 12
       });
 
-      const vfKey = $.piece.key.tonality
-        ? $.piece.key.tone.string()
-        : $.piece.key.degree(2).string();
-
       const vfTime = {
         time: {
           num_beats: bar
@@ -216,19 +218,23 @@ const $ = {
         },
       };
 
-      let upper = system.addStave({
+      const upper = system.addStave({
         voices: [
           score.voice(vfParts[0], vfTime).setStrict(false),
           score.voice(vfParts[1], vfTime).setStrict(false),
         ],
       });
 
-      let lower = system.addStave({
+      const lower = system.addStave({
         voices: [
           score.voice(vfParts[2], vfTime).setStrict(false),
           score.voice(vfParts[3], vfTime).setStrict(false),
         ],
       });
+
+      const vfKey = $.piece.key.tonality
+      ? $.piece.key.tone.string()
+      : $.piece.key.degree(2).string();
 
       if (i === 0) {
         upper.addClef("treble").addKeySignature(vfKey);
