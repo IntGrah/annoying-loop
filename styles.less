@@ -13,6 +13,7 @@
 @purple4: #b28cda;
 @purple5: #bc7eff;
 @purple6: #9d5ee0;
+@purple7: #9f5ae9;
 @red: #fadbe5;
 
 @shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
@@ -88,31 +89,6 @@ body {
       }
     }
 
-    #mirror {
-      display: flex;
-      width: fit-content;
-      max-width: calc(100% - 40px);
-
-      .note {
-        .box();
-
-        &:first-child {
-          border-top-left-radius: 10px;
-          border-bottom-left-radius: 10px;
-        }
-
-        &:last-child {
-          border-top-right-radius: 10px;
-          border-bottom-right-radius: 10px;
-        }
-
-        &.empty {
-          font-size: 10px;
-          font-style: italic;
-        }
-      }
-    }
-
     #piece-box {
       width: fit-content;
       max-width: calc(100% - 40px);
@@ -136,16 +112,43 @@ body {
           .event {
             display: flex;
             flex-direction: column;
+            width: fit-content;
+            max-width: 40px;
+            overflow-x: hidden;
+            transition: max-width @fast;
+
+            &.selected,
+            &:hover {
+              max-width: 80px;
+              box-shadow: @shadow;
+            }
 
             &.error {
               box-shadow: @shadow;
             }
 
             .group {
-              .box();
+              display: flex;
 
               &.multi {
-                font-style: oblique;
+                color: @purple7;
+              }
+
+              .note {
+                width: 100%;
+                min-width: 40px;
+                height: 40px;
+                line-height: 40px;
+                cursor: pointer;
+                transition: background-color @fast;
+
+                &.selected {
+                  background-color: @purple4;
+                }
+
+                &:hover {
+                  background-color: @purple3;
+                }
               }
             }
           }
@@ -229,22 +232,6 @@ body {
   background-color: @white;
   box-shadow: @shadow;
   .scrollbar();
-}
-
-.box() {
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  cursor: pointer;
-  transition: background-color @fast;
-
-  &:hover {
-    background-color: @purple3;
-  }
-
-  &.selected {
-    background-color: @purple4;
-  }
 }
 
 .button() {

@@ -31,71 +31,44 @@ const $ = {
   table() {
     const barsHtml = $.piece.cache.map((bar, barIndex) => {
       const eventsHtml = bar.map((event, eventIndex) => {
-        const group = $.group();
-
-        const sHtml = document.createElement("div");
-        sHtml.classList.add("group");
-        if (event.s === group) {
-          sHtml.classList.add("selected");
-        }
-        if (event.s.notes.length > 1) {
-          sHtml.classList.add("multi");
-        }
-        sHtml.appendChild(
-          document.createTextNode(event.s.main()?.string() ?? "")
-        );
-        sHtml.addEventListener("mousedown", () =>
-          $.select(barIndex, eventIndex, "s", 0)
-        );
-
-        const aHtml = document.createElement("div");
-        aHtml.classList.add("group");
-        if (event.a === group) {
-          aHtml.classList.add("selected");
-        }
-        if (event.a.notes.length > 1) {
-          sHtml.classList.add("multi");
-        }
-        aHtml.appendChild(
-          document.createTextNode(event.a.main()?.string() ?? "")
-        );
-        aHtml.addEventListener("mousedown", () =>
-          $.select(barIndex, eventIndex, "a", 0)
-        );
-
-        const tHtml = document.createElement("div");
-        tHtml.classList.add("group");
-        if (event.t === group) {
-          tHtml.classList.add("selected");
-        }
-        if (event.t.notes.length > 1) {
-          sHtml.classList.add("multi");
-        }
-        tHtml.appendChild(
-          document.createTextNode(event.t.main()?.string() ?? "")
-        );
-        tHtml.addEventListener("mousedown", () =>
-          $.select(barIndex, eventIndex, "t", 0)
-        );
-
-        const bHtml = document.createElement("div");
-        bHtml.classList.add("group");
-        if (event.b === group) {
-          bHtml.classList.add("selected");
-        }
-        if (event.b.notes.length > 1) {
-          sHtml.classList.add("multi");
-        }
-        bHtml.appendChild(
-          document.createTextNode(event.b.main()?.string() ?? "")
-        );
-        bHtml.addEventListener("mousedown", () =>
-          $.select(barIndex, eventIndex, "b", 0)
-        );
-
+        const currentGroup = $.group();
+        const groupsHtml = ["s", "a", "t", "b"].map(part => {
+          const group = event.get(part);
+          const groupHtml = document.createElement("div");
+          groupHtml.classList.add("group");
+          if (group.notes.length > 1) {
+            groupHtml.classList.add("multi");
+          }
+          if (group.notes.length === 0) {
+            const noteHtml = document.createElement("span");
+            noteHtml.classList.add("note");
+            if (group === currentGroup) {
+              noteHtml.classList.add("selected");
+            }
+            noteHtml.addEventListener("mousedown", () => $.select(barIndex, eventIndex, part, 0));
+            groupHtml.appendChild(noteHtml);
+          } else {
+            const currentNote = $.note();
+            const notesHtml = group.notes.map((note, noteIndex) => {
+              const noteHtml = document.createElement("span");
+              noteHtml.classList.add("note");
+              if (note === currentNote) {
+                noteHtml.classList.add("selected");
+              }
+              noteHtml.appendChild(document.createTextNode(note.string()));
+              noteHtml.addEventListener("mousedown", () => $.select(barIndex, eventIndex, part, noteIndex));
+              return noteHtml;
+            });
+            groupHtml.append(...notesHtml);
+          }
+          return groupHtml;
+        });
         const eventHtml = document.createElement("div");
         eventHtml.classList.add("event");
-        eventHtml.append(sHtml, aHtml, tHtml, bHtml);
+        if (barIndex === $.barIndex && eventIndex === $.eventIndex) {
+          eventHtml.classList.add("selected");
+        }
+        eventHtml.append(...groupsHtml);
         return eventHtml;
       });
       const barHtml = document.createElement("span");
@@ -110,31 +83,6 @@ const $ = {
     const pieceBox = document.getElementById("piece-box");
     pieceBox.innerHTML = "";
     pieceBox.appendChild(pieceHtml);
-
-    const mirror = document.getElementById("mirror");
-    const notesHtml = $.group().notes.map((note, noteIndex) => {
-      const noteHtml = document.createElement("span");
-      noteHtml.classList.add("note");
-      if (note === $.note()) {
-        noteHtml.classList.add("selected");
-      }
-      noteHtml.appendChild(document.createTextNode(note.string()));
-      noteHtml.addEventListener("mousedown", () =>
-        $.select($.barIndex, $.eventIndex, $.part, noteIndex)
-      );
-      return noteHtml;
-    });
-    if (notesHtml.length === 0) {
-      const emptyNote = document.createElement("span");
-      emptyNote.classList.add("note");
-      emptyNote.classList.add("empty");
-      emptyNote.appendChild(document.createTextNode("(empty)"));
-      emptyNote.style;
-      notesHtml[0] = emptyNote;
-    }
-
-    mirror.innerHTML = "";
-    mirror.append(...notesHtml);
   },
 
   render(bars) {
@@ -233,8 +181,8 @@ const $ = {
       });
 
       const vfKey = $.piece.key.tonality
-      ? $.piece.key.tone.string()
-      : $.piece.key.degree(2).string();
+        ? $.piece.key.tone.string()
+        : $.piece.key.degree(2).string();
 
       if (i === 0) {
         upper.addClef("treble").addKeySignature(vfKey);
