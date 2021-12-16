@@ -1,5 +1,4 @@
 const VF = Vex.Flow;
-
 const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
 const score = factory.EasyScore();
 
@@ -29,7 +28,7 @@ const $ = {
     12: "1/2"
   },
 
-  renderInput() {
+  table() {
     const barsHtml = $.piece.cache.map((bar, barIndex) => {
       const eventsHtml = bar.map((event, eventIndex) => {
         const group = $.group();
@@ -138,7 +137,7 @@ const $ = {
     mirror.append(...notesHtml);
   },
 
-  renderOutput(bars) {
+  render(bars) {
     let x = 40;
 
     factory.getContext().clear();
@@ -271,7 +270,7 @@ const $ = {
   },
 
   update(harmonise) {
-    $.renderInput();
+    $.table();
     if (harmonise && $.auto) {
       $.harmonise();
     }
@@ -280,13 +279,13 @@ const $ = {
   harmonise() {
     try {
       $.piece.harmonise();
-      $.renderOutput($.piece.bars);
+      $.render($.piece.bars);
     } catch (error) {
       const piece = document.getElementById("piece");
       const time = $.piece.maxTime;
       const event = piece.children[time.barIndex].children[time.eventIndex];
       event.classList.add("error");
-      $.renderOutput($.piece.cache);
+      $.render($.piece.cache);
       console.log(error);
     }
   },
@@ -420,6 +419,7 @@ const $ = {
         $.defaultNote().duration *= 2;
         break;
     }
+    $.update(true);
   },
 
   toggleDot() {
@@ -593,9 +593,9 @@ const $ = {
     document.getElementById("sharpen")?.addEventListener("mousedown", $.sharpen);
     document.getElementById("harmonise")?.addEventListener("mousedown", $.harmonise);
     $.autoElement.addEventListener("mousedown", $.toggleAuto);
-    $.renderInput();
+    $.table();
     $.harmonise();
-    $.renderOutput($.piece.bars);
+    $.render($.piece.bars);
   }
 };
 
