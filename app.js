@@ -1,19 +1,12 @@
 const VF = Vex.Flow;
 
-const factory = new Vex.Flow.Factory({
-  renderer: {
-    elementId: "output",
-  },
-});
+const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
 const score = factory.EasyScore();
 
-const state = {
+const $ = {
   piece: new JSB.Piece()
     .setKey(JSB.Key.parse("A major"))
-    .parse(
-      "[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_;|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4;]",
-      "s"
-    )
+    .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_;|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4;]", "s")
     .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_;|G#2 F#2 E2 G#2/ A2/|B2 B2 E3;]", "b"),
   barIndex: 0,
   eventIndex: 0,
@@ -35,11 +28,11 @@ const state = {
     8: "1/2",
     12: "1/2"
   },
-
+  
   renderInput() {
-    const barsHtml = state.piece.cache.map((bar, barIndex) => {
+    const barsHtml = $.piece.cache.map((bar, barIndex) => {
       const eventsHtml = bar.map((event, eventIndex) => {
-        const group = state.group();
+        const group = $.group();
 
         const sHtml = document.createElement("div");
         sHtml.classList.add("group");
@@ -53,7 +46,7 @@ const state = {
           document.createTextNode(event.s.main()?.string() ?? "")
         );
         sHtml.addEventListener("mousedown", () =>
-          state.select(barIndex, eventIndex, "s", 0)
+          $.select(barIndex, eventIndex, "s", 0)
         );
 
         const aHtml = document.createElement("div");
@@ -68,7 +61,7 @@ const state = {
           document.createTextNode(event.a.main()?.string() ?? "")
         );
         aHtml.addEventListener("mousedown", () =>
-          state.select(barIndex, eventIndex, "a", 0)
+          $.select(barIndex, eventIndex, "a", 0)
         );
 
         const tHtml = document.createElement("div");
@@ -83,7 +76,7 @@ const state = {
           document.createTextNode(event.t.main()?.string() ?? "")
         );
         tHtml.addEventListener("mousedown", () =>
-          state.select(barIndex, eventIndex, "t", 0)
+          $.select(barIndex, eventIndex, "t", 0)
         );
 
         const bHtml = document.createElement("div");
@@ -98,7 +91,7 @@ const state = {
           document.createTextNode(event.b.main()?.string() ?? "")
         );
         bHtml.addEventListener("mousedown", () =>
-          state.select(barIndex, eventIndex, "b", 0)
+          $.select(barIndex, eventIndex, "b", 0)
         );
 
         const eventHtml = document.createElement("div");
@@ -120,15 +113,15 @@ const state = {
     pieceBox.appendChild(pieceHtml);
 
     const mirror = document.getElementById("mirror");
-    const notesHtml = state.group().notes.map((note, noteIndex) => {
+    const notesHtml = $.group().notes.map((note, noteIndex) => {
       const noteHtml = document.createElement("span");
       noteHtml.classList.add("note");
-      if (note === state.note()) {
+      if (note === $.note()) {
         noteHtml.classList.add("selected");
       }
       noteHtml.appendChild(document.createTextNode(note.string()));
       noteHtml.addEventListener("mousedown", () =>
-        state.select(state.barIndex, state.eventIndex, state.part, noteIndex)
+        $.select($.barIndex, $.eventIndex, $.part, noteIndex)
       );
       return noteHtml;
     });
@@ -155,7 +148,7 @@ const state = {
       const bar = bars[i];
 
       let vfParts = ["s", "a", "t", "b"].map(part => {
-        const accidentals = Array(6).fill(state.piece.key.signature());
+        const accidentals = Array(6).fill($.piece.key.signature());
         const vfNotes = [];
         for (const event of bar) {
           const notes = event.get(part).notes;
@@ -165,7 +158,7 @@ const state = {
               keys: [
                 `${JSB.Tone.LETTERS[note.pitch.tone.letter]}/${note.pitch.octave}`
               ],
-              duration: state.durations[note.duration],
+              duration: $.durations[note.duration],
               stem_direction: part === "s" || part === "t" ? 1 : -1
             });
             if (accidentals[note.pitch.octave][note.pitch.tone.letter] !== note.pitch.tone.accidental) {
@@ -186,8 +179,8 @@ const state = {
           if (difference > 0) {
             const vfRest = new VF.StaveNote({
               clef: part === "s" || part === "a" ? "treble" : "bass",
-              keys: [{"s": "A/5", "a": "C/4", "t": "C/4", "b": "E/2"}[part]],
-              duration: state.durations[difference] + "r",
+              keys: [{ "s": "A/5", "a": "C/4", "t": "C/4", "b": "E/2" }[part]],
+              duration: $.durations[difference] + "r",
             });
             if ([0.75, 1.5, 3, 6, 12].includes(difference)) {
               vfRest.addDot(0);
@@ -201,7 +194,7 @@ const state = {
       width = 20 + 40 * bar.map(event => event.duration()).reduce((l, r) => l + r);
 
       if (i === 0) {
-        width += 20 * Math.abs(state.piece.key.accidentals());
+        width += 20 * Math.abs($.piece.key.accidentals());
       }
 
       const system = factory.System({
@@ -211,9 +204,9 @@ const state = {
         spaceBetweenStaves: 12
       });
 
-      const vfKey = state.piece.key.tonality
-        ? state.piece.key.tone.string()
-        : state.piece.key.degree(2).string();
+      const vfKey = $.piece.key.tonality
+        ? $.piece.key.tone.string()
+        : $.piece.key.degree(2).string();
 
       const vfTime = {
         time: {
@@ -255,83 +248,81 @@ const state = {
   },
 
   select(barIndex, eventIndex, part, noteIndex) {
-    state.barIndex = barIndex;
-    state.eventIndex = eventIndex;
-    state.part = part;
-    state.noteIndex = noteIndex;
-    state.update();
+    $.barIndex = barIndex;
+    $.eventIndex = eventIndex;
+    $.part = part;
+    $.noteIndex = noteIndex;
+    $.update(false);
   },
 
   group() {
-    return state.piece.cache[state.barIndex][state.eventIndex].get(state.part);
+    return $.piece.cache[$.barIndex][$.eventIndex].get($.part);
   },
 
   note() {
-    return state.group().notes[state.noteIndex];
+    return $.group().notes[$.noteIndex];
   },
 
   defaultNote() {
-    if (state.note() === undefined) {
-      state.group().notes = [JSB.Note.parse("C4")];
+    if ($.note() === undefined) {
+      $.group().notes = [JSB.Note.parse("C4")];
     }
-    return state.note();
+    return $.note();
   },
 
-  update() {
-    state.renderInput();
-    if (state.auto) {
-      state.harmonise();
+  update(harmonise) {
+    $.renderInput();
+    if (harmonise && $.auto) {
+      $.harmonise();
     }
   },
 
   harmonise() {
     try {
-      state.piece.harmonise();
-      state.renderOutput(state.piece.bars);
+      $.piece.harmonise();
+      $.renderOutput($.piece.bars);
     } catch (error) {
       const piece = document.getElementById("piece");
-      const time = state.piece.maxTime;
+      const time = $.piece.maxTime;
       const event = piece.children[time.barIndex].children[time.eventIndex];
       event.classList.add("error");
-      state.renderOutput(state.piece.cache);
+      $.renderOutput($.piece.cache);
       console.log(error);
     }
   },
 
   deleteEvent() {
-    if (state.piece.cache[state.barIndex].length > 1) {
-      state.piece.cache[state.barIndex].splice(state.eventIndex, 1);
-      if (--state.eventIndex < 0) {
-        state.eventIndex = 0;
+    if ($.piece.cache[$.barIndex].length > 1) {
+      $.piece.cache[$.barIndex].splice($.eventIndex, 1);
+      if (--$.eventIndex < 0) {
+        $.eventIndex = 0;
       }
-      state.noteIndex = 0;
-      state.update();
-    } else if (state.piece.cache.length > 1) {
-      state.piece.cache.splice(state.barIndex, 1);
-      if (--state.barIndex < 0) {
-        state.barIndex = 0;
+    } else if ($.piece.cache.length > 1) {
+      $.piece.cache.splice($.barIndex, 1);
+      if (--$.barIndex < 0) {
+        $.barIndex = 0;
       }
-      state.eventIndex = 0;
-      state.noteIndex = 0;
-      state.update();
+      $.eventIndex = 0;
     }
+    $.noteIndex = 0;
+    $.update(true);
   },
 
   deleteBar() {
-    if (state.piece.cache.length > 1) {
-      state.piece.cache.splice(state.barIndex, 1);
-      if (--state.barIndex < 0) {
-        state.barIndex = 0;
+    if ($.piece.cache.length > 1) {
+      $.piece.cache.splice($.barIndex, 1);
+      if (--$.barIndex < 0) {
+        $.barIndex = 0;
       }
-      state.eventIndex = 0;
-      state.noteIndex = 0;
-      state.update();
+      $.eventIndex = 0;
+      $.noteIndex = 0;
+      $.update(true);
     }
   },
 
   appendEvent() {
-    state.piece.cache[state.barIndex].splice(
-      ++state.eventIndex,
+    $.piece.cache[$.barIndex].splice(
+      ++$.eventIndex,
       0,
       new JSB.Event(
         JSB.Group.empty(),
@@ -341,11 +332,11 @@ const state = {
         "normal"
       )
     );
-    state.update();
+    $.update(true);
   },
 
   appendBar() {
-    state.piece.cache.splice(state.barIndex + 1, 0, [
+    $.piece.cache.splice($.barIndex + 1, 0, [
       new JSB.Event(
         JSB.Group.empty(),
         JSB.Group.empty(),
@@ -354,266 +345,258 @@ const state = {
         "normal"
       ),
     ]);
-    ++state.barIndex;
-    state.eventIndex = 0;
-    state.noteIndex = 0;
-    state.update();
+    ++$.barIndex;
+    $.eventIndex = 0;
+    $.noteIndex = 0;
+    $.update(true);
+  },
+
+  clearGroup() {
+    $.group().index = 0;
+    $.group().notes = [];
+    $.update(true);
   },
 
   flatten() {
-    if (state.piece.key.accidentals() > -7) {
-      state.piece.key.tone = state.piece.key.degree(3);
+    if ($.piece.key.accidentals() > -7) {
+      $.piece.key.tone = $.piece.key.degree(3);
     }
-    state.keyElement.innerText = state.piece.key.string();
-    state.update();
+    $.keyElement.innerText = $.piece.key.string();
+    $.update(true);
   },
 
   toggleTonality() {
-    if (state.piece.key.tonality) {
-      state.piece.key = new JSB.Key(state.piece.key.degree(5), false);
+    if ($.piece.key.tonality) {
+      $.piece.key = new JSB.Key($.piece.key.degree(5), false);
     } else {
-      state.piece.key = new JSB.Key(state.piece.key.degree(2), true);
+      $.piece.key = new JSB.Key($.piece.key.degree(2), true);
     }
-    state.keyElement.innerText = state.piece.key.string();
-    state.update();
+    $.keyElement.innerText = $.piece.key.string();
+    $.update(true);
   },
 
   sharpen() {
-    if (state.piece.key.accidentals() < 7) {
-      state.piece.key.tone = state.piece.key.degree(4);
+    if ($.piece.key.accidentals() < 7) {
+      $.piece.key.tone = $.piece.key.degree(4);
     }
-    state.keyElement.innerText = state.piece.key.string();
-    state.update();
+    $.keyElement.innerText = $.piece.key.string();
+    $.update(true);
   },
 
   toggleAuto() {
-    state.auto = !state.auto;
-    state.autoElement.innerText = "Auto: " + (state.auto ? "on" : "off");
-    if (state.auto) {
-      state.update();
+    $.auto = !$.auto;
+    $.autoElement.innerText = "Auto: " + ($.auto ? "on" : "off");
+    if ($.auto) {
+      $.update(true);
     }
+  },
+
+  augmentDuration() {
+    switch ($.defaultNote().duration) {
+      case 0.25:
+      case 0.5:
+      case 0.75:
+      case 1:
+      case 1.5:
+      case 2:
+      case 3:
+      case 4:
+      case 6:
+        $.defaultNote().duration *= 2;
+        break;
+    }
+  },
+
+  toggleDot() {
+    switch ($.defaultNote().duration) {
+      case 0.5:
+      case 1:
+      case 2:
+      case 4:
+      case 8:
+        $.defaultNote().duration *= 1.5;
+        break;
+      case 0.75:
+      case 1.5:
+      case 3:
+      case 6:
+      case 12:
+        $.defaultNote().duration /= 1.5;
+        break;
+    }
+    $.update(true);
+  },
+
+  diminishDuration() {
+    switch ($.defaultNote().duration) {
+      case 0.5:
+      case 1:
+      case 1.5:
+      case 2:
+      case 3:
+      case 4:
+      case 6:
+      case 8:
+      case 12:
+        $.defaultNote().duration *= 0.5;
+        break;
+    }
+    $.update(true);
+  },
+
+  left() {
+    if ($.eventIndex-- === 0) {
+      if ($.barIndex-- === 0) {
+        $.barIndex = 0;
+        $.eventIndex = 0;
+      } else {
+        $.eventIndex = $.piece.cache[$.barIndex].length - 1;
+        $.noteIndex = 0;
+      }
+    } else {
+      $.noteIndex = 0;
+    }
+    $.update(false);
+  },
+
+  right() {
+    if (
+      ++$.eventIndex === $.piece.cache[$.barIndex].length
+    ) {
+      if (++$.barIndex === $.piece.cache.length) {
+        --$.barIndex;
+        --$.eventIndex;
+      } else {
+        $.eventIndex = 0;
+        $.noteIndex = 0;
+      }
+    } else {
+      $.noteIndex = 0;
+    }
+    $.update(false);
+  },
+
+  up() {
+    switch ($.part) {
+      case "a":
+        $.part = "s";
+        break;
+      case "t":
+        $.part = "a";
+        break;
+      case "b":
+        $.part = "t";
+        break;
+    }
+    $.update(false);
+  },
+
+  down() {
+    switch ($.part) {
+      case "s":
+        $.part = "a";
+        break;
+      case "a":
+        $.part = "t";
+        break;
+      case "t":
+        $.part = "b";
+        break;
+    }
+    $.update(false);
+  },
+
+  nextNote() {
+    const length = $.group().notes.length;
+    ++$.noteIndex;
+    $.noteIndex %= length;
+    $.update(false);
+  },
+
+  previousNote() {
+    const length = $.group().notes.length;
+    $.noteIndex += length - 1;
+    $.noteIndex %= length;
+    $.update(false);
   },
 
   keydown(e) {
     if (e.ctrlKey) {
       if (e.shiftKey) {
+        //
       } else {
         switch (e.key) {
-          case "Enter":
-            state.appendBar();
-            break;
-          case "Backspace":
-            state.deleteBar();
-            break;
+          case "Enter": $.appendBar(); break;
+          case "Backspace": $.deleteBar(); break;
         }
       }
     } else {
       if (e.shiftKey) {
-      } else {
-        const signature = state.piece.key.signature();
         switch (e.key) {
-          case "a":
-            state.defaultNote().pitch.tone = JSB.Tone.parse("A").alterAccidental(signature[5]);
-            break;
-          case "b":
-            state.defaultNote().pitch.tone = JSB.Tone.parse("B").alterAccidental(signature[6]);
-            break;
-          case "c":
-            state.defaultNote().pitch.tone = JSB.Tone.parse("C").alterAccidental(signature[0]);
-            break;
-          case "d":
-            state.defaultNote().pitch.tone = JSB.Tone.parse("D").alterAccidental(signature[1]);
-            break;
-          case "e":
-            state.defaultNote().pitch.tone = JSB.Tone.parse("E").alterAccidental(signature[2]);
-            break;
-          case "f":
-            state.defaultNote().pitch.tone = JSB.Tone.parse("F").alterAccidental(signature[3]);
-            break;
-          case "g":
-            state.defaultNote().pitch.tone = JSB.Tone.parse("G").alterAccidental(signature[4]);
-            break;
-          case "1":
-            state.defaultNote().pitch.octave = 1;
-            break;
-          case "2":
-            state.defaultNote().pitch.octave = 2;
-            break;
-          case "3":
-            state.defaultNote().pitch.octave = 3;
-            break;
-          case "4":
-            state.defaultNote().pitch.octave = 4;
-            break;
-          case "5":
-            state.defaultNote().pitch.octave = 5;
-            break;
-          case "#":
-            state.defaultNote().pitch.tone.alterAccidental(1);
-            break;
-          case "'":
-            state.defaultNote().pitch.tone.alterAccidental(-1);
-            break;
-          case ",":
-            switch (state.defaultNote().duration) {
-              case 0.25:
-              case 0.5:
-              case 0.75:
-              case 1:
-              case 1.5:
-              case 2:
-              case 3:
-              case 4:
-              case 6:
-                state.defaultNote().duration *= 2;
-                break;
-            }
-            break;
-          case ".":
-            switch (state.defaultNote().duration) {
-              case 0.5:
-              case 1:
-              case 2:
-              case 4:
-              case 8:
-                state.defaultNote().duration *= 1.5;
-                break;
-              case 0.75:
-              case 1.5:
-              case 3:
-              case 6:
-              case 12:
-                state.defaultNote().duration /= 1.5;
-                break;
-            }
-            break;
-          case "/":
-            switch (state.defaultNote().duration) {
-              case 0.5:
-              case 1:
-              case 1.5:
-              case 2:
-              case 3:
-              case 4:
-              case 6:
-              case 8:
-              case 12:
-                state.defaultNote().duration *= 0.5;
-                break;
-            }
-            break;
-          case "ArrowLeft":
-            if (state.eventIndex-- === 0) {
-              if (state.barIndex-- === 0) {
-                state.barIndex = 0;
-                state.eventIndex = 0;
-              } else {
-                state.eventIndex = state.piece.cache[state.barIndex].length - 1;
-                state.noteIndex = 0;
-              }
-            } else {
-              state.noteIndex = 0;
-            }
-            break;
-          case "ArrowRight":
-            if (
-              ++state.eventIndex === state.piece.cache[state.barIndex].length
-            ) {
-              if (++state.barIndex === state.piece.cache.length) {
-                --state.barIndex;
-                --state.eventIndex;
-              } else {
-                state.eventIndex = 0;
-                state.noteIndex = 0;
-              }
-            } else {
-              state.noteIndex = 0;
-            }
-            break;
-          case "ArrowUp":
-            switch (state.part) {
-              case "a":
-                state.part = "s";
-                break;
-              case "t":
-                state.part = "a";
-                break;
-              case "b":
-                state.part = "t";
-                break;
-            }
-            break;
-          case "ArrowDown":
-            switch (state.part) {
-              case "s":
-                state.part = "a";
-                break;
-              case "a":
-                state.part = "t";
-                break;
-              case "t":
-                state.part = "b";
-                break;
-            }
-            break;
-          case "Tab":
-            e.preventDefault();
-            const length = state.group().notes.length;
-            if (e.shiftKey) {
-              state.noteIndex += length - 1;
-              state.noteIndex %= length;
-            } else {
-              ++state.noteIndex;
-              state.noteIndex %= length;
-            }
-            break;
-          case "Enter":
-            state.appendEvent();
-            break;
-          case "Backspace":
-            state.deleteEvent();
-            break;
-          case " ":
-            state.group().index = 0;
-            state.group().notes = [];
-            break;
-          default:
-            return;
+          case "Tab": e.preventDefault(); $.previousNote(); break;
+        }
+      } else {
+        const signature = $.piece.key.signature();
+        switch (e.key) {
+          case "a": $.defaultNote().pitch.tone = JSB.Tone.parse("A").alterAccidental(signature[5]); break;
+          case "b": $.defaultNote().pitch.tone = JSB.Tone.parse("B").alterAccidental(signature[6]); break;
+          case "c": $.defaultNote().pitch.tone = JSB.Tone.parse("C").alterAccidental(signature[0]); break;
+          case "d": $.defaultNote().pitch.tone = JSB.Tone.parse("D").alterAccidental(signature[1]); break;
+          case "e": $.defaultNote().pitch.tone = JSB.Tone.parse("E").alterAccidental(signature[2]); break;
+          case "f": $.defaultNote().pitch.tone = JSB.Tone.parse("F").alterAccidental(signature[3]); break;
+          case "g": $.defaultNote().pitch.tone = JSB.Tone.parse("G").alterAccidental(signature[4]); break;
+          case "1": $.defaultNote().pitch.octave = 1; break;
+          case "2": $.defaultNote().pitch.octave = 2; break;
+          case "3": $.defaultNote().pitch.octave = 3; break;
+          case "4": $.defaultNote().pitch.octave = 4; break;
+          case "5": $.defaultNote().pitch.octave = 5; break;
+          case "#": $.defaultNote().pitch.tone.alterAccidental(1); break;
+          case "'": $.defaultNote().pitch.tone.alterAccidental(-1); break;
+          case ",": $.augmentDuration(); break;
+          case ".": $.toggleDot(); break;
+          case "/": $.diminishDuration(); break;
+          case "ArrowLeft": $.left(); break;
+          case "ArrowRight": $.right(); break;
+          case "ArrowUp": $.up(); break;
+          case "ArrowDown": $.down(); break;
+          case "Tab": e.preventDefault(); $.nextNote(); break;
+          case "Enter": $.appendEvent(); break;
+          case "Backspace": $.deleteEvent(); break;
+          case " ": $.clearGroup(); break;
         }
       }
     }
-    state.update();
   },
 
   init() {
     document
       .getElementById("delete-bar")
-      ?.addEventListener("mousedown", state.deleteBar);
+      ?.addEventListener("mousedown", $.deleteBar);
     document
       .getElementById("delete-event")
-      ?.addEventListener("mousedown", state.deleteEvent);
+      ?.addEventListener("mousedown", $.deleteEvent);
     document
       .getElementById("append-event")
-      ?.addEventListener("mousedown", state.appendEvent);
+      ?.addEventListener("mousedown", $.appendEvent);
     document
       .getElementById("append-bar")
-      ?.addEventListener("mousedown", state.appendBar);
-    document.addEventListener("keydown", state.keydown);
+      ?.addEventListener("mousedown", $.appendBar);
+    document.addEventListener("keydown", $.keydown);
     document
       .getElementById("flatten")
-      ?.addEventListener("mousedown", state.flatten);
-    state.keyElement.addEventListener("mousedown", state.toggleTonality);
+      ?.addEventListener("mousedown", $.flatten);
+    $.keyElement.addEventListener("mousedown", $.toggleTonality);
     document
       .getElementById("sharpen")
-      ?.addEventListener("mousedown", state.sharpen);
+      ?.addEventListener("mousedown", $.sharpen);
     document
       .getElementById("harmonise")
-      ?.addEventListener("mousedown", state.harmonise);
-    state.autoElement.addEventListener("mousedown", state.toggleAuto);
-    state.renderInput();
-    state.harmonise();
-    state.renderOutput(state.piece.bars);
+      ?.addEventListener("mousedown", $.harmonise);
+    $.autoElement.addEventListener("mousedown", $.toggleAuto);
+    $.renderInput();
+    $.harmonise();
+    $.renderOutput($.piece.bars);
   }
 };
 
-state.init();
+$.init();
