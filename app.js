@@ -57,14 +57,7 @@ const $ = {
             groupElement.classList.add("multi");
           }
           if (group.notes.length === 0) {
-            const noteElement = document.createElement("span");
-            noteElement.classList.add("note");
-            if (group === selectedGroup) {
-              noteElement.classList.add("selected");
-              $.noteElement = noteElement;
-            }
-            noteElement.addEventListener("mousedown", () => $.select(noteElement));
-            groupElement.appendChild(noteElement);
+            groupElement.appendChild($.emptyNoteElement(group === selectedGroup));
           } else {
             for (const note of group.notes) {
               const noteElement = document.createElement("span");
@@ -87,6 +80,17 @@ const $ = {
 
     $.pieceBoxElement.innerHTML = "";
     $.pieceBoxElement.appendChild(pieceElement);
+  },
+
+  emptyNoteElement(selected) {
+    const noteElement = document.createElement("span");
+    noteElement.classList.add("note");
+    if (selected) {
+      noteElement.classList.add("selected");
+      $.noteElement = noteElement;
+    }
+    noteElement.addEventListener("mousedown", () => $.select(noteElement));
+    return noteElement;
   },
 
   vexflow(bars) {
@@ -324,7 +328,10 @@ const $ = {
   clearGroup() {
     $.group().index = 0;
     $.group().notes = [];
-    $.html();
+    const groupElement = $.noteElement.parentElement;
+    groupElement.innerHTML = "";
+    groupElement.appendChild($.emptyNoteElement(true));
+    $.select(groupElement.firstElementChild);
     $.harmonise();
   },
 
@@ -363,8 +370,12 @@ const $ = {
   },
 
   setLetter(letter) {
-    $.defaultNote().pitch.tone = JSB.Tone.parse(["C", "D", "E", "F", "G", "A", "B"][letter]).alterAccidental($.piece.key.signature()[letter]);
-    $.html();
+    const note = $.note();
+    if (!note) {
+      return;
+    }
+    note.pitch.tone = JSB.Tone.parse(["C", "D", "E", "F", "G", "A", "B"][letter]).alterAccidental($.piece.key.signature()[letter]);
+    $.noteElement.innerText = note.string();
     $.harmonise();
   },
 
