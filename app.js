@@ -12,10 +12,10 @@ const $ = {
   part: "s",
   noteIndex: 0,
   auto: true,
-  noteElmt: undefined,
-  boxElmt: document.getElementById("piece-box"),
-  keyElmt: document.getElementById("key"),
-  autoElmt: document.getElementById("auto"),
+  noteElement: undefined,
+  boxElement: document.getElementById("piece-box"),
+  keyElement: document.getElementById("key"),
+  autoElement: document.getElementById("auto"),
   durations: {
     0.25: "16",
     0.5: "8",
@@ -35,63 +35,63 @@ const $ = {
     const selectedEvent = $.event();
     const selectedGroup = $.group();
     const selectedNote = $.note();
-    const barsElmt = $.piece.cache.map((bar, barIndex) => {
-      const eventsElmt = bar.map((event, eventIndex) => {
-        const eventElmt = document.createElement("div");
-        const groupsElmt = ["s", "a", "t", "b"].map(part => {
+    const barsElement = $.piece.cache.map((bar, barIndex) => {
+      const eventsElement = bar.map((event, eventIndex) => {
+        const eventElement = document.createElement("div");
+        const groupsElement = ["s", "a", "t", "b"].map(part => {
           const group = event.get(part);
-          const groupElmt = document.createElement("div");
-          groupElmt.classList.add("group");
+          const groupElement = document.createElement("div");
+          groupElement.classList.add("group");
           if (group.notes.length > 1) {
-            groupElmt.classList.add("multi");
+            groupElement.classList.add("multi");
           }
           if (group.notes.length === 0) {
-            const noteElmt = document.createElement("span");
-            noteElmt.classList.add("note");
+            const noteElement = document.createElement("span");
+            noteElement.classList.add("note");
             if (group === selectedGroup) {
-              noteElmt.classList.add("selected");
-              $.noteElmt = noteElmt;
+              noteElement.classList.add("selected");
+              $.noteElement = noteElement;
             }
-            noteElmt.addEventListener("mousedown", () => $.select(noteElmt));
-            groupElmt.appendChild(noteElmt);
+            noteElement.addEventListener("mousedown", () => $.select(noteElement));
+            groupElement.appendChild(noteElement);
           } else {
-            const notesElmt = group.notes.map((note, noteIndex) => {
-              const noteElmt = document.createElement("span");
-              noteElmt.classList.add("note");
+            const notesElement = group.notes.map((note, noteIndex) => {
+              const noteElement = document.createElement("span");
+              noteElement.classList.add("note");
               if (note === selectedNote) {
-                noteElmt.classList.add("selected");
-                $.noteElmt = noteElmt;
+                noteElement.classList.add("selected");
+                $.noteElement = noteElement;
               }
-              noteElmt.appendChild(document.createTextNode(note.string()));
-              noteElmt.addEventListener("mousedown", () => $.select(noteElmt));
-              return noteElmt;
+              noteElement.appendChild(document.createTextNode(note.string()));
+              noteElement.addEventListener("mousedown", () => $.select(noteElement));
+              return noteElement;
             });
-            groupElmt.append(...notesElmt);
+            groupElement.append(...notesElement);
           }
-          return groupElmt;
+          return groupElement;
         });
-        eventElmt.classList.add("event");
+        eventElement.classList.add("event");
         if (event === selectedEvent) {
-          eventElmt.classList.add("selected");
+          eventElement.classList.add("selected");
         }
         switch (event.type) {
-          case "cadence": eventElmt.classList.add("cadence"); break;
-          case "end": eventElmt.classList.add("end"); break;
+          case "cadence": eventElement.classList.add("cadence"); break;
+          case "end": eventElement.classList.add("end"); break;
         }
-        eventElmt.append(...groupsElmt);
-        return eventElmt;
+        eventElement.append(...groupsElement);
+        return eventElement;
       });
-      const barElmt = document.createElement("span");
-      barElmt.classList.add("bar");
-      barElmt.append(...eventsElmt);
-      return barElmt;
+      const barElement = document.createElement("span");
+      barElement.classList.add("bar");
+      barElement.append(...eventsElement);
+      return barElement;
     });
-    const pieceElmt = document.createElement("div");
-    pieceElmt.id = "piece";
-    pieceElmt.append(...barsElmt);
+    const pieceElement = document.createElement("div");
+    pieceElement.id = "piece";
+    pieceElement.append(...barsElement);
 
-    $.boxElmt.innerHTML = "";
-    $.boxElmt.appendChild(pieceElmt);
+    $.boxElement.innerHTML = "";
+    $.boxElement.appendChild(pieceElement);
   },
 
   vexflow(bars) {
@@ -212,25 +212,25 @@ const $ = {
     factory.getContext().resize(x + 40, 240);
   },
 
-  index(elmt) {
-    return Array.prototype.indexOf.call(elmt.parentElement.children, elmt);
+  index(element) {
+    return Array.prototype.indexOf.call(element.parentElement.children, element);
   },
 
-  select(noteElmt) {
-    if (!noteElmt) {
+  select(noteElement) {
+    if (!noteElement) {
       return;
     }
-    $.barIndex = $.index(noteElmt.parentElement.parentElement.parentElement);
-    $.eventIndex = $.index(noteElmt.parentElement.parentElement);
-    $.groupIndex = [$.index(noteElmt.parentElement)];
+    $.barIndex = $.index(noteElement.parentElement.parentElement.parentElement);
+    $.eventIndex = $.index(noteElement.parentElement.parentElement);
+    $.groupIndex = [$.index(noteElement.parentElement)];
     $.part = ["s", "a", "t", "b"][$.groupIndex];
-    $.noteIndex = $.index(noteElmt);
+    $.noteIndex = $.index(noteElement);
 
-    $.noteElmt.parentElement.parentElement.classList.remove("selected");
-    $.noteElmt.classList.remove("selected");
-    $.noteElmt = noteElmt;
-    $.noteElmt.parentElement.parentElement.classList.add("selected");
-    $.noteElmt.classList.add("selected");
+    $.noteElement.parentElement.parentElement.classList.remove("selected");
+    $.noteElement.classList.remove("selected");
+    $.noteElement = noteElement;
+    $.noteElement.parentElement.parentElement.classList.add("selected");
+    $.noteElement.classList.add("selected");
   },
 
   bar() {
@@ -264,7 +264,7 @@ const $ = {
       } catch (error) {
         console.log(error);
         const time = $.piece.maxTime;
-        $.boxElmt.firstElementChild.children[time.barIndex].children[time.eventIndex].classList.add("error");
+        $.boxElement.firstElementChild.children[time.barIndex].children[time.eventIndex].classList.add("error");
         $.vexflow($.piece.cache);
       }
   },
@@ -345,7 +345,7 @@ const $ = {
     if ($.piece.key.accidentals() > -7) {
       $.piece.key.tone = $.piece.key.degree(3);
     }
-    $.keyElmt.innerText = $.piece.key.string();
+    $.keyElement.innerText = $.piece.key.string();
     $.html();
     $.harmonise();
   },
@@ -356,7 +356,7 @@ const $ = {
     } else {
       $.piece.key = new JSB.Key($.piece.key.degree(2), true);
     }
-    $.keyElmt.innerText = $.piece.key.string();
+    $.keyElement.innerText = $.piece.key.string();
     $.html();
     $.harmonise();
   },
@@ -365,14 +365,14 @@ const $ = {
     if ($.piece.key.accidentals() < 7) {
       $.piece.key.tone = $.piece.key.degree(4);
     }
-    $.keyElmt.innerText = $.piece.key.string();
+    $.keyElement.innerText = $.piece.key.string();
     $.html();
     $.harmonise();
   },
 
   toggleAuto() {
     $.auto = !$.auto;
-    $.autoElmt.innerText = "Auto: " + ($.auto ? "on" : "off");
+    $.autoElement.innerText = "Auto: " + ($.auto ? "on" : "off");
     if ($.auto) {
       $.html();
       $.harmonise();
@@ -458,29 +458,29 @@ const $ = {
   },
 
   previousEvent() {
-    const event = $.noteElmt.parentElement.parentElement;
+    const event = $.noteElement.parentElement.parentElement;
     $.select(event.previousElementSibling?.children[$.groupIndex].firstElementChild ?? event.parentElement.previousElementSibling?.lastElementChild.children[$.groupIndex].firstElementChild);
   },
 
   nextEvent() {
-    const event = $.noteElmt.parentElement.parentElement;
+    const event = $.noteElement.parentElement.parentElement;
     $.select(event.nextElementSibling?.children[$.groupIndex].firstElementChild ?? event.parentElement.nextElementSibling?.firstElementChild.children[$.groupIndex].firstElementChild);
   },
 
   up() {
-    $.select($.noteElmt.parentElement.previousElementSibling?.firstElementChild);
+    $.select($.noteElement.parentElement.previousElementSibling?.firstElementChild);
   },
 
   down() {
-    $.select($.noteElmt.parentElement.nextElementSibling?.firstElementChild);
+    $.select($.noteElement.parentElement.nextElementSibling?.firstElementChild);
   },
 
   nextNote() {
-    $.select($.noteElmt.nextElementSibling ?? $.noteElmt.parentElement.firstElementChild);
+    $.select($.noteElement.nextElementSibling ?? $.noteElement.parentElement.firstElementChild);
   },
 
   previousNote() {
-    $.select($.noteElmt.previousElementSibling ?? $.noteElmt.parentElement.lastElementChild);
+    $.select($.noteElement.previousElementSibling ?? $.noteElement.parentElement.lastElementChild);
   },
 
   toggleEventType(type) {
@@ -550,10 +550,10 @@ const $ = {
     document.getElementById("append-bar")?.addEventListener("mousedown", $.appendBar);
     document.addEventListener("keydown", $.keydown);
     document.getElementById("flatten")?.addEventListener("mousedown", $.flattenKey);
-    $.keyElmt.addEventListener("mousedown", $.toggleTonality);
+    $.keyElement.addEventListener("mousedown", $.toggleTonality);
     document.getElementById("sharpen")?.addEventListener("mousedown", $.sharpenKey);
     document.getElementById("harmonise")?.addEventListener("mousedown", $.harmonise);
-    $.autoElmt.addEventListener("mousedown", $.toggleAuto);
+    $.autoElement.addEventListener("mousedown", $.toggleAuto);
   },
 
   init() {
