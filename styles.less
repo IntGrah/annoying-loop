@@ -13,6 +13,7 @@
 @purple4: #b28cda;
 @purple5: #bc7eff;
 @purple6: #9d5ee0;
+@purple7: #9f5ae9;
 @red: #fadbe5;
 
 @shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
@@ -111,6 +112,16 @@ body {
           .event {
             display: flex;
             flex-direction: column;
+            width: fit-content;
+            max-width: 40px;
+            overflow-x: hidden;
+            transition: max-width @fast;
+
+            &.selected,
+            &:hover {
+              max-width: 80px;
+              box-shadow: @shadow;
+            }
 
             &.error {
               box-shadow: @shadow;
@@ -118,18 +129,9 @@ body {
 
             .group {
               display: flex;
-              min-width: 40px;
-              width: 40px;
-              min-height: 40px;
-              overflow-x: hidden;
-              transition: width 1s;
-
-              &:hover {
-                width: fit-content;
-              }
 
               &.multi {
-                font-style: oblique;
+                color: @purple7;
               }
 
               .note {
@@ -139,11 +141,6 @@ body {
                 line-height: 40px;
                 cursor: pointer;
                 transition: background-color @fast;
-
-                &.empty {
-                  font-size: 10px;
-                  font-style: italic;
-                }
 
                 &.selected {
                   background-color: @purple4;

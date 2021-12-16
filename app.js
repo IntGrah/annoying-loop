@@ -31,6 +31,7 @@ const $ = {
   table() {
     const barsHtml = $.piece.cache.map((bar, barIndex) => {
       const eventsHtml = bar.map((event, eventIndex) => {
+        const currentGroup = $.group();
         const groupsHtml = ["s", "a", "t", "b"].map(part => {
           const group = event.get(part);
           const groupHtml = document.createElement("div");
@@ -41,11 +42,9 @@ const $ = {
           if (group.notes.length === 0) {
             const noteHtml = document.createElement("span");
             noteHtml.classList.add("note");
-            noteHtml.classList.add("empty");
-            if (false) {
+            if (group === currentGroup) {
               noteHtml.classList.add("selected");
             }
-            noteHtml.appendChild(document.createTextNode("(empty)"));
             noteHtml.addEventListener("mousedown", () => $.select(barIndex, eventIndex, part, 0));
             groupHtml.appendChild(noteHtml);
           } else {
@@ -66,6 +65,9 @@ const $ = {
         });
         const eventHtml = document.createElement("div");
         eventHtml.classList.add("event");
+        if (barIndex === $.barIndex && eventIndex === $.eventIndex) {
+          eventHtml.classList.add("selected");
+        }
         eventHtml.append(...groupsHtml);
         return eventHtml;
       });
