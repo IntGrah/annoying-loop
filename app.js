@@ -588,7 +588,7 @@ const $ = {
     }
   },
 
-  init() {
+  eventListeners() {
     document.getElementById("delete-bar")?.addEventListener("mousedown", $.deleteBar);
     document.getElementById("delete-event")?.addEventListener("mousedown", $.deleteEvent);
     document.getElementById("append-event")?.addEventListener("mousedown", $.appendEvent);
@@ -599,6 +599,10 @@ const $ = {
     document.getElementById("sharpen")?.addEventListener("mousedown", $.sharpen);
     document.getElementById("harmonise")?.addEventListener("mousedown", $.harmonise);
     $.autoElement.addEventListener("mousedown", $.toggleAuto);
+  },
+
+  init() {
+    $.eventListeners();
     $.table();
     $.harmonise();
     $.render($.piece.bars);
