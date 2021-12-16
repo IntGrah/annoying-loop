@@ -5,7 +5,8 @@
 @grey2: #e3e3e3;
 @grey3: #dedede;
 @grey4: #c7c7c7;
-@grey5: #484848;
+@grey5: #979797;
+@grey6: #484848;
 @white: #ffffff;
 @purple1: #eadbfa;
 @purple2: #e3c8ff;
@@ -22,7 +23,7 @@ body {
   margin: 0;
   background-color: @grey2;
   font-family: sans-serif;
-  color: @grey5;
+  color: @grey6;
   font-size: 14px;
   text-align: center;
   user-select: none;
@@ -115,12 +116,20 @@ body {
             width: fit-content;
             max-width: 40px;
             overflow-x: hidden;
-            transition: max-width @fast;
+            transition: max-width @fast, box-shadow @fast;
 
             &.selected,
             &:hover {
               max-width: 80px;
               box-shadow: @shadow;
+            }
+
+            &.cadence {
+              border-right: 2px dotted @grey5;
+            }
+
+            &.end {
+              border-right: 2px solid @grey5;
             }
 
             &.error {
