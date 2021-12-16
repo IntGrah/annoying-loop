@@ -28,7 +28,7 @@ const $ = {
     8: "1/2",
     12: "1/2"
   },
-  
+
   renderInput() {
     const barsHtml = $.piece.cache.map((bar, barIndex) => {
       const eventsHtml = bar.map((event, eventIndex) => {
@@ -391,6 +391,21 @@ const $ = {
     }
   },
 
+  setLetter(letter) {
+    $.defaultNote().pitch.tone = JSB.Tone.parse(["C", "D", "E", "F", "G", "A", "B"][letter]).alterAccidental($.piece.key.signature()[letter]);
+    $.update(true);
+  },
+
+  setOctave(octave) {
+    $.defaultNote().pitch.octave = octave;
+    $.update(true);
+  },
+
+  alterAccidental(accidental) {
+    $.defaultNote().pitch.tone.alterAccidental(accidental);
+    $.update(true);
+  },
+
   augmentDuration() {
     switch ($.defaultNote().duration) {
       case 0.25:
@@ -536,22 +551,21 @@ const $ = {
           case "Tab": e.preventDefault(); $.previousNote(); break;
         }
       } else {
-        const signature = $.piece.key.signature();
         switch (e.key) {
-          case "a": $.defaultNote().pitch.tone = JSB.Tone.parse("A").alterAccidental(signature[5]); break;
-          case "b": $.defaultNote().pitch.tone = JSB.Tone.parse("B").alterAccidental(signature[6]); break;
-          case "c": $.defaultNote().pitch.tone = JSB.Tone.parse("C").alterAccidental(signature[0]); break;
-          case "d": $.defaultNote().pitch.tone = JSB.Tone.parse("D").alterAccidental(signature[1]); break;
-          case "e": $.defaultNote().pitch.tone = JSB.Tone.parse("E").alterAccidental(signature[2]); break;
-          case "f": $.defaultNote().pitch.tone = JSB.Tone.parse("F").alterAccidental(signature[3]); break;
-          case "g": $.defaultNote().pitch.tone = JSB.Tone.parse("G").alterAccidental(signature[4]); break;
-          case "1": $.defaultNote().pitch.octave = 1; break;
-          case "2": $.defaultNote().pitch.octave = 2; break;
-          case "3": $.defaultNote().pitch.octave = 3; break;
-          case "4": $.defaultNote().pitch.octave = 4; break;
-          case "5": $.defaultNote().pitch.octave = 5; break;
-          case "#": $.defaultNote().pitch.tone.alterAccidental(1); break;
-          case "'": $.defaultNote().pitch.tone.alterAccidental(-1); break;
+          case "a": $.setLetter(5); break;
+          case "b": $.setLetter(6); break;
+          case "c": $.setLetter(0); break;
+          case "d": $.setLetter(1); break;
+          case "e": $.setLetter(2); break;
+          case "f": $.setLetter(3); break;
+          case "g": $.setLetter(4); break;
+          case "1": $.setOctave(1); break;
+          case "2": $.setOctave(2); break;
+          case "3": $.setOctave(3); break;
+          case "4": $.setOctave(4); break;
+          case "5": $.setOctave(5); break;
+          case "#": $.alterAccidental(1); break;
+          case "'": $.alterAccidental(-1); break;
           case ",": $.augmentDuration(); break;
           case ".": $.toggleDot(); break;
           case "/": $.diminishDuration(); break;
@@ -569,29 +583,15 @@ const $ = {
   },
 
   init() {
-    document
-      .getElementById("delete-bar")
-      ?.addEventListener("mousedown", $.deleteBar);
-    document
-      .getElementById("delete-event")
-      ?.addEventListener("mousedown", $.deleteEvent);
-    document
-      .getElementById("append-event")
-      ?.addEventListener("mousedown", $.appendEvent);
-    document
-      .getElementById("append-bar")
-      ?.addEventListener("mousedown", $.appendBar);
+    document.getElementById("delete-bar")?.addEventListener("mousedown", $.deleteBar);
+    document.getElementById("delete-event")?.addEventListener("mousedown", $.deleteEvent);
+    document.getElementById("append-event")?.addEventListener("mousedown", $.appendEvent);
+    document.getElementById("append-bar")?.addEventListener("mousedown", $.appendBar);
     document.addEventListener("keydown", $.keydown);
-    document
-      .getElementById("flatten")
-      ?.addEventListener("mousedown", $.flatten);
+    document.getElementById("flatten")?.addEventListener("mousedown", $.flatten);
     $.keyElement.addEventListener("mousedown", $.toggleTonality);
-    document
-      .getElementById("sharpen")
-      ?.addEventListener("mousedown", $.sharpen);
-    document
-      .getElementById("harmonise")
-      ?.addEventListener("mousedown", $.harmonise);
+    document.getElementById("sharpen")?.addEventListener("mousedown", $.sharpen);
+    document.getElementById("harmonise")?.addEventListener("mousedown", $.harmonise);
     $.autoElement.addEventListener("mousedown", $.toggleAuto);
     $.renderInput();
     $.harmonise();
