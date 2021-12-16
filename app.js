@@ -11,9 +11,9 @@ const $ = {
   groupIndex: 0,
   part: "s",
   noteIndex: 0,
+  noteElement: null,
   auto: true,
-  noteElement: undefined,
-  boxElement: document.getElementById("piece-box"),
+  pieceBoxElement: document.getElementById("piece-box"),
   keyElement: document.getElementById("key"),
   autoElement: document.getElementById("auto"),
   durations: {
@@ -29,16 +29,27 @@ const $ = {
     8: "1/2",
     12: "1/2"
   },
-  mousedown: new MouseEvent("mousedown"),
 
   html() {
     const selectedEvent = $.event();
     const selectedGroup = $.group();
     const selectedNote = $.note();
-    const barsElement = $.piece.cache.map((bar, barIndex) => {
-      const eventsElement = bar.map((event, eventIndex) => {
+    const pieceElement = document.createElement("div");
+    pieceElement.id = "piece";
+    for (const bar of $.piece.cache) {
+      const barElement = document.createElement("span");
+      barElement.classList.add("bar");
+      for (const event of bar) {
         const eventElement = document.createElement("div");
-        const groupsElement = ["s", "a", "t", "b"].map(part => {
+        eventElement.classList.add("event");
+        if (event === selectedEvent) {
+          eventElement.classList.add("selected");
+        }
+        switch (event.type) {
+          case "cadence": eventElement.classList.add("cadence"); break;
+          case "end": eventElement.classList.add("end"); break;
+        }
+        for (const part of ["s", "a", "t", "b"]) {
           const group = event.get(part);
           const groupElement = document.createElement("div");
           groupElement.classList.add("group");
@@ -55,7 +66,7 @@ const $ = {
             noteElement.addEventListener("mousedown", () => $.select(noteElement));
             groupElement.appendChild(noteElement);
           } else {
-            const notesElement = group.notes.map((note, noteIndex) => {
+            for (const note of group.notes) {
               const noteElement = document.createElement("span");
               noteElement.classList.add("note");
               if (note === selectedNote) {
@@ -64,34 +75,18 @@ const $ = {
               }
               noteElement.appendChild(document.createTextNode(note.string()));
               noteElement.addEventListener("mousedown", () => $.select(noteElement));
-              return noteElement;
-            });
-            groupElement.append(...notesElement);
+              groupElement.appendChild(noteElement);
+            }
           }
-          return groupElement;
-        });
-        eventElement.classList.add("event");
-        if (event === selectedEvent) {
-          eventElement.classList.add("selected");
+          eventElement.appendChild(groupElement);
         }
-        switch (event.type) {
-          case "cadence": eventElement.classList.add("cadence"); break;
-          case "end": eventElement.classList.add("end"); break;
-        }
-        eventElement.append(...groupsElement);
-        return eventElement;
-      });
-      const barElement = document.createElement("span");
-      barElement.classList.add("bar");
-      barElement.append(...eventsElement);
-      return barElement;
-    });
-    const pieceElement = document.createElement("div");
-    pieceElement.id = "piece";
-    pieceElement.append(...barsElement);
+        barElement.appendChild(eventElement);
+      }
+      pieceElement.appendChild(barElement);
+    }
 
-    $.boxElement.innerHTML = "";
-    $.boxElement.appendChild(pieceElement);
+    $.pieceBoxElement.innerHTML = "";
+    $.pieceBoxElement.appendChild(pieceElement);
   },
 
   vexflow(bars) {
@@ -171,9 +166,7 @@ const $ = {
 
       const vfTime = {
         time: {
-          num_beats: bar
-            .map(event => event.duration())
-            .reduce((l, r) => l + r),
+          num_beats: bar.map(event => event.duration()).reduce((l, r) => l + r),
           beat_value: 4,
         },
       };
@@ -264,7 +257,7 @@ const $ = {
       } catch (error) {
         console.log(error);
         const time = $.piece.maxTime;
-        $.boxElement.firstElementChild.children[time.barIndex].children[time.eventIndex].classList.add("error");
+        $.pieceBoxElement.firstElementChild.children[time.barIndex].children[time.eventIndex].classList.add("error");
         $.vexflow($.piece.cache);
       }
   },
@@ -272,33 +265,27 @@ const $ = {
   deleteEvent() {
     const bar = $.bar();
     if (bar.length > 1) {
+      const eventElement = $.noteElement.parentElement.parentElement;
+      const newNoteElement = eventElement.previousElementSibling?.children[$.groupIndex].firstElementChild ?? eventElement.nextElementSibling.children[$.groupIndex].firstElementChild;
       bar.splice($.eventIndex, 1);
-      if (--$.eventIndex < 0) {
-        $.eventIndex = 0;
-      }
-    } else if ($.piece.cache.length > 1) {
-      $.piece.cache.splice($.barIndex, 1);
-      if (--$.barIndex < 0) {
-        $.barIndex = 0;
-      }
-      $.eventIndex = 0;
+      eventElement.remove();
+      $.select(newNoteElement)
+      $.harmonise();
+    } else {
+      $.deleteBar();
     }
-    $.noteIndex = 0;
-    $.html();
-    $.harmonise();
   },
 
   deleteBar() {
-    if ($.piece.cache.length > 1) {
-      $.piece.cache.splice($.barIndex, 1);
-      if (--$.barIndex < 0) {
-        $.barIndex = 0;
-      }
-      $.eventIndex = 0;
-      $.noteIndex = 0;
-      $.html();
-      $.harmonise();
+    if ($.piece.cache.length === 1) {
+      return;
     }
+    const barElement = $.noteElement.parentElement.parentElement.parentElement;
+    const newNoteElement = barElement.previousElementSibling?.lastElementChild.children[$.groupIndex].firstElementChild ?? barElement.nextElementSibling.firstElementChild.children[$.groupIndex].firstElementChild;
+    $.piece.cache.splice($.barIndex, 1);
+    barElement.remove();
+    $.select(newNoteElement)
+    $.harmonise();
   },
 
   appendEvent() {
@@ -346,7 +333,6 @@ const $ = {
       $.piece.key.tone = $.piece.key.degree(3);
     }
     $.keyElement.innerText = $.piece.key.string();
-    $.html();
     $.harmonise();
   },
 
@@ -357,7 +343,6 @@ const $ = {
       $.piece.key = new JSB.Key($.piece.key.degree(2), true);
     }
     $.keyElement.innerText = $.piece.key.string();
-    $.html();
     $.harmonise();
   },
 
@@ -366,7 +351,6 @@ const $ = {
       $.piece.key.tone = $.piece.key.degree(4);
     }
     $.keyElement.innerText = $.piece.key.string();
-    $.html();
     $.harmonise();
   },
 
@@ -374,7 +358,6 @@ const $ = {
     $.auto = !$.auto;
     $.autoElement.innerText = "Auto: " + ($.auto ? "on" : "off");
     if ($.auto) {
-      $.html();
       $.harmonise();
     }
   },
@@ -387,21 +370,30 @@ const $ = {
 
   setOctave(octave) {
     const note = $.note();
-    if (note) {
-      note.pitch.octave = octave;
-      $.html();
-      $.harmonise();
+    if (!note) {
+      return;
     }
+    note.pitch.octave = octave;
+    $.noteElement.innerText = note.string();
+    $.harmonise();
   },
 
   alterAccidental(accidental) {
-    $.defaultNote().pitch.tone.alterAccidental(accidental);
-    $.html();
+    const note = $.note();
+    if (!note) {
+      return;
+    }
+    note.pitch.tone.alterAccidental(accidental);
+    $.noteElement.innerText = note.string();
     $.harmonise();
   },
 
   augmentDuration() {
-    switch ($.defaultNote().duration) {
+    const note = $.note();
+    if (!note) {
+      return;
+    }
+    switch (note.duration) {
       case 0.25:
       case 0.5:
       case 0.75:
@@ -411,36 +403,45 @@ const $ = {
       case 3:
       case 4:
       case 6:
-        $.defaultNote().duration *= 2;
+        note.duration *= 2;
+        $.noteElement.innerText = note.string();
         break;
     }
-    $.html();
     $.harmonise();
   },
 
   toggleDot() {
-    switch ($.defaultNote().duration) {
+    const note = $.note();
+    if (!note) {
+      return;
+    }
+    switch (note.duration) {
       case 0.5:
       case 1:
       case 2:
       case 4:
       case 8:
-        $.defaultNote().duration *= 1.5;
+        note.duration *= 1.5;
+        $.noteElement.innerText = note.string();
         break;
       case 0.75:
       case 1.5:
       case 3:
       case 6:
       case 12:
-        $.defaultNote().duration /= 1.5;
+        note.duration /= 1.5;
+        $.noteElement.innerText = note.string();
         break;
     }
-    $.html();
     $.harmonise();
   },
 
   diminishDuration() {
-    switch ($.defaultNote().duration) {
+    const note = $.note();
+    if (!note) {
+      return;
+    }
+    switch (note.duration) {
       case 0.5:
       case 1:
       case 1.5:
@@ -450,21 +451,21 @@ const $ = {
       case 6:
       case 8:
       case 12:
-        $.defaultNote().duration *= 0.5;
+        note.duration *= 0.5;
+        $.noteElement.innerText = note.string();
         break;
     }
-    $.html();
     $.harmonise();
   },
 
   previousEvent() {
-    const event = $.noteElement.parentElement.parentElement;
-    $.select(event.previousElementSibling?.children[$.groupIndex].firstElementChild ?? event.parentElement.previousElementSibling?.lastElementChild.children[$.groupIndex].firstElementChild);
+    const eventElement = $.noteElement.parentElement.parentElement;
+    $.select(eventElement.previousElementSibling?.children[$.groupIndex].firstElementChild ?? eventElement.parentElement.previousElementSibling?.lastElementChild.children[$.groupIndex].firstElementChild);
   },
 
   nextEvent() {
-    const event = $.noteElement.parentElement.parentElement;
-    $.select(event.nextElementSibling?.children[$.groupIndex].firstElementChild ?? event.parentElement.nextElementSibling?.firstElementChild.children[$.groupIndex].firstElementChild);
+    const eventEvent = $.noteElement.parentElement.parentElement;
+    $.select(eventEvent.nextElementSibling?.children[$.groupIndex].firstElementChild ?? eventEvent.parentElement.nextElementSibling?.firstElementChild.children[$.groupIndex].firstElementChild);
   },
 
   up() {
@@ -485,12 +486,16 @@ const $ = {
 
   toggleEventType(type) {
     const event = $.event();
-    if (event.type === "normal") {
-      event.type = { ";": "cadence", ":": "end" }[type];
-    } else {
+    const classList = $.noteElement.parentElement.parentElement.classList;
+    if (event.type === type) {
+      classList.remove(event.type);
       event.type = "normal";
+      classList.add("normal");
+    } else {
+      classList.remove(event.type);
+      event.type = type;
+      classList.add(type);
     }
-    $.html();
     $.harmonise();
   },
 
@@ -508,7 +513,7 @@ const $ = {
       if (e.shiftKey) {
         switch (e.key) {
           case "Tab": e.preventDefault(); $.previousNote(); break;
-          case ":": $.toggleEventType(":"); break;
+          case ":": $.toggleEventType("end"); break;
         }
       } else {
         switch (e.key) {
@@ -537,7 +542,7 @@ const $ = {
           case "Enter": $.appendEvent(); break;
           case "Backspace": $.deleteEvent(); break;
           case "Delete": $.clearGroup(); break;
-          case ";": $.toggleEventType(";"); break;
+          case ";": $.toggleEventType("cadence"); break;
         }
       }
     }
