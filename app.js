@@ -3,12 +3,28 @@ const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
 const score = factory.EasyScore();
 
 const $ = {
-  VERSION: "1.0.3",
+  VERSION: "1.0.4",
   durations: { 0.25: "16", 0.5: "8", 0.75: "8", 1: "4", 1.5: "4", 2: "2", 3: "2", 4: "1", 6: "1", 8: "1/2", 12: "1/2" },
 
   HTML: {
     index(element) {
       return Array.prototype.indexOf.call(element.parentElement.children, element);
+    },
+
+    select(noteElement) {
+      if (!noteElement) {
+        return;
+      }
+      $.JSB.barIndex = $.HTML.index(noteElement.parentElement.parentElement.parentElement);
+      $.JSB.eventIndex = $.HTML.index(noteElement.parentElement.parentElement);
+      $.JSB.groupIndex = [$.HTML.index(noteElement.parentElement)];
+      $.JSB.noteIndex = $.HTML.index(noteElement);
+  
+      $.noteElement.parentElement.parentElement.classList.remove("selected");
+      $.noteElement.classList.remove("selected");
+      $.noteElement = noteElement;
+      $.noteElement.parentElement.parentElement.classList.add("selected");
+      $.noteElement.classList.add("selected");
     },
 
     createPiece(children) {
@@ -61,7 +77,7 @@ const $ = {
         $.noteElement = element;
       }
       element.appendChild(document.createTextNode(string));
-      element.addEventListener("mousedown", () => $.select(element));
+      element.addEventListener("mousedown", () => $.HTML.select(element));
       return element;
     },
 
@@ -250,22 +266,6 @@ const $ = {
     }
   },
 
-  select(noteElement) {
-    if (!noteElement) {
-      return;
-    }
-    $.JSB.barIndex = $.HTML.index(noteElement.parentElement.parentElement.parentElement);
-    $.JSB.eventIndex = $.HTML.index(noteElement.parentElement.parentElement);
-    $.JSB.groupIndex = [$.HTML.index(noteElement.parentElement)];
-    $.JSB.noteIndex = $.HTML.index(noteElement);
-
-    $.noteElement.parentElement.parentElement.classList.remove("selected");
-    $.noteElement.classList.remove("selected");
-    $.noteElement = noteElement;
-    $.noteElement.parentElement.parentElement.classList.add("selected");
-    $.noteElement.classList.add("selected");
-  },
-
   manage: {
     deleteEvent() {
       const bar = $.JSB.getBar();
@@ -274,7 +274,7 @@ const $ = {
         const newNoteElement = eventElement.previousElementSibling?.children[$.JSB.groupIndex].firstElementChild ?? eventElement.nextElementSibling.children[$.JSB.groupIndex].firstElementChild;
         bar.splice($.JSB.eventIndex, 1);
         eventElement.remove();
-        $.select(newNoteElement)
+        $.HTML.select(newNoteElement)
         $.JSB.harmonise();
       } else {
         $.manage.deleteBar();
@@ -289,7 +289,7 @@ const $ = {
       const newNoteElement = barElement.previousElementSibling?.lastElementChild.children[$.JSB.groupIndex].firstElementChild ?? barElement.nextElementSibling.firstElementChild.children[$.JSB.groupIndex].firstElementChild;
       $.JSB.piece.cache.splice($.JSB.barIndex, 1);
       barElement.remove();
-      $.select(newNoteElement)
+      $.HTML.select(newNoteElement)
       $.JSB.harmonise();
     },
 
@@ -302,7 +302,7 @@ const $ = {
         $.HTML.createGroup([], false),
       ], true, "normal");
       $.noteElement.parentElement.parentElement.insertAdjacentElement("afterend", eventElement);
-      $.select(eventElement.children[$.JSB.groupIndex].firstElementChild);
+      $.HTML.select(eventElement.children[$.JSB.groupIndex].firstElementChild);
       $.JSB.harmonise();
     },
 
@@ -315,7 +315,7 @@ const $ = {
         $.HTML.createGroup([], false),
       ], true, "normal")]);
       $.noteElement.parentElement.parentElement.parentElement.insertAdjacentElement("afterend", barElement);
-      $.select(barElement.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
+      $.HTML.select(barElement.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
       $.JSB.harmonise();
     },
 
@@ -325,7 +325,7 @@ const $ = {
       const groupElement = $.noteElement.parentElement;
       groupElement.innerHTML = "";
       groupElement.appendChild($.HTML.createNote("", true));
-      $.select(groupElement.firstElementChild);
+      $.HTML.select(groupElement.firstElementChild);
       $.JSB.harmonise();
     },
 
@@ -367,14 +367,6 @@ const $ = {
       if ($.JSB.piece.key.accidentals() < 7) {
         $.JSB.piece.key.tone = $.JSB.piece.key.degree(4);
       }
-      $.JSB.harmonise();
-    }
-  },
-
-  toggleAuto(element) {
-    $.auto = !$.auto;
-    element.innerText = "Auto: " + ($.auto ? "on" : "off");
-    if ($.auto) {
       $.JSB.harmonise();
     }
   },
@@ -484,28 +476,36 @@ const $ = {
   location: {
     previousEvent() {
       const eventElement = $.noteElement.parentElement.parentElement;
-      $.select(eventElement.previousElementSibling?.children[$.JSB.groupIndex].firstElementChild ?? eventElement.parentElement.previousElementSibling?.lastElementChild.children[$.JSB.groupIndex].firstElementChild);
+      $.HTML.select(eventElement.previousElementSibling?.children[$.JSB.groupIndex].firstElementChild ?? eventElement.parentElement.previousElementSibling?.lastElementChild.children[$.JSB.groupIndex].firstElementChild);
     },
 
     nextEvent() {
       const eventEvent = $.noteElement.parentElement.parentElement;
-      $.select(eventEvent.nextElementSibling?.children[$.JSB.groupIndex].firstElementChild ?? eventEvent.parentElement.nextElementSibling?.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
+      $.HTML.select(eventEvent.nextElementSibling?.children[$.JSB.groupIndex].firstElementChild ?? eventEvent.parentElement.nextElementSibling?.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
     },
 
     abovePart() {
-      $.select($.noteElement.parentElement.previousElementSibling?.firstElementChild);
+      $.HTML.select($.noteElement.parentElement.previousElementSibling?.firstElementChild);
     },
 
     belowPart() {
-      $.select($.noteElement.parentElement.nextElementSibling?.firstElementChild);
+      $.HTML.select($.noteElement.parentElement.nextElementSibling?.firstElementChild);
     },
 
     previousNote() {
-      $.select($.noteElement.previousElementSibling ?? $.noteElement.parentElement.lastElementChild);
+      $.HTML.select($.noteElement.previousElementSibling ?? $.noteElement.parentElement.lastElementChild);
     },
 
     nextNote() {
-      $.select($.noteElement.nextElementSibling ?? $.noteElement.parentElement.firstElementChild);
+      $.HTML.select($.noteElement.nextElementSibling ?? $.noteElement.parentElement.firstElementChild);
+    }
+  },
+
+  toggleAuto(element) {
+    $.auto = !$.auto;
+    element.innerText = "Auto: " + ($.auto ? "on" : "off");
+    if ($.auto) {
+      $.JSB.harmonise();
     }
   },
 
