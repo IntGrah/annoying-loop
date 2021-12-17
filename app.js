@@ -3,7 +3,7 @@ const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
 const score = factory.EasyScore();
 
 const $ = {
-  VERSION: "1.0.0",
+  VERSION: "1.0.1",
   piece: new JSB.Piece().setKey(JSB.Key.parse("A major"))
     .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_;|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4;]", "s")
     .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_;|G#2 F#2 E2 G#2/ A2/|B2 B2 E3;]", "b"),
@@ -146,7 +146,7 @@ const $ = {
               vfNote.addDot(0);
             }
             if (part === "s" && event.type === "cadence") {
-              vfNote.addArticulation(0, new VF.Articulation("a@a"));
+              vfNote.addArticulation(0, new VF.Articulation("a@"));
             }
             return vfNote;
           });
