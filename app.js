@@ -3,7 +3,7 @@ const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
 const score = factory.EasyScore();
 
 const $ = {
-  VERSION: "1.0.2",
+  VERSION: "1.0.3",
   durations: { 0.25: "16", 0.5: "8", 0.75: "8", 1: "4", 1.5: "4", 2: "2", 3: "2", 4: "1", 6: "1", 8: "1/2", 12: "1/2" },
 
   HTML: {
@@ -221,8 +221,8 @@ const $ = {
       return $.JSB.getGroup().notes[$.JSB.noteIndex];
     },
 
-    harmonise() {
-      if (!$.auto) {
+    harmonise(force = false) {
+      if (!force && !$.auto) {
         return;
       }
       try {
@@ -266,66 +266,83 @@ const $ = {
     $.noteElement.classList.add("selected");
   },
 
-  deleteEvent() {
-    const bar = $.JSB.getBar();
-    if (bar.length > 1) {
-      const eventElement = $.noteElement.parentElement.parentElement;
-      const newNoteElement = eventElement.previousElementSibling?.children[$.JSB.groupIndex].firstElementChild ?? eventElement.nextElementSibling.children[$.JSB.groupIndex].firstElementChild;
-      bar.splice($.JSB.eventIndex, 1);
-      eventElement.remove();
+  manage: {
+    deleteEvent() {
+      const bar = $.JSB.getBar();
+      if (bar.length > 1) {
+        const eventElement = $.noteElement.parentElement.parentElement;
+        const newNoteElement = eventElement.previousElementSibling?.children[$.JSB.groupIndex].firstElementChild ?? eventElement.nextElementSibling.children[$.JSB.groupIndex].firstElementChild;
+        bar.splice($.JSB.eventIndex, 1);
+        eventElement.remove();
+        $.select(newNoteElement)
+        $.JSB.harmonise();
+      } else {
+        $.manage.deleteBar();
+      }
+    },
+
+    deleteBar() {
+      if ($.JSB.piece.cache.length === 1) {
+        return;
+      }
+      const barElement = $.noteElement.parentElement.parentElement.parentElement;
+      const newNoteElement = barElement.previousElementSibling?.lastElementChild.children[$.JSB.groupIndex].firstElementChild ?? barElement.nextElementSibling.firstElementChild.children[$.JSB.groupIndex].firstElementChild;
+      $.JSB.piece.cache.splice($.JSB.barIndex, 1);
+      barElement.remove();
       $.select(newNoteElement)
       $.JSB.harmonise();
-    } else {
-      $.deleteBar();
+    },
+
+    appendEvent() {
+      $.JSB.getBar().splice($.JSB.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"));
+      const eventElement = $.HTML.createEvent([
+        $.HTML.createGroup([], false),
+        $.HTML.createGroup([], false),
+        $.HTML.createGroup([], false),
+        $.HTML.createGroup([], false),
+      ], true, "normal");
+      $.noteElement.parentElement.parentElement.insertAdjacentElement("afterend", eventElement);
+      $.select(eventElement.children[$.JSB.groupIndex].firstElementChild);
+      $.JSB.harmonise();
+    },
+
+    appendBar() {
+      $.JSB.piece.cache.splice($.JSB.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"),]);
+      const barElement = $.HTML.createBar([$.HTML.createEvent([
+        $.HTML.createGroup([], false),
+        $.HTML.createGroup([], false),
+        $.HTML.createGroup([], false),
+        $.HTML.createGroup([], false),
+      ], true, "normal")]);
+      $.noteElement.parentElement.parentElement.parentElement.insertAdjacentElement("afterend", barElement);
+      $.select(barElement.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
+      $.JSB.harmonise();
+    },
+
+    clearGroup() {
+      $.JSB.getGroup().index = 0;
+      $.JSB.getGroup().notes = [];
+      const groupElement = $.noteElement.parentElement;
+      groupElement.innerHTML = "";
+      groupElement.appendChild($.HTML.createNote("", true));
+      $.select(groupElement.firstElementChild);
+      $.JSB.harmonise();
+    },
+
+    toggleEventType(type) {
+      const event = $.JSB.getEvent();
+      const classList = $.noteElement.parentElement.parentElement.classList;
+      if (event.type === type) {
+        classList.remove(event.type);
+        event.type = "normal";
+        classList.add("normal");
+      } else {
+        classList.remove(event.type);
+        event.type = type;
+        classList.add(type);
+      }
+      $.JSB.harmonise();
     }
-  },
-
-  deleteBar() {
-    if ($.JSB.piece.cache.length === 1) {
-      return;
-    }
-    const barElement = $.noteElement.parentElement.parentElement.parentElement;
-    const newNoteElement = barElement.previousElementSibling?.lastElementChild.children[$.JSB.groupIndex].firstElementChild ?? barElement.nextElementSibling.firstElementChild.children[$.JSB.groupIndex].firstElementChild;
-    $.JSB.piece.cache.splice($.JSB.barIndex, 1);
-    barElement.remove();
-    $.select(newNoteElement)
-    $.JSB.harmonise();
-  },
-
-  appendEvent() {
-    $.JSB.getBar().splice($.JSB.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"));
-    const eventElement = $.HTML.createEvent([
-      $.HTML.createGroup([], false),
-      $.HTML.createGroup([], false),
-      $.HTML.createGroup([], false),
-      $.HTML.createGroup([], false),
-    ], true, "normal");
-    $.noteElement.parentElement.parentElement.insertAdjacentElement("afterend", eventElement);
-    $.select(eventElement.children[$.JSB.groupIndex].firstElementChild);
-    $.JSB.harmonise();
-  },
-
-  appendBar() {
-    $.JSB.piece.cache.splice($.JSB.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"),]);
-    const barElement = $.HTML.createBar([$.HTML.createEvent([
-      $.HTML.createGroup([], false),
-      $.HTML.createGroup([], false),
-      $.HTML.createGroup([], false),
-      $.HTML.createGroup([], false),
-    ], true, "normal")]);
-    $.noteElement.parentElement.parentElement.parentElement.insertAdjacentElement("afterend", barElement);
-    $.select(barElement.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
-    $.JSB.harmonise();
-  },
-
-  clearGroup() {
-    $.JSB.getGroup().index = 0;
-    $.JSB.getGroup().notes = [];
-    const groupElement = $.noteElement.parentElement;
-    groupElement.innerHTML = "";
-    groupElement.appendChild($.HTML.createNote("", true));
-    $.select(groupElement.firstElementChild);
-    $.JSB.harmonise();
   },
 
   key: {
@@ -492,36 +509,21 @@ const $ = {
     }
   },
 
-  toggleEventType(type) {
-    const event = $.JSB.getEvent();
-    const classList = $.noteElement.parentElement.parentElement.classList;
-    if (event.type === type) {
-      classList.remove(event.type);
-      event.type = "normal";
-      classList.add("normal");
-    } else {
-      classList.remove(event.type);
-      event.type = type;
-      classList.add(type);
-    }
-    $.JSB.harmonise();
-  },
-
   keydown(e) {
     if (e.ctrlKey) {
       if (e.shiftKey) {
         //
       } else {
         switch (e.key) {
-          case "Enter": $.appendBar(); break;
-          case "Backspace": $.deleteBar(); break;
+          case "Enter": $.manage.appendBar(); break;
+          case "Backspace": $.manage.deleteBar(); break;
         }
       }
     } else {
       if (e.shiftKey) {
         switch (e.key) {
           case "Tab": e.preventDefault(); $.location.previousNote(); break;
-          case ":": $.toggleEventType("end"); break;
+          case ":": $.manage.toggleEventType("end"); break;
         }
       } else {
         switch (e.key) {
@@ -547,10 +549,10 @@ const $ = {
           case "ArrowUp": e.preventDefault(); $.location.abovePart(); break;
           case "ArrowDown": e.preventDefault(); $.location.belowPart(); break;
           case "Tab": e.preventDefault(); $.location.nextNote(); break;
-          case "Enter": $.appendEvent(); break;
-          case "Backspace": $.deleteEvent(); break;
-          case "Delete": $.clearGroup(); break;
-          case ";": $.toggleEventType("cadence"); break;
+          case "Enter": $.manage.appendEvent(); break;
+          case "Backspace": $.manage.deleteEvent(); break;
+          case "Delete": $.manage.clearGroup(); break;
+          case ";": $.manage.toggleEventType("cadence"); break;
         }
       }
     }
@@ -558,14 +560,14 @@ const $ = {
 
   initEventListeners() {
     document.addEventListener("keydown", $.keydown);
-    document.getElementById("delete-bar").addEventListener("mousedown", $.deleteBar);
-    document.getElementById("delete-event").addEventListener("mousedown", $.deleteEvent);
-    document.getElementById("append-event").addEventListener("mousedown", $.appendEvent);
-    document.getElementById("append-bar").addEventListener("mousedown", $.appendBar);
+    document.getElementById("delete-bar").addEventListener("mousedown", $.manage.deleteBar);
+    document.getElementById("delete-event").addEventListener("mousedown", $.manage.deleteEvent);
+    document.getElementById("append-event").addEventListener("mousedown", $.manage.appendEvent);
+    document.getElementById("append-bar").addEventListener("mousedown", $.manage.appendBar);
     document.getElementById("flatten").addEventListener("mousedown", $.key.flatten);
     document.getElementById("key").addEventListener("mousedown", function () { $.key.toggleTonality(this); });
     document.getElementById("sharpen").addEventListener("mousedown", $.key.sharpen);
-    document.getElementById("harmonise").addEventListener("mousedown", $.JSB.harmonise);
+    document.getElementById("harmonise").addEventListener("mousedown", () => $.JSB.harmonise(true));
     document.getElementById("auto").addEventListener("mousedown", function () { $.toggleAuto(this) });
   },
 
@@ -581,3 +583,17 @@ const $ = {
 };
 
 $.init();
+console.log(
+  "%cJSB%cHarmoniser",
+  `padding: 5px;
+border-radius: 5px;
+color: #000000;
+background-image: linear-gradient(to right, #9d5ee0, #bc7eff);
+font-size: 20px;`,
+  `margin: 5px;
+padding: 5px;
+border-radius: 2px;
+color: #000000;
+background-image: linear-gradient(to right, #d3a9ff, #ffffff);
+  `
+);
