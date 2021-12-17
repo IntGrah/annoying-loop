@@ -96,7 +96,7 @@ body {
       background-color: @grey1;
       overflow-x: auto;
 
-      #piece {
+      .piece {
         display: flex;
 
         .bar {
@@ -116,12 +116,13 @@ body {
             width: fit-content;
             max-width: 40px;
             overflow-x: hidden;
-            transition: max-width @fast, box-shadow @fast;
+            transition: max-width @slow, box-shadow @slow;
 
             &.selected,
             &:hover {
               max-width: 80px;
               box-shadow: @shadow;
+              z-index: 0;
             }
 
             &.cadence {
