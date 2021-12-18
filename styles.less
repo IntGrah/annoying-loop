@@ -140,8 +140,12 @@ body {
             .group {
               display: flex;
 
-              &.multi {
-                color: @purple7;
+              &.multi .note {
+                font-style: italic;
+
+                &:not(.main) {
+                  color: @grey5;
+                }
               }
 
               .note {

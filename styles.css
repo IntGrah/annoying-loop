@@ -144,8 +144,11 @@ body #left #piece-box .piece .bar .event.error {
 body #left #piece-box .piece .bar .event .group {
   display: flex;
 }
-body #left #piece-box .piece .bar .event .group.multi {
-  color: #9f5ae9;
+body #left #piece-box .piece .bar .event .group.multi .note {
+  font-style: italic;
+}
+body #left #piece-box .piece .bar .event .group.multi .note:not(.main) {
+  color: #979797;
 }
 body #left #piece-box .piece .bar .event .group .note {
   width: 100%;
