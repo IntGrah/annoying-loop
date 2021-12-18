@@ -294,7 +294,7 @@ const $ = {
     },
 
     appendEvent() {
-      $.JSB.getBar().splice($.JSB.eventIndex, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"));
+      $.JSB.getBar().splice($.JSB.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"));
       const eventElement = $.HTML.createEvent([
         $.HTML.createGroup([], false),
         $.HTML.createGroup([], false),
@@ -307,7 +307,7 @@ const $ = {
     },
 
     appendBar() {
-      $.JSB.piece.cache.splice($.JSB.barIndex, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"),]);
+      $.JSB.piece.cache.splice($.JSB.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"),]);
       const barElement = $.HTML.createBar([$.HTML.createEvent([
         $.HTML.createGroup([], false),
         $.HTML.createGroup([], false),
