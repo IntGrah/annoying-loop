@@ -350,16 +350,17 @@ const $ = {
       if ($.JSB.piece.key.accidentals() > -7) {
         $.JSB.piece.key.tone = $.JSB.piece.key.degree(3);
       }
+      $.keyElement.innerText = $.JSB.piece.key.string();
       $.JSB.harmonise();
     },
 
-    toggleTonality(element) {
+    toggleTonality() {
       if ($.JSB.piece.key.tonality) {
         $.JSB.piece.key = new JSB.Key($.JSB.piece.key.degree(5), false);
       } else {
         $.JSB.piece.key = new JSB.Key($.JSB.piece.key.degree(2), true);
       }
-      element.innerText = $.JSB.piece.key.string();
+      $.keyElement.innerText = $.JSB.piece.key.string();
       $.JSB.harmonise();
     },
 
@@ -367,6 +368,7 @@ const $ = {
       if ($.JSB.piece.key.accidentals() < 7) {
         $.JSB.piece.key.tone = $.JSB.piece.key.degree(4);
       }
+      $.keyElement.innerText = $.JSB.piece.key.string();
       $.JSB.harmonise();
     }
   },
@@ -565,7 +567,7 @@ const $ = {
     document.getElementById("append-event").addEventListener("mousedown", $.manage.appendEvent);
     document.getElementById("append-bar").addEventListener("mousedown", $.manage.appendBar);
     document.getElementById("flatten").addEventListener("mousedown", $.key.flatten);
-    document.getElementById("key").addEventListener("mousedown", function () { $.key.toggleTonality(this); });
+    $.keyElement.addEventListener("mousedown",$.key.toggleTonality);
     document.getElementById("sharpen").addEventListener("mousedown", $.key.sharpen);
     document.getElementById("harmonise").addEventListener("mousedown", () => $.JSB.harmonise(true));
     document.getElementById("auto").addEventListener("mousedown", function () { $.toggleAuto(this) });
@@ -575,6 +577,7 @@ const $ = {
     $.JSB.init();
     $.noteElement = undefined;
     $.auto = true;
+    $.keyElement = document.getElementById("key");
     $.box = document.getElementById("piece-box");
     $.initEventListeners();
     $.HTML.init($.JSB.piece.cache);
