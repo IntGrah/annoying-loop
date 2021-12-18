@@ -237,6 +237,20 @@ body #left #options #auto:hover {
   box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
   cursor: pointer;
 }
+body #left #options #clear {
+  width: 50px;
+  margin: 0 5px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 10px;
+  background-color: #dedede;
+  transition: background-color 0.4s, box-shadow 0.4s;
+}
+body #left #options #clear:hover {
+  background-color: #eeeeee;
+  box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
+  cursor: pointer;
+}
 body #left #output-box {
   overflow-x: auto;
 }

@@ -19,7 +19,7 @@ const $ = {
       $.JSB.eventIndex = $.HTML.index(noteElement.parentElement.parentElement);
       $.JSB.groupIndex = [$.HTML.index(noteElement.parentElement)];
       $.JSB.noteIndex = $.HTML.index(noteElement);
-  
+
       $.noteElement.parentElement.parentElement.classList.remove("selected");
       $.noteElement.classList.remove("selected");
       $.noteElement = noteElement;
@@ -81,7 +81,7 @@ const $ = {
       return element;
     },
 
-    init(bars) {
+    render(bars) {
       const selectedEvent = $.JSB.getEvent();
       const selectedGroup = $.JSB.getGroup();
       const selectedNote = $.JSB.getNote();
@@ -254,10 +254,8 @@ const $ = {
       }
     },
 
-    init() {
-      $.JSB.piece = new JSB.Piece().setKey(JSB.Key.parse("A major"))
-        .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_;|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4;]", "s")
-        .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_;|G#2 F#2 E2 G#2/ A2/|B2 B2 E3;]", "b");
+    init(piece) {
+      $.JSB.piece = piece
       $.JSB.barIndex = 0;
       $.JSB.eventIndex = 0;
       $.JSB.groupIndex = 0;
@@ -294,7 +292,7 @@ const $ = {
     },
 
     appendEvent() {
-      $.JSB.getBar().splice($.JSB.eventIndex + 1, 0, new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"));
+      $.JSB.getBar().splice($.JSB.eventIndex + 1, 0, JSB.Event.empty());
       const eventElement = $.HTML.createEvent([
         $.HTML.createGroup([], false),
         $.HTML.createGroup([], false),
@@ -307,7 +305,7 @@ const $ = {
     },
 
     appendBar() {
-      $.JSB.piece.cache.splice($.JSB.barIndex + 1, 0, [new JSB.Event(JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), JSB.Group.empty(), "normal"),]);
+      $.JSB.piece.cache.splice($.JSB.barIndex + 1, 0, [JSB.Event.empty()]);
       const barElement = $.HTML.createBar([$.HTML.createEvent([
         $.HTML.createGroup([], false),
         $.HTML.createGroup([], false),
@@ -511,6 +509,16 @@ const $ = {
     }
   },
 
+  clear() {
+    const piece = new JSB.Piece();
+    piece.cache = [[JSB.Event.empty()]];
+    $.JSB.init(piece);
+    $.keyElement.innerText = $.JSB.piece.key.string();
+    $.noteElement = undefined;
+    $.HTML.render($.JSB.piece.cache);
+    $.VF.render($.JSB.piece.bars);
+  },
+
   keydown(e) {
     if (e.ctrlKey) {
       if (e.shiftKey) {
@@ -567,20 +575,24 @@ const $ = {
     document.getElementById("append-event").addEventListener("mousedown", $.manage.appendEvent);
     document.getElementById("append-bar").addEventListener("mousedown", $.manage.appendBar);
     document.getElementById("flatten").addEventListener("mousedown", $.key.flatten);
-    $.keyElement.addEventListener("mousedown",$.key.toggleTonality);
+    $.keyElement.addEventListener("mousedown", $.key.toggleTonality);
     document.getElementById("sharpen").addEventListener("mousedown", $.key.sharpen);
     document.getElementById("harmonise").addEventListener("mousedown", () => $.JSB.harmonise(true));
     document.getElementById("auto").addEventListener("mousedown", function () { $.toggleAuto(this) });
+    document.getElementById("clear").addEventListener("mousedown", $.clear);
   },
 
   init() {
-    $.JSB.init();
+    const piece = new JSB.Piece().setKey(JSB.Key.parse("A major"))
+      .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_;|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4;]", "s")
+      .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_;|G#2 F#2 E2 G#2/ A2/|B2 B2 E3;]", "b");
+    $.JSB.init(piece);
     $.noteElement = undefined;
     $.auto = true;
     $.keyElement = document.getElementById("key");
     $.box = document.getElementById("piece-box");
     $.initEventListeners();
-    $.HTML.init($.JSB.piece.cache);
+    $.HTML.render($.JSB.piece.cache);
     $.VF.render($.JSB.piece.bars);
   }
 };
