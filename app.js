@@ -329,6 +329,9 @@ const $ = {
       if (notes.length > 1) {
         notes.splice($.JSB.noteIndex, 1);
         const noteElement = $.noteElement.previousElementSibling ?? $.noteElement.nextElementSibling;
+        if (notes.length === 1) {
+          $.noteElement.parentElement.classList.remove("multi");
+        }
         $.noteElement.remove();
         $.HTML.select(noteElement)
         $.JSB.harmonise();
@@ -339,9 +342,13 @@ const $ = {
 
     appendNote() {
       const note = $.JSB.getNote();
+      if (!note) {
+        return;
+      }
       $.JSB.getGroup().notes.splice($.JSB.noteIndex + 1, 0, new JSB.Note(JSB.Pitch.parse(note.pitch.string()), note.duration));
       const noteElement = $.HTML.createNote(note.string(), true, false, false);
       $.noteElement.insertAdjacentElement("afterend", noteElement);
+      $.noteElement.parentElement.classList.add("multi");
       $.HTML.select(noteElement);
       $.JSB.harmonise();
     },
