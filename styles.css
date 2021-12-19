@@ -48,7 +48,7 @@ body #header #npm-box #npm {
   margin: auto;
   height: 40px;
   width: 90px;
-  opacity: 0.6;
+  opacity: 0.8;
   transition: opacity 0.4s;
 }
 body #left {

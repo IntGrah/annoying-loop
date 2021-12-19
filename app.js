@@ -569,6 +569,9 @@ const $ = {
   },
 
   clear() {
+    if (!confirm("Are you sure you want to clear all data?")) {
+      return;
+    }
     const piece = new JSB.Piece();
     piece.cache = [[JSB.Event.empty()]];
     $.JSB.init(piece);
