@@ -14,7 +14,7 @@ body #header {
   height: 60px;
   background-color: #9d5ee0;
 }
-body #header #jsb-box {
+body #header #github-box {
   display: flex;
   align-items: center;
   height: 50px;
@@ -22,12 +22,34 @@ body #header #jsb-box {
   margin-left: 40px;
   transition: background-color 0.4s, box-shadow 0.4s;
 }
-body #header #jsb-box:hover {
+body #header #github-box:hover {
   background-color: #bc7eff;
   box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
 }
-body #header #jsb-box #jsb {
+body #header #github-box #github {
   margin: auto;
+}
+body #header #npm-box {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  width: 100px;
+  margin-left: 40px;
+  transition: background-color 0.4s, box-shadow 0.4s;
+}
+body #header #npm-box:hover {
+  background-color: #bc7eff;
+  box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
+}
+body #header #npm-box:hover #npm {
+  opacity: 1;
+}
+body #header #npm-box #npm {
+  margin: auto;
+  height: 40px;
+  width: 90px;
+  opacity: 0.6;
+  transition: opacity 0.4s;
 }
 body #left {
   width: 70%;

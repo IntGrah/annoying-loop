@@ -35,7 +35,7 @@ body {
     height: 60px;
     background-color: @purple6;
 
-    #jsb-box {
+    #github-box {
       display: flex;
       align-items: center;
       height: 50px;
@@ -48,8 +48,34 @@ body {
         box-shadow: @shadow;
       }
 
-      #jsb {
+      #github {
         margin: auto;
+      }
+    }
+
+    #npm-box {
+      display: flex;
+      align-items: center;
+      height: 50px;
+      width: 100px;
+      margin-left: 40px;
+      transition: background-color @slow, box-shadow @slow;
+
+      &:hover {
+        background-color: @purple5;
+        box-shadow: @shadow;
+
+        #npm {
+          opacity: 1;
+        }
+      }
+
+      #npm {
+        margin: auto;
+        height: 40px;
+        width: 90px;
+        opacity: 0.6;
+        transition: opacity @slow;
       }
     }
   }
