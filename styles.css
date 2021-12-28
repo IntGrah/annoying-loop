@@ -59,15 +59,15 @@ body #left {
 body #left #edit {
   display: flex;
   padding: 10px;
-  width: 440px;
+  width: 424px;
   max-width: calc(100% - 40px);
   height: 20px;
   background-color: #eeeeee;
   overflow-x: auto;
   overflow-y: hidden;
 }
-body #left #edit #delete-bar {
-  min-width: 100px;
+body #left #edit span {
+  min-width: 96px;
   margin: 0 5px;
   height: 20px;
   line-height: 20px;
@@ -75,49 +75,7 @@ body #left #edit #delete-bar {
   background-color: #dedede;
   transition: background-color 0.4s, box-shadow 0.4s;
 }
-body #left #edit #delete-bar:hover {
-  background-color: #eeeeee;
-  box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
-  cursor: pointer;
-}
-body #left #edit #delete-event {
-  min-width: 100px;
-  margin: 0 5px;
-  height: 20px;
-  line-height: 20px;
-  border-radius: 10px;
-  background-color: #dedede;
-  transition: background-color 0.4s, box-shadow 0.4s;
-}
-body #left #edit #delete-event:hover {
-  background-color: #eeeeee;
-  box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
-  cursor: pointer;
-}
-body #left #edit #append-event {
-  min-width: 100px;
-  margin: 0 5px;
-  height: 20px;
-  line-height: 20px;
-  border-radius: 10px;
-  background-color: #dedede;
-  transition: background-color 0.4s, box-shadow 0.4s;
-}
-body #left #edit #append-event:hover {
-  background-color: #eeeeee;
-  box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
-  cursor: pointer;
-}
-body #left #edit #append-bar {
-  min-width: 100px;
-  margin: 0 5px;
-  height: 20px;
-  line-height: 20px;
-  border-radius: 10px;
-  background-color: #dedede;
-  transition: background-color 0.4s, box-shadow 0.4s;
-}
-body #left #edit #append-bar:hover {
+body #left #edit span:hover {
   background-color: #eeeeee;
   box-shadow: #34345f40 0px 13px 27px -5px, #0303034d 0px 8px 16px -8px;
   cursor: pointer;

@@ -1,9 +1,11 @@
+import * as JSB from 'https://unpkg.com/jsb-js@1.9.15/dist/index';
+
 const VF = Vex.Flow;
 const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
 const score = factory.EasyScore();
 
 const $ = {
-  VERSION: "1.0.8",
+  VERSION: "1.1.0",
   durations: { 0.25: "16", 0.5: "8", 0.75: "8", 1: "4", 1.5: "4", 2: "2", 3: "2", 4: "1", 6: "1", 8: "1/2", 12: "1/2" },
 
   HTML: {
@@ -116,55 +118,61 @@ const $ = {
 
   VF: {
     createBar(bar, part) {
-      const accidentals = Array(6).fill($.JSB.piece.key.signature());
+      const accidentals = Array(6).fill($.JSB.piece.config.key.signature());
       return bar.map(event => $.VF.createGroup(event, part, accidentals)).flat();
     },
 
     createGroup(event, part, accidentals) {
       const group = event.get(part);
-      const vfGroup = group.notes.map(note => $.VF.createNote(note, part, accidentals));
-
-      const vfRests = [];
-      let difference = event.duration() - group.duration();
-      while (difference > 0) {
-        const duration = [12, 8, 6, 4, 3, 2, 1.5, 1, 0.75, 0.5, 0.25].filter(n => n <= difference)[0];
-        difference -= duration;
-        vfRests.unshift($.VF.createRest(duration, part));
+      const vfGroup = [];
+      for (const note of group.notes) {
+        vfGroup.push(...$.VF.createNote(note, part, accidentals));
       }
-      vfGroup.push(...vfRests);
+      vfGroup.push(...$.VF.createRest(event.duration() - group.duration(), part));
       return vfGroup;
     },
 
     createNote(note, part, accidentals) {
-      const vfNote = new VF.StaveNote({
-        clef: part === "s" || part === "a" ? "treble" : "bass",
-        keys: [
-          `${JSB.Tone.LETTERS[note.pitch.tone.letter]}/${note.pitch.octave}`
-        ],
-        duration: $.durations[note.duration],
-        stem_direction: part === "s" || part === "t" ? 1 : -1
-      });
-      if (accidentals[note.pitch.octave][note.pitch.tone.letter] !== note.pitch.tone.accidental) {
-        accidentals[note.pitch.octave][note.pitch.tone.letter] =
-          note.pitch.tone.accidental;
-        vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", 0: "n", 1: "#", 2: "##" }[note.pitch.tone.accidental]));
+      let duration = note.duration;
+      const vfNotes = [];
+      while (duration > 0) {
+        const subtrahend = [12, 8, 6, 4, 3, 2, 1.5, 1, 0.75, 0.5, 0.25].filter(n => n <= duration)[0];
+        duration -= subtrahend;
+        const vfNote = new VF.StaveNote({
+          clef: part === "s" || part === "a" ? "treble" : "bass",
+          keys: [
+            `${JSB.Tone.LETTERS[note.pitch.tone.letter]}/${note.pitch.octave}`
+          ],
+          duration: $.durations[subtrahend],
+          dots: [0.75, 1.5, 3, 6, 12].includes(subtrahend) ? 1 : 0,
+          stem_direction: part === "s" || part === "t" ? 1 : -1
+        });
+        if (accidentals[note.pitch.octave][note.pitch.tone.letter] !== note.pitch.tone.accidental) {
+          accidentals[note.pitch.octave][note.pitch.tone.letter] =
+            note.pitch.tone.accidental;
+          vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", 0: "n", 1: "#", 2: "##" }[note.pitch.tone.accidental]));
+        }
+        if ([0.75, 1.5, 3, 6, 12].includes(subtrahend)) {
+          vfNote.addDot(0);
+        }
+        vfNotes.push(vfNote);
       }
-      if ([0.75, 1.5, 3, 6, 12].includes(note.duration)) {
-        vfNote.addDot(0);
-      }
-      return vfNote;
+      return vfNotes;
     },
 
     createRest(duration, part) {
-      const vfRest = new VF.StaveNote({
-        clef: part === "s" || part === "a" ? "treble" : "bass",
-        keys: [{ "s": "A/5", "a": "C/4", "t": "C/4", "b": "E/2" }[part]],
-        duration: $.durations[duration] + "r",
-      });
-      if ([0.75, 1.5, 3, 6, 12].includes(duration)) {
-        vfRest.addDot(0);
+      const vfRests = [];
+      while (duration > 0) {
+        const subtrahend = [8, 4, 2, 1, 0.5, 0.25].filter(n => n <= duration)[0];
+        duration -= subtrahend;
+        vfRests.unshift(new VF.StaveNote({
+          clef: part === "s" || part === "a" ? "treble" : "bass",
+          keys: [{ "s": "A/5", "a": "C/4", "t": "C/4", "b": "E/2" }[part]],
+          duration: $.durations[subtrahend],
+          type: "r"
+        }));
       }
-      return vfRest;
+      return vfRests;
     },
 
     render(bars) {
@@ -177,7 +185,7 @@ const $ = {
         const bar = bars[i];
         width = 20 + 40 * bar.map(event => event.duration()).reduce((l, r) => l + r);
         if (i === 0) {
-          width += 25 + 10 * Math.abs($.JSB.piece.key.accidentals());
+          width += 25 + 10 * Math.abs($.JSB.piece.config.key.accidentals());
         }
 
         const system = factory.System({
@@ -207,7 +215,7 @@ const $ = {
           ]
         });
 
-        const vfKey = $.JSB.piece.key.tonality ? $.JSB.piece.key.tone.string() : $.JSB.piece.key.degree(2).string();
+        const vfKey = $.JSB.piece.config.key.tonality ? $.JSB.piece.config.key.tone.string() : $.JSB.piece.config.key.degree(2).string();
 
         if (i === 0) {
           upper.addClef("treble").addKeySignature(vfKey);
@@ -382,28 +390,28 @@ const $ = {
 
   key: {
     flatten() {
-      if ($.JSB.piece.key.accidentals() > -7) {
-        $.JSB.piece.key.tone = $.JSB.piece.key.degree(3);
+      if ($.JSB.piece.config.key.accidentals() > -7) {
+        $.JSB.piece.config.key.tone = $.JSB.piece.config.key.degree(3);
       }
-      $.keyElement.innerText = $.JSB.piece.key.string();
+      $.keyElement.innerText = $.JSB.piece.config.key.string();
       $.JSB.harmonise();
     },
 
     toggleTonality() {
-      if ($.JSB.piece.key.tonality) {
-        $.JSB.piece.key = new JSB.Key($.JSB.piece.key.degree(5), false);
+      if ($.JSB.piece.config.key.tonality) {
+        $.JSB.piece.config.key = new JSB.Key($.JSB.piece.config.key.degree(5), false);
       } else {
-        $.JSB.piece.key = new JSB.Key($.JSB.piece.key.degree(2), true);
+        $.JSB.piece.config.key = new JSB.Key($.JSB.piece.config.key.degree(2), true);
       }
-      $.keyElement.innerText = $.JSB.piece.key.string();
+      $.keyElement.innerText = $.JSB.piece.config.key.string();
       $.JSB.harmonise();
     },
 
     sharpen() {
-      if ($.JSB.piece.key.accidentals() < 7) {
-        $.JSB.piece.key.tone = $.JSB.piece.key.degree(4);
+      if ($.JSB.piece.config.key.accidentals() < 7) {
+        $.JSB.piece.config.key.tone = $.JSB.piece.config.key.degree(4);
       }
-      $.keyElement.innerText = $.JSB.piece.key.string();
+      $.keyElement.innerText = $.JSB.piece.config.key.string();
       $.JSB.harmonise();
     }
   },
@@ -414,7 +422,7 @@ const $ = {
         $.JSB.getGroup().notes = [JSB.Note.parse("C4")];
       }
       const note = $.JSB.getNote();
-      note.pitch.tone = JSB.Tone.parse(["C", "D", "E", "F", "G", "A", "B"][letter]).alterAccidental($.JSB.piece.key.signature()[letter]);
+      note.pitch.tone = JSB.Tone.parse(["C", "D", "E", "F", "G", "A", "B"][letter]).alterAccidental($.JSB.piece.config.key.signature()[letter]);
       $.noteElement.innerText = note.string();
       $.JSB.harmonise();
     },
@@ -582,7 +590,7 @@ const $ = {
     const piece = new JSB.Piece();
     piece.cache = [[JSB.Event.empty()]];
     $.JSB.init(piece);
-    $.keyElement.innerText = $.JSB.piece.key.string();
+    $.keyElement.innerText = $.JSB.piece.config.key.string();
     $.noteElement = undefined;
     $.HTML.render($.JSB.piece.cache);
     $.VF.render($.JSB.piece.bars);
@@ -657,7 +665,7 @@ const $ = {
   },
 
   init() {
-    const piece = new JSB.Piece().setKey(JSB.Key.parse("A major"))
+    const piece = new JSB.Piece({ key: JSB.Key.parse("A major") })
       .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_;|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4;]", "s")
       .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_;|G#2 F#2 E2 G#2/ A2/|B2 B2 E3;]", "b");
     $.JSB.init(piece);
