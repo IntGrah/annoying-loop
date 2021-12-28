@@ -119,7 +119,16 @@ const $ = {
   VF: {
     createBar(bar, part) {
       const accidentals = Array(6).fill($.JSB.piece.config.key.signature());
-      return bar.map(event => $.VF.createGroup(event, part, accidentals)).flat();
+      const vfBar = bar.map(event => $.VF.createGroup(event, part, accidentals)).flat();
+      let vfNotes = [];
+      for (const vfNote of vfBar) {
+        if (vfNote.getDuration() === "8" && vfNote.getNoteType() === "n") {
+          vfNotes.push(vfNote);
+        } else if (vfNotes.length > 1) {
+          factory.Beam({ notes: vfNotes });
+        }
+      }
+      return vfBar;
     },
 
     createGroup(event, part, accidentals) {
@@ -154,6 +163,9 @@ const $ = {
         }
         if ([0.75, 1.5, 3, 6, 12].includes(subtrahend)) {
           vfNote.addDot(0);
+        }
+        if (vfNotes.length > 0) {
+          factory.Curve({ from: vfNotes.at(-1), to: vfNote, options: { invert: true } });
         }
         vfNotes.push(vfNote);
       }
@@ -194,6 +206,7 @@ const $ = {
           width: width,
           spaceBetweenStaves: 12
         });
+
         const vfTime = {
           time: {
             num_beats: bar.map(event => event.duration()).reduce((l, r) => l + r),
