@@ -1,2 +1,2 @@
 # IntGrah.github.io
-[JSB.js](intGrah.github.io)
+[JSB.js](https://intgrah.github.io/)
