@@ -5,7 +5,7 @@ const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
 const score = factory.EasyScore();
 
 const $ = {
-  VERSION: "1.1.2",
+  VERSION: "v1.1.3",
   durations: { 0.25: "16", 0.5: "8", 0.75: "8", 1: "4", 1.5: "4", 2: "2", 3: "2", 4: "1", 6: "1", 8: "1/2", 12: "1/2" },
 
   HTML: {
@@ -677,6 +677,10 @@ const $ = {
     document.getElementById("clear").addEventListener("mousedown", $.clear);
   },
 
+  log(...args) {
+    setTimeout(console.log.bind(console, ...args));
+  },
+
   init() {
     const piece = new JSB.Piece({ key: JSB.Key.parse("A major") })
       .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_;|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4;]", "s")
@@ -688,22 +692,13 @@ const $ = {
     $.initEventListeners();
     $.HTML.render($.JSB.piece.cache);
     $.VF.render($.JSB.piece.bars);
+
+    $.log(
+      "%cJSB%c" + $.VERSION,
+      `padding: 5px; border-radius: 5px 0 0 5px; color: #000000; font-size: 16px; background-image: linear-gradient(to right, #9d5ee0, #bc7eff);`,
+      `padding: 5px; border-radius: 0 5px 5px 0; color: #000000; font-size: 16px; background-image: linear-gradient(to right, #d3a9ff, #ffffff);`
+    );
   }
 };
 
 $.init();
-
-console.info(
-  "%cJSB%cHarmoniser",
-  `padding: 5px;
-border-radius: 5px;
-color: #000000;
-background-image: linear-gradient(to right, #9d5ee0, #bc7eff);
-font-size: 20px;`,
-  `margin: 5px;
-padding: 5px;
-border-radius: 2px;
-color: #000000;
-background-image: linear-gradient(to right, #d3a9ff, #ffffff);
-  `
-);
