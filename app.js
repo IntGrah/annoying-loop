@@ -5,7 +5,7 @@ const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
 const score = factory.EasyScore();
 
 const $ = {
-  VERSION: "v1.1.4",
+  VERSION: "v1.1.5",
   durations: { 0.25: "16", 0.5: "8", 0.75: "8", 1: "4", 1.5: "4", 2: "2", 3: "2", 4: "1", 6: "1", 8: "1/2", 12: "1/2" },
 
   HTML: {
@@ -122,7 +122,7 @@ const $ = {
       const vfBar = bar.map(event => $.VF.createGroup(event, part, accidentals)).flat();
       let vfBeamNotes = [];
       for (const vfNote of vfBar) {
-        if (vfNote.getDuration() === "8" && vfNote.getNoteType() === "n") {
+        if (["8", "16"].includes(vfNote.getDuration()) && vfNote.getNoteType() === "n") {
           vfBeamNotes.push(vfNote);
         } else if (vfBeamNotes.length > 1) {
           factory.Beam({ notes: vfBeamNotes });
