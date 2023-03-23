@@ -71,6 +71,8 @@ function jazz() {
         lick1();
         lick1();
         filler4();
+        bassSolo();
+        filler6();
         tune1();
         filler5();
         rickRoll();
@@ -114,6 +116,8 @@ function jazz() {
             bebop();
         }
         filler6();
+        filler4();
+        bassSolo();
         tune1();
         filler1();
         rickRoll();
