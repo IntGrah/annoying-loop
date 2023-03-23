@@ -23,7 +23,7 @@ function filler4() {
     modulate(); noise(5); middle(); bass(false); progress(4);
     offbeat(); noise(3); middle(); bass(); progress(4);
     modulate(); noise(6); middle(); bass(false); progress(4);
-    offbeat(); middle(); bass(); progress(4);
+    offbeat(); noise(6); middle(); bass(); progress(4);
 }
 
 function filler5() {
