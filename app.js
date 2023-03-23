@@ -24,7 +24,7 @@ function jazz() {
     middle(); bass(); progress(4);
     modulate(); middle(); bass(); progress(4);
     modulate(); middle(); bass(); progress(4);
-    for (let i = 0; i < 10; ++i) {
+    for (let i = 0; i < 3; ++i) {
         if (coin()) {
             filler1();
             filler2();
@@ -46,8 +46,8 @@ function jazz() {
         improv(); improv();
         filler4();
         filler6();
-        filler5();
         if (coin()) {
+            filler5();
             riteOfSpring(); riteOfSpring();
             filler3();
             filler1();
