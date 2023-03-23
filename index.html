@@ -1,94 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>JSB.js</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://unpkg.com/vexflow@4.0.0/build/vexflow.js"></script>
-  </head>
+<html>
 
-  <body>
-    <header id="header">
-      <a href="https://github.com/IntGrah/jsb-js" id="github-box">
-        <svg
-          id="github"
-          width="77.5"
-          height="34.55"
-          viewBox="0 0 77.5 34.55"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g
-            id="svgGroup"
-            stroke-linecap="round"
-            fill-rule="evenodd"
-            font-size="9pt"
-            stroke="#000000"
-            stroke-width="0.25mm"
-            fill="black"
-            style="stroke: #000000; stroke-width: 0.25mm; fill: #000000"
-          >
-            <path
-              d="M 44.15 0 L 48.5 4.35 L 31.5 4.35 L 31.5 12.95 L 42.95 12.95 L 47.2 17.25 L 47.2 30.2 L 42.95 34.55 L 30.85 34.55 L 26.55 30.2 L 26.55 26.75 L 31.5 22 L 31.5 30.2 L 42.25 30.2 L 42.25 17.25 L 30.85 17.25 L 26.55 12.95 L 26.55 4.35 L 30.85 0 L 44.15 0 Z M 18.55 0 L 18.55 30.2 L 14.2 34.55 L 4.35 34.55 L 0 30.2 L 0 26.05 L 4.95 21.15 L 4.95 30.2 L 13.6 30.2 L 13.6 4.35 L 0.65 4.35 L 0.65 0 L 18.55 0 Z M 77.5 17.25 L 77.5 30.2 L 73.15 34.55 L 55.9 34.55 L 55.9 8.6 L 60.25 4.35 L 55.3 4.35 L 55.3 0 L 69.45 0 L 73.8 4.35 L 73.8 10.5 L 70.75 13.55 L 73.8 13.55 L 77.5 17.25 Z M 60.85 17.25 L 72.55 17.25 L 72.55 30.2 L 60.85 30.2 L 60.85 17.25 Z M 64.5 13.55 L 68.85 13.55 L 68.85 4.35 L 60.85 4.35 L 60.85 17.25 L 64.5 13.55 Z"
-              vector-effect="non-scaling-stroke"
-            />
-          </g>
-        </svg>
-      </a>
-      <a href="https://npmjs.com/package/jsb-js" id="npm-box">
-        <svg id="npm" viewBox="0 0 18 7">
-          <path
-            fill="#cb3837"
-            d="M0,0h18v6H9v1H5V6H0V0z M1,5h2V2h1v3h1V1H1V5z M6,1v5h2V5h2V1H6z M8,2h1v2H8V2z M11,1v4h2V2h1v3h1V2h1v3h1V1H11z"
-          />
-          <polygon fill="#ffffff" points="1,5 3,5 3,2 4,2 4,5 5,5 5,1 1,1 " />
-          <path fill="#ffffff" d="M6,1v5h2V5h2V1H6z M9,4H8V2h1V4z" />
-          <polygon
-            fill="#ffffff"
-            points="11,1 11,5 13,5 13,2 14,2 14,5 15,5 15,2 16,2 16,5 17,5 17,1 "
-          />
-        </svg>
-      </a>
-    </header>
-    <div id="left">
-      <div id="edit" class="section">
-        <span id="delete-bar">Delete bar</span>
-        <span id="delete-event">Delete chord</span>
-        <span id="append-event">Add chord</span>
-        <span id="append-bar">Add bar</span>
-      </div>
-      <div id="piece-box" class="section"></div>
-      <div id="options" class="section">
-        <span id="flatten">b</span>
-        <span id="key">A Major</span>
-        <span id="sharpen">#</span>
-        <span id="harmonise">Harmonise</span>
-        <span id="auto">Auto: on</span>
-        <span id="clear">Clear</span>
-      </div>
-      <div id="output-box" class="section">
-        <div id="output"></div>
-      </div>
-    </div>
-    <div id="right">
-      <div id="info-box" class="section">
-        <div id="info-header">Info</div>
-        <div id="info">
-          [A-G] to enter a note.<br /><br />
-          [1-5] to set the octave of a note.<br /><br />
-          ['] to flatten, [#] to sharpen an accidental.<br /><br />
-          [,] to double, [/] to halve the duration of a note.<br /><br />
-          [.] to dot/undot a note.<br /><br />
-          [=] to mark a note as being the harmony note in a group.<br /><br />
-          [SPACE] to clear a group of notes.<br /><br />
-          [LEFT] and [RIGHT] navigate the piece.<br />
-          By default, this moves between events.<br />
-          Adding [CTRL] navigates bars.<br />
-          Adding [SHIFT] navigates notes.
-        </div>
-      </div>
-    </div>
-    <script src="app.js" type="module"></script>
-  </body>
+<head>
+</head>
+
+<body style="display: flex; justify-content: center;">
+    <button id="jazz" style="font-size:80px;background-color:whitesmoke;text-align:center;margin:100px;">
+        Click me
+    </button>
+    <script src="http://unpkg.com/tone"></script>
+    <script src="utilities.js"></script>
+    <script src="riff.js"></script>
+    <script src="lick.js"></script>
+    <script src="filler.js"></script>
+    <script src="app.js"></script>
+</body>
+
 </html>

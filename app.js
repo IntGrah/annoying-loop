@@ -1,708 +1,160 @@
-import * as JSB from 'https://unpkg.com/jsb-js@1.9.15/dist/index';
+const rhythms = [[0, 0.75], [0, 0.25, 0.75], [0.25, 0.75], [0.25, 0.5, 0.75], [0, 0.25, 0.5, 0.75]];
+const Chord = {
+    Major7th: [7, 11, 12, 16],
+    Minor9th: [3, 7, 10, 14],
+    Major9th: [4, 7, 11, 14],
+    Dominant9th: [4, 7, 10, 14],
+    Minor11th: [7, 10, 14, 17],
+    Major11th: [7, 11, 14, 18]
+}
 
-const VF = Vex.Flow;
-const factory = new Vex.Flow.Factory({ renderer: { elementId: "output" } });
-const score = factory.EasyScore();
+let time;
+let tonic;
+let chord;
+const beat = 0.5;
+let started = false;
 
-const $ = {
-  VERSION: "v1.1.5",
-  durations: { 0.25: "16", 0.5: "8", 0.75: "8", 1: "4", 1.5: "4", 2: "2", 3: "2", 4: "1", 6: "1", 8: "1/2", 12: "1/2" },
-
-  HTML: {
-    index(element) {
-      return Array.prototype.indexOf.call(element.parentElement.children, element);
-    },
-
-    select(noteElement) {
-      if (!noteElement) {
-        return;
-      }
-      $.JSB.barIndex = $.HTML.index(noteElement.parentElement.parentElement.parentElement);
-      $.JSB.eventIndex = $.HTML.index(noteElement.parentElement.parentElement);
-      $.JSB.groupIndex = $.HTML.index(noteElement.parentElement);
-      $.JSB.noteIndex = $.HTML.index(noteElement);
-
-      $.noteElement.parentElement?.parentElement.classList.remove("selected");
-      $.noteElement.classList.remove("selected");
-      $.noteElement = noteElement;
-      $.noteElement.parentElement.parentElement.classList.add("selected");
-      $.noteElement.classList.add("selected");
-      $.noteElement.scrollIntoView({ block: "end", behavior: "smooth" });
-    },
-
-    createPiece(children) {
-      const element = document.createElement("div");
-      element.classList.add("piece");
-      element.append(...children);
-      return element;
-    },
-
-    createBar(children) {
-      const element = document.createElement("span");
-      element.classList.add("bar");
-      element.append(...children);
-      return element;
-    },
-
-    createEvent(children, selected, type) {
-      const element = document.createElement("div");
-      element.classList.add("event");
-      if (selected) {
-        element.classList.add("selected");
-      }
-      switch (type) {
-        case "cadence": element.classList.add("cadence"); break;
-        case "end": element.classList.add("end"); break;
-      }
-      element.append(...children);
-      return element;
-    },
-
-    createGroup(children, selected) {
-      const element = document.createElement("div");
-      element.classList.add("group");
-      if (children.length > 1) {
-        element.classList.add("multi");
-      }
-      if (children.length === 0) {
-        element.appendChild($.HTML.createNote("", selected, true, true));
-      } else {
-        element.append(...children);
-      }
-      return element;
-    },
-
-    createNote(string, selected, select, main) {
-      const element = document.createElement("span");
-      element.classList.add("note");
-      if (selected) {
-        element.classList.add("selected");
-        if (select) {
-          $.noteElement = element;
+function jazz() {
+    if (started === true) return;
+    started = true;
+    Tone.start();
+    time = Tone.now() + 0.5;
+    tonic = 38; chord = Chord.Minor9th;
+    middle(); bass(false); progress(4);
+    middle(); bass(); progress(4);
+    modulate(); middle(); bass(); progress(4);
+    modulate(); middle(); bass(); progress(4);
+    for (let i = 0; i < 10; ++i) {
+        if (coin()) {
+            filler1();
+            filler2();
+            improv(); improv(); improv(); improv();
+            filler3();
+            filler1();
+            filler4();
+            tune1();
+            filler2();
+            filler3();
+            if (coin()) {
+                filler4();
+                bassSolo();
+            }
         }
-      }
-      if (main) {
-        element.classList.add("main");
-      }
-      element.appendChild(document.createTextNode(string));
-      element.addEventListener("mousedown", () => $.HTML.select(element));
-      return element;
-    },
-
-    render(bars) {
-      const selectedEvent = $.JSB.getEvent();
-      const selectedGroup = $.JSB.getGroup();
-      const selectedNote = $.JSB.getNote();
-      $.box.innerHTML = "";
-      $.box.appendChild(
-        $.HTML.createPiece(
-          bars.map(
-            bar => $.HTML.createBar(
-              bar.map(
-                event => $.HTML.createEvent(
-                  [event.s, event.a, event.t, event.b].map(
-                    group => $.HTML.createGroup(
-                      group.notes.map((note, noteIndex) => $.HTML.createNote(note.string(), note === selectedNote, true, noteIndex === group.index)),
-                      group === selectedGroup
-                    )
-                  ),
-                  event === selectedEvent, event.type
-                )
-              )
-            )
-          )
-        )
-      );
+        filler1();
+        filler2();
+        tune2();
+        improv(); improv();
+        filler4();
+        filler6();
+        filler5();
+        if (coin()) {
+            riteOfSpring(); riteOfSpring();
+            filler3();
+            filler1();
+        }
+        filler1();
+        filler3();
+        filler4();
+        lick1();
+        lick1();
+        filler6();
+        filler4();
+        tune2();
+        filler5();
+        filler1();
+        if (coin()) {
+            filler2();
+            filler3();
+            improv(); improv(); improv(); improv();
+            filler1();
+            filler1();
+            filler6();
+            filler4();
+            bassSolo();
+        }
+        improv(); improv(); improv(); improv();
+        filler2();
+        filler2();
+        if (coin()) {
+            improv(); improv(); improv(); improv();
+        }
+        filler1();
+        filler2();
+        filler3();
+        tune2();
+        tune2();
+        filler1();
+        filler4();
+        filler5();
+        if (coin()) rickRoll();
+        lick2();
+        lick2();
+        filler3();
+        if (coin()) {
+            filler1();
+            improv(); improv(); improv(); improv();
+            filler3();
+            filler6();
+        }
+        filler2();
+        filler4();
+        filler1();
+        tune2();
+        tune2();
+        filler1();
+        filler4();
+        improv(); improv(); improv(); improv();
+        filler2();
+        filler3();
+        if (coin()) {
+            lick2();
+            lick2();
+        }
+        filler4();
+        if (coin()) {
+            filler4();
+            improv(); improv(); improv(); improv();
+            improv(); improv(); improv(); improv();
+            filler1();
+            rickRoll();
+            filler2();
+        }
+        riteOfSpring(); riteOfSpring();
+        filler1();
+        filler4();
+        if (coin()) tune1();
+        filler4();
+        lick1();
+        lick1();
+        improv(); improv(); improv(); improv();
+        if (coin()) {
+            filler4();
+            bebop();
+            filler4();
+            bebop();
+        }
+        filler6();
+        tune1();
+        filler1();
+        rickRoll();
+        lick1();
+        lick2();
+        tune2();
+        tune2();
+        filler1();
+        filler2();
+        improv(); improv(); improv(); improv();
+        improv(); improv(); improv(); improv();
+        filler1();
+        improv(); improv(); improv(); improv();
+        improv(); improv(); improv(); improv();
+        filler3();
+        filler1();
     }
-  },
+}
 
-  VF: {
-    createBar(bar, part) {
-      const accidentals = Array(6).fill($.JSB.piece.config.key.signature());
-      const vfBar = bar.map(event => $.VF.createGroup(event, part, accidentals)).flat();
-      let vfBeamNotes = [];
-      for (const vfNote of vfBar) {
-        if (["8", "16"].includes(vfNote.getDuration()) && vfNote.getNoteType() === "n") {
-          vfBeamNotes.push(vfNote);
-        } else if (vfBeamNotes.length > 1) {
-          factory.Beam({ notes: vfBeamNotes });
-          vfBeamNotes = [];
-        }
-      }
-      if (vfBeamNotes.length > 1) {
-        factory.Beam({ notes: vfBeamNotes });
-      }
-      return vfBar;
-    },
-
-    createGroup(event, part, accidentals) {
-      const group = event.get(part);
-      const vfGroup = [];
-      for (const note of group.notes) {
-        vfGroup.push(...$.VF.createNote(note, part, accidentals));
-      }
-      vfGroup.push(...$.VF.createRest(event.duration() - group.duration(), part));
-      return vfGroup;
-    },
-
-    createNote(note, part, accidentals) {
-      let duration = note.duration;
-      const vfNotes = [];
-      while (duration > 0) {
-        const subtrahend = [12, 8, 6, 4, 3, 2, 1.5, 1, 0.75, 0.5, 0.25].filter(n => n <= duration)[0];
-        duration -= subtrahend;
-        const vfNote = new VF.StaveNote({
-          clef: part === "s" || part === "a" ? "treble" : "bass",
-          keys: [
-            `${JSB.Tone.LETTERS[note.pitch.tone.letter]}/${note.pitch.octave}`
-          ],
-          duration: $.durations[subtrahend],
-          dots: [0.75, 1.5, 3, 6, 12].includes(subtrahend) ? 1 : 0,
-          stem_direction: part === "s" || part === "t" ? 1 : -1
-        });
-        if (accidentals[note.pitch.octave][note.pitch.tone.letter] !== note.pitch.tone.accidental) {
-          accidentals[note.pitch.octave][note.pitch.tone.letter] =
-            note.pitch.tone.accidental;
-          vfNote.addAccidental(0, new VF.Accidental({ "-2": "bb", "-1": "b", 0: "n", 1: "#", 2: "##" }[note.pitch.tone.accidental]));
-        }
-        if ([0.75, 1.5, 3, 6, 12].includes(subtrahend)) {
-          vfNote.addDot(0);
-        }
-        if (vfNotes.length > 0) {
-          factory.Curve({ from: vfNotes.at(-1), to: vfNote, options: { invert: true } });
-        }
-        vfNotes.push(vfNote);
-      }
-      return vfNotes;
-    },
-
-    createRest(duration, part) {
-      const vfRests = [];
-      while (duration > 0) {
-        const subtrahend = [8, 4, 2, 1, 0.5, 0.25].filter(n => n <= duration)[0];
-        duration -= subtrahend;
-        vfRests.unshift(new VF.StaveNote({
-          clef: part === "s" || part === "a" ? "treble" : "bass",
-          keys: [{ "s": "A/5", "a": "C/4", "t": "C/4", "b": "E/2" }[part]],
-          duration: $.durations[subtrahend],
-          type: "r"
-        }));
-      }
-      return vfRests;
-    },
-
-    render(bars) {
-      let x = 40;
-
-      factory.getContext().clear();
-      factory.getContext().resize(100000, 240);
-
-      for (let i = 0, width = 0; i < bars.length; ++i, x += width) {
-        const bar = bars[i];
-        width = 20 + 40 * bar.map(event => event.duration()).reduce((l, r) => l + r);
-        if (i === 0) {
-          width += 25 + 10 * Math.abs($.JSB.piece.config.key.accidentals());
-        }
-
-        const system = factory.System({
-          x: x,
-          y: 0,
-          width: width,
-          spaceBetweenStaves: 12
-        });
-
-        const vfTime = {
-          time: {
-            num_beats: bar.map(event => event.duration()).reduce((l, r) => l + r),
-            beat_value: 4,
-          },
-        };
-
-        const upper = system.addStave({
-          voices: [
-            score.voice($.VF.createBar(bar, "s"), vfTime).setStrict(false),
-            score.voice($.VF.createBar(bar, "a"), vfTime).setStrict(false)
-          ]
-        });
-
-        const lower = system.addStave({
-          voices: [
-            score.voice($.VF.createBar(bar, "t"), vfTime).setStrict(false),
-            score.voice($.VF.createBar(bar, "b"), vfTime).setStrict(false)
-          ]
-        });
-
-        const vfKey = $.JSB.piece.config.key.tonality ? $.JSB.piece.config.key.tone.string() : $.JSB.piece.config.key.degree(2).string();
-
-        if (i === 0) {
-          upper.addClef("treble").addKeySignature(vfKey);
-          lower.addClef("bass").addKeySignature(vfKey);
-          system.addConnector("brace");
-          system.addConnector("singleLeft");
-        }
-
-        system.addConnector(
-          i === bars.length - 1 ? "boldDoubleRight" : "singleRight"
-        );
-
-        factory.draw();
-      }
-      factory.getContext().resize(x + 40, 240);
-    }
-  },
-
-  JSB: {
-    getBar() {
-      return $.JSB.piece.cache[$.JSB.barIndex];
-    },
-
-    getEvent() {
-      return $.JSB.getBar()[$.JSB.eventIndex];
-    },
-
-    getGroup() {
-      return $.JSB.getEvent().get(["s", "a", "t", "b"][$.JSB.groupIndex]);
-    },
-
-    getNote() {
-      return $.JSB.getGroup().notes[$.JSB.noteIndex];
-    },
-
-    harmonise(force = false) {
-      if (!force && !$.auto) {
-        return;
-      }
-      try {
-        $.error?.classList.remove("error");
-        $.JSB.piece.harmonise();
-        $.VF.render($.JSB.piece.bars);
-      } catch (error) {
-        console.error(error);
-        const time = $.JSB.piece.maxTime;
-        $.error = $.box.firstElementChild.children[time.barIndex].children[time.eventIndex];
-        $.error.classList.add("error");
-        $.VF.render($.JSB.piece.cache);
-      }
-    },
-
-    init(piece) {
-      $.JSB.piece = piece
-      $.JSB.barIndex = 0;
-      $.JSB.eventIndex = 0;
-      $.JSB.groupIndex = 0;
-      $.JSB.noteIndex = 0;
-      $.JSB.piece.harmonise();
-      $.noteElement = undefined;
-    }
-  },
-
-  manage: {
-    deleteBar() {
-      if ($.JSB.piece.cache.length === 1) {
-        return;
-      }
-      $.JSB.piece.cache.splice($.JSB.barIndex, 1);
-      const barElement = $.noteElement.parentElement.parentElement.parentElement;
-      const noteElement = barElement.previousElementSibling?.lastElementChild.children[$.JSB.groupIndex].firstElementChild ?? barElement.nextElementSibling.firstElementChild.children[$.JSB.groupIndex].firstElementChild;
-      barElement.remove();
-      $.HTML.select(noteElement)
-      $.JSB.harmonise();
-    },
-
-    appendBar() {
-      $.JSB.piece.cache.splice($.JSB.barIndex + 1, 0, [JSB.Event.empty()]);
-      const barElement = $.HTML.createBar([$.HTML.createEvent([
-        $.HTML.createGroup([], false),
-        $.HTML.createGroup([], false),
-        $.HTML.createGroup([], false),
-        $.HTML.createGroup([], false),
-      ], true, "normal")]);
-      $.noteElement.parentElement.parentElement.parentElement.insertAdjacentElement("afterend", barElement);
-      $.HTML.select(barElement.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
-      $.JSB.harmonise();
-    },
-
-    deleteEvent() {
-      const bar = $.JSB.getBar();
-      if (bar.length > 1) {
-        bar.splice($.JSB.eventIndex, 1);
-        const eventElement = $.noteElement.parentElement.parentElement;
-        const noteElement = eventElement.previousElementSibling?.children[$.JSB.groupIndex].firstElementChild ?? eventElement.nextElementSibling.children[$.JSB.groupIndex].firstElementChild;
-        eventElement.remove();
-        $.HTML.select(noteElement)
-        $.JSB.harmonise();
-      } else {
-        $.manage.deleteBar();
-      }
-    },
-
-    appendEvent() {
-      $.JSB.getBar().splice($.JSB.eventIndex + 1, 0, JSB.Event.empty());
-      const eventElement = $.HTML.createEvent([
-        $.HTML.createGroup([], false),
-        $.HTML.createGroup([], false),
-        $.HTML.createGroup([], false),
-        $.HTML.createGroup([], false),
-      ], true, "normal");
-      $.noteElement.parentElement.parentElement.insertAdjacentElement("afterend", eventElement);
-      $.HTML.select(eventElement.children[$.JSB.groupIndex].firstElementChild);
-      $.JSB.harmonise();
-    },
-
-    deleteNote() {
-      const notes = $.JSB.getGroup().notes;
-      if (notes.length > 1) {
-        notes.splice($.JSB.noteIndex, 1);
-        const noteElement = $.noteElement.previousElementSibling ?? $.noteElement.nextElementSibling;
-        if (notes.length === 1) {
-          $.noteElement.parentElement.classList.remove("multi");
-        }
-        $.noteElement.remove();
-        $.HTML.select(noteElement)
-        $.JSB.harmonise();
-      } else {
-        $.manage.clearGroup();
-      }
-    },
-
-    appendNote() {
-      const note = $.JSB.getNote();
-      if (!note) {
-        return;
-      }
-      $.JSB.getGroup().notes.splice($.JSB.noteIndex + 1, 0, new JSB.Note(JSB.Pitch.parse(note.pitch.string()), note.duration));
-      const noteElement = $.HTML.createNote(note.string(), true, false, false);
-      $.noteElement.insertAdjacentElement("afterend", noteElement);
-      $.noteElement.parentElement.classList.add("multi");
-      $.HTML.select(noteElement);
-      $.JSB.harmonise();
-    },
-
-    clearGroup() {
-      $.JSB.getGroup().notes = [];
-      $.JSB.getGroup().index = 0;
-      const groupElement = $.noteElement.parentElement;
-      groupElement.innerHTML = "";
-      const noteElement = $.HTML.createNote("", true, false, true);
-      groupElement.appendChild(noteElement);
-      $.HTML.select(noteElement);
-      $.JSB.harmonise();
-    },
-
-    toggleEventType(type) {
-      const event = $.JSB.getEvent();
-      const classList = $.noteElement.parentElement.parentElement.classList;
-      if (event.type === type) {
-        classList.remove(event.type);
-        event.type = "normal";
-        classList.add("normal");
-      } else {
-        classList.remove(event.type);
-        event.type = type;
-        classList.add(type);
-      }
-      $.JSB.harmonise();
-    }
-  },
-
-  key: {
-    flatten() {
-      if ($.JSB.piece.config.key.accidentals() > -7) {
-        $.JSB.piece.config.key.tone = $.JSB.piece.config.key.degree(3);
-      }
-      $.keyElement.innerText = $.JSB.piece.config.key.string();
-      $.JSB.harmonise();
-    },
-
-    toggleTonality() {
-      if ($.JSB.piece.config.key.tonality) {
-        $.JSB.piece.config.key = new JSB.Key($.JSB.piece.config.key.degree(5), false);
-      } else {
-        $.JSB.piece.config.key = new JSB.Key($.JSB.piece.config.key.degree(2), true);
-      }
-      $.keyElement.innerText = $.JSB.piece.config.key.string();
-      $.JSB.harmonise();
-    },
-
-    sharpen() {
-      if ($.JSB.piece.config.key.accidentals() < 7) {
-        $.JSB.piece.config.key.tone = $.JSB.piece.config.key.degree(4);
-      }
-      $.keyElement.innerText = $.JSB.piece.config.key.string();
-      $.JSB.harmonise();
-    }
-  },
-
-  edit: {
-    letter(letter) {
-      if ($.JSB.getNote() === undefined) {
-        $.JSB.getGroup().notes = [JSB.Note.parse("C4")];
-      }
-      const note = $.JSB.getNote();
-      note.pitch.tone = JSB.Tone.parse(["C", "D", "E", "F", "G", "A", "B"][letter]).alterAccidental($.JSB.piece.config.key.signature()[letter]);
-      $.noteElement.innerText = note.string();
-      $.JSB.harmonise();
-    },
-
-    octave(octave) {
-      const note = $.JSB.getNote();
-      if (!note) {
-        return;
-      }
-      note.pitch.octave = octave;
-      $.noteElement.innerText = note.string();
-      $.JSB.harmonise();
-    },
-
-    accidental(accidental) {
-      const note = $.JSB.getNote();
-      if (!note) {
-        return;
-      }
-      note.pitch.tone.alterAccidental(accidental);
-      $.noteElement.innerText = note.string();
-      $.JSB.harmonise();
-    },
-
-    augmentDuration() {
-      const note = $.JSB.getNote();
-      if (!note) {
-        return;
-      }
-      switch (note.duration) {
-        case 0.25:
-        case 0.5:
-        case 0.75:
-        case 1:
-        case 1.5:
-        case 2:
-        case 3:
-        case 4:
-        case 6:
-          note.duration *= 2;
-          $.noteElement.innerText = note.string();
-          break;
-      }
-      $.JSB.harmonise();
-    },
-
-    toggleDot() {
-      const note = $.JSB.getNote();
-      if (!note) {
-        return;
-      }
-      switch (note.duration) {
-        case 0.5:
-        case 1:
-        case 2:
-        case 4:
-        case 8:
-          note.duration *= 1.5;
-          $.noteElement.innerText = note.string();
-          break;
-        case 0.75:
-        case 1.5:
-        case 3:
-        case 6:
-        case 12:
-          note.duration /= 1.5;
-          $.noteElement.innerText = note.string();
-          break;
-      }
-      $.JSB.harmonise();
-    },
-
-    diminishDuration() {
-      const note = $.JSB.getNote();
-      if (!note) {
-        return;
-      }
-      switch (note.duration) {
-        case 0.5:
-        case 1:
-        case 1.5:
-        case 2:
-        case 3:
-        case 4:
-        case 6:
-        case 8:
-        case 12:
-          note.duration *= 0.5;
-          $.noteElement.innerText = note.string();
-          break;
-      }
-      $.JSB.harmonise();
-    },
-
-    setMain() {
-      $.JSB.getGroup().index = $.JSB.noteIndex;
-      $.noteElement.parentElement.getElementsByClassName("main")[0].classList.remove("main");
-      $.noteElement.classList.add("main");
-      $.JSB.harmonise();
-    }
-  },
-
-  location: {
-    previousBar() {
-      const barElement = $.noteElement.parentElement.parentElement.parentElement;
-      $.HTML.select(barElement.previousElementSibling?.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
-    },
-
-    nextBar() {
-      const barElement = $.noteElement.parentElement.parentElement.parentElement;
-      $.HTML.select(barElement.nextElementSibling?.firstElementChild.children[$.JSB.groupIndex].firstElementChild);
-    },
-
-    previousEvent() {
-      const eventElement = $.noteElement.parentElement.parentElement;
-      $.HTML.select(eventElement.previousElementSibling?.children[$.JSB.groupIndex].firstElementChild
-        ?? eventElement.parentElement.previousElementSibling?.lastElementChild.children[$.JSB.groupIndex].firstElementChild);
-    },
-
-    nextEvent() {
-      const eventEvent = $.noteElement.parentElement.parentElement;
-      $.HTML.select(
-        eventEvent.nextElementSibling?.children[$.JSB.groupIndex].firstElementChild
-        ?? eventEvent.parentElement.nextElementSibling?.firstElementChild.children[$.JSB.groupIndex].firstElementChild
-      );
-    },
-
-    abovePart() {
-      $.HTML.select($.noteElement.parentElement.previousElementSibling?.firstElementChild);
-    },
-
-    belowPart() {
-      $.HTML.select($.noteElement.parentElement.nextElementSibling?.firstElementChild);
-    },
-
-    previousNote() {
-      $.HTML.select(
-        $.noteElement.previousElementSibling
-        ?? $.noteElement.parentElement.parentElement.previousElementSibling?.children[$.JSB.groupIndex].lastElementChild
-        ?? $.noteElement.parentElement.parentElement.parentElement.previousElementSibling?.lastElementChild.children[$.JSB.groupIndex].lastElementChild
-      );
-    },
-
-    nextNote() {
-      $.HTML.select(
-        $.noteElement.nextElementSibling
-        ?? $.noteElement.parentElement.parentElement.nextElementSibling?.children[$.JSB.groupIndex].firstElementChild
-        ?? $.noteElement.parentElement.parentElement.parentElement.nextElementSibling?.firstElementChild.children[$.JSB.groupIndex].firstElementChild
-      );
-    }
-  },
-
-  toggleAuto(element) {
-    $.auto = !$.auto;
-    element.innerText = "Auto: " + ($.auto ? "on" : "off");
-    if ($.auto) {
-      $.JSB.harmonise();
-    }
-  },
-
-  clear() {
-    if (!confirm("Are you sure you want to clear all data?")) {
-      return;
-    }
-    const piece = new JSB.Piece();
-    piece.cache = [[JSB.Event.empty()]];
-    $.JSB.init(piece);
-    $.keyElement.innerText = $.JSB.piece.config.key.string();
-    $.noteElement = undefined;
-    $.HTML.render($.JSB.piece.cache);
-    $.VF.render($.JSB.piece.bars);
-  },
-
-  keydown(e) {
-    if (e.ctrlKey) {
-      if (e.shiftKey) {
-        //
-      } else {
-        switch (e.key) {
-          case "ArrowLeft": e.preventDefault(); $.location.previousBar(); break;
-          case "ArrowRight": e.preventDefault(); $.location.nextBar(); break;
-          case "Enter": $.manage.appendBar(); break;
-          case "Backspace": $.manage.deleteBar(); break;
-        }
-      }
-    } else {
-      if (e.shiftKey) {
-        switch (e.key) {
-          case "ArrowLeft": e.preventDefault(); $.location.previousNote(); break;
-          case "ArrowRight": e.preventDefault(); $.location.nextNote(); break;
-          case "Enter": $.manage.appendNote(); break;
-          case "Backspace": $.manage.deleteNote(); break;
-          case ":": $.manage.toggleEventType("end"); break;
-        }
-      } else {
-        switch (e.key) {
-          case "a": $.edit.letter(5); break;
-          case "b": $.edit.letter(6); break;
-          case "c": $.edit.letter(0); break;
-          case "d": $.edit.letter(1); break;
-          case "e": $.edit.letter(2); break;
-          case "f": $.edit.letter(3); break;
-          case "g": $.edit.letter(4); break;
-          case "1": $.edit.octave(1); break;
-          case "2": $.edit.octave(2); break;
-          case "3": $.edit.octave(3); break;
-          case "4": $.edit.octave(4); break;
-          case "5": $.edit.octave(5); break;
-          case "#": $.edit.accidental(1); break;
-          case "'": $.edit.accidental(-1); break;
-          case ",": $.edit.augmentDuration(); break;
-          case ".": $.edit.toggleDot(); break;
-          case "/": $.edit.diminishDuration(); break;
-          case "=": $.edit.setMain(); break;
-          case "ArrowLeft": e.preventDefault(); $.location.previousEvent(); break;
-          case "ArrowRight": e.preventDefault(); $.location.nextEvent(); break;
-          case "ArrowUp": e.preventDefault(); $.location.abovePart(); break;
-          case "ArrowDown": e.preventDefault(); $.location.belowPart(); break;
-          case "Enter": $.manage.appendEvent(); break;
-          case "Backspace": $.manage.deleteEvent(); break;
-          case ";": $.manage.toggleEventType("cadence"); break;
-          case " ": e.preventDefault(); $.manage.clearGroup(); break;
-        }
-      }
-    }
-  },
-
-  initEventListeners() {
-    document.addEventListener("keydown", $.keydown);
-    document.getElementById("delete-bar").addEventListener("mousedown", $.manage.deleteBar);
-    document.getElementById("delete-event").addEventListener("mousedown", $.manage.deleteEvent);
-    document.getElementById("append-event").addEventListener("mousedown", $.manage.appendEvent);
-    document.getElementById("append-bar").addEventListener("mousedown", $.manage.appendBar);
-    document.getElementById("flatten").addEventListener("mousedown", $.key.flatten);
-    $.keyElement.addEventListener("mousedown", $.key.toggleTonality);
-    document.getElementById("sharpen").addEventListener("mousedown", $.key.sharpen);
-    document.getElementById("harmonise").addEventListener("mousedown", () => $.JSB.harmonise(true));
-    document.getElementById("auto").addEventListener("mousedown", function () { $.toggleAuto(this) });
-    document.getElementById("clear").addEventListener("mousedown", $.clear);
-  },
-
-  log(...args) {
-    setTimeout(console.log.bind(console, ...args));
-  },
-
-  init() {
-    const piece = new JSB.Piece({ key: JSB.Key.parse("A major") })
-      .parse("[A4|A4 A4 (F#4/,G#4/) A4|(B4/,A4/) G#4 F#4_;|G#4 A4 B4 E4/ F#4/|(G#4/,A4/) F#4 E4;]", "s")
-      .parse("[A3|A2 C#3 D3 F#3|D#3 E3 B2_;|G#2 F#2 E2 G#2/ A2/|B2 B2 E3;]", "b");
-    $.JSB.init(piece);
-    $.auto = true;
-    $.keyElement = document.getElementById("key");
-    $.box = document.getElementById("piece-box");
-    $.initEventListeners();
-    $.HTML.render($.JSB.piece.cache);
-    $.VF.render($.JSB.piece.bars);
-
-    $.log(
-      "%cJSB%c" + $.VERSION,
-      `padding: 5px; border-radius: 5px 0 0 5px; color: #000000; font-size: 16px; background-image: linear-gradient(to right, #9d5ee0, #bc7eff);`,
-      `padding: 5px; border-radius: 0 5px 5px 0; color: #000000; font-size: 16px; background-image: linear-gradient(to right, #d3a9ff, #ffffff);`
-    );
-  }
-};
-
-$.init();
+const button = document.getElementById("jazz");
+button.onclick = () => {
+    button.innerText = "Close tab to stop"
+    Tone.loaded().then(jazz);
+}
