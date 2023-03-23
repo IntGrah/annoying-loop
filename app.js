@@ -24,18 +24,16 @@ function jazz() {
     middle(); bass(); progress(4);
     modulate(); middle(); bass(); progress(4);
     modulate(); middle(); bass(); progress(4);
-    for (let i = 0; i < 3; ++i) {
+    for (let i = 0; i < 16; ++i) {
         if (coin()) {
             filler1();
             filler2();
             improv(); improv();
             filler3();
             tune1();
-            filler2();
             filler4();
             bassSolo();
         }
-        filler1();
         filler2();
         tune2();
         improv(); improv();
