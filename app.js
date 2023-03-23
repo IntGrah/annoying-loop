@@ -46,12 +46,10 @@ function jazz() {
         improv(); improv();
         filler4();
         filler6();
-        if (coin()) {
-            filler5();
-            riteOfSpring(); riteOfSpring();
-            filler3();
-            filler1();
-        }
+        filler5();
+        riteOfSpring(); riteOfSpring();
+        filler3();
+        filler1();
         filler1();
         filler3();
         filler4();
@@ -69,21 +67,23 @@ function jazz() {
             filler1();
             filler1();
             filler6();
+            lick1();
+            lick1();
             filler4();
             bassSolo();
         }
         improv(); improv(); improv(); improv();
         filler2();
         filler2();
-        if (coin()) {
-            improv(); improv(); improv(); improv();
-        }
+        improv(); improv(); improv(); improv();
         filler1();
         filler2();
         filler3();
         tune2();
         tune2();
         filler1();
+        lick1();
+        lick1();
         filler4();
         filler5();
         if (coin()) rickRoll();
@@ -98,6 +98,8 @@ function jazz() {
         }
         filler2();
         filler4();
+        lick1();
+        lick1();
         filler1();
         tune2();
         tune2();

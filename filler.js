@@ -1,8 +1,8 @@
 function filler1() {
     modulate(); noise(5); middle(); bass(false); progress(4);
-    rain2(); noise(3); middle(); bass(); progress(4);
+    offbeat(); noise(3); middle(); bass(); progress(4);
     modulate(); offbeat(); noise(6); middle(); bass(); progress(4);
-    modulate(); rain2(); noise(6); middle(); bass(); progress(4);
+    modulate(); offbeat(); noise(6); middle(); bass(); progress(4);
 }
 
 function filler2() {

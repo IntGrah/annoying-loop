@@ -4,7 +4,9 @@ function modulate() {
     tonic = randEl([-4, -3, -2, -1, 1, 2, 3, 4].map(n => n + tonic).filter(n => 36 <= n && n <= 47));
     chord = randEl(Object.values(Chord));
 }
+let i=0;
 function trigger(n, d, t, v = 1) {
+    i++;
     const notes = typeof n === "number" ? freq(n + tonic) : n.map(note => freq(note + tonic));
     synth.triggerAttackRelease(notes, d * beat, time + t * beat, v);
 }
