@@ -57,10 +57,10 @@ function riteOfSpring() {
     chord = Chord.Major9th;
     const mapped = chord.map(n => n + 24)
     trigger(38, 4, 0);
-    trigger(mapped, 0.2, 1)
-    trigger(mapped, 0.2, 1.25)
-    trigger(mapped, 0.2, 2.5)
-    trigger(mapped, 0.2, 2.75)
+    trigger(mapped, 0.2, 1, 0.5)
+    trigger(mapped, 0.2, 1.25, 0.5)
+    trigger(mapped, 0.2, 2.5, 0.5)
+    trigger(mapped, 0.2, 2.75, 0.5)
     middle(); bass(false); progress(4);
 }
 
