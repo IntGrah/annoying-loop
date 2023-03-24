@@ -1,7 +1,7 @@
 function offbeat() {
-    trigger(randEl(chord) + 36, 2, 1, 0.25);
-    trigger(randEl(chord) + 36, 2, 2, 0.25);
-    trigger(randEl(chord) + 36, 2, 3, 0.25);
+    trigger(randEl(chord) + 36, 1.5, 1, 0.25);
+    trigger(randEl(chord) + 36, 1.5, 2, 0.25);
+    trigger(randEl(chord) + 36, 1.25, 3, 0.25);
 }
 
 function rain1() {
