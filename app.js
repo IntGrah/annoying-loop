@@ -9,8 +9,6 @@ function jazz() {
     started = true;
     Tone.start();
     time = Tone.now() + 0.5;
-    tonic = 38;
-    fourBarBassSolo();
     tonic = 38; chord = Chord.Minor9th;
     middle(); bass(false); progress(4);
     middle(); bass(); progress(4);
@@ -19,7 +17,7 @@ function jazz() {
     tonic = 39; chord = Chord.Minor9th;
     middle(); bass(); progress(4);
 
-    for (let i = 0; i < 16; ++i) {
+    for (let i = 0; i < 12; ++i) {
         if (coin()) {
             if (coin()) {
                 fourBarFiller();
