@@ -8,7 +8,7 @@ function jazz() {
     if (started === true) return;
     started = true;
     Tone.start();
-    time = Tone.now() + 0.5;
+    time = Tone.now() + 1;
     tonic = 38; chord = Chord.Minor9th;
     middle(); bass(false); progress(4);
     middle(); bass(); progress(4);
