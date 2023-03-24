@@ -4,10 +4,10 @@ let chord;
 const beat = 0.5;
 let started = false;
 
-function jazz(short) {
+function jazz() {
     if (started === true) return;
     started = true;
-    time = Tone.now();
+    time = Tone.now() + 1;
     tonic = 38; chord = Chord.Minor9th;
     middle(); bass(false); progress(4);
     middle(); bass(); progress(4);
@@ -16,49 +16,16 @@ function jazz(short) {
     tonic = 39; chord = Chord.Minor9th;
     middle(); bass(); progress(4);
 
-    if (short) {
-        cycleLowEnd();
-    } else {
-        for (let i = 0; i < 12; ++i) {
-            cycle();
-        }
+    for (let i = 0; i < 12; ++i) {
+        cycle();
     }
 }
 
-const button1 = document.getElementById("jazz");
-button1.onclick = () => {
-    button1.innerText = "Close tab to stop";
+const button = document.getElementById("jazz");
+button.onclick = () => {
+    button.innerText = "Close tab to stop";
     Tone.start();
-    Tone.loaded().then(() => jazz(false));
-}
-
-const button2 = document.getElementById("jazz-short");
-button2.onclick = () => {
-    button2.innerText = "Close tab to stop";
-    Tone.start();
-    Tone.loaded().then(() => jazz(true));
-}
-
-function cycleLowEnd() {
-    fourBarFiller();
-    fourBarRiteOfSpring();
-    fourBarFiller();
-    fourBarImprov();
-
-    fourBarFiller();
-    fourBarScaleMelody();
-    fourBarImprov();
-    fourBarFiller();
-
-    fourBarTrillLick();
-    fourBarFiller();
-    fourBarArpeggioLick();
-    fourBarFiller();
-
-    fourBarTheLick();
-    fourBarArpeggioMelody()
-    fourBarImprov();
-    fourBarBassSolo();
+    Tone.loaded().then(jazz);
 }
 
 function cycle() {
