@@ -1,13 +1,3 @@
-const rhythms = [[0, 0.75], [0, 0.25, 0.75], [0.25, 0.75], [0.25, 0.5, 0.75], [0, 0.25, 0.5, 0.75]];
-const Chord = {
-    Major7th: [7, 11, 12, 16],
-    Minor9th: [3, 7, 10, 14],
-    Major9th: [4, 7, 11, 14],
-    Dominant9th: [4, 7, 10, 14],
-    Minor11th: [7, 10, 14, 17],
-    Major11th: [7, 11, 14, 18]
-}
-
 let time;
 let tonic;
 let chord;
@@ -19,127 +9,270 @@ function jazz() {
     started = true;
     Tone.start();
     time = Tone.now() + 0.5;
+    tonic = 38;
+    fourBarBassSolo();
     tonic = 38; chord = Chord.Minor9th;
     middle(); bass(false); progress(4);
     middle(); bass(); progress(4);
-    modulate(); middle(); bass(); progress(4);
-    modulate(); middle(); bass(); progress(4);
+    tonic = 36; chord = Chord.Dominant9th;
+    middle(); bass(); progress(4);
+    tonic = 39; chord = Chord.Minor9th;
+    middle(); bass(); progress(4);
+
     for (let i = 0; i < 16; ++i) {
         if (coin()) {
-            filler1();
-            filler2();
-            improv(); improv();
-            filler3();
-            tune1();
-            filler4();
-            bassSolo();
+            if (coin()) {
+                fourBarFiller();
+                fourBarFiller();
+                fourBarImprov();
+                fourBarFiller();
+            } else {
+                fourBarFiller();
+                fourBarScaleMelody();
+                fourBarImprov();
+                fourBarBassSolo();
+
+                if (coin()) {
+                    fourBarFiller();
+                    fourBarTheLick();
+                    fourBarImprov();
+                    fourBarTrillLick();
+                }
+            }
         }
-        filler2();
-        tune2();
-        improv(); improv();
-        filler4();
-        tune1();
-        filler5();
-        riteOfSpring(); riteOfSpring();
-        filler3();
-        bassSolo();
-        filler1();
-        tune1();
-        filler3();
-        lick1();
-        lick1();
-        filler4();
-        tune2();
-        filler1();
+
+        fourBarFiller();
+        fourBarRiteOfSpring();
+        fourBarFiller();
+        fourBarImprov();
+
+        fourBarFiller();
+        fourBarScaleMelody();
+        fourBarImprov();
+        fourBarFiller();
+
+        fourBarTrillLick();
+        fourBarFiller();
+        fourBarArpeggioLick();
+        fourBarFiller();
+
         if (coin()) {
-            filler2();
-            improv(); improv();
-            filler1();
-            tune1();
-            lick1();
-            lick1();
-            filler4();
-            bassSolo();
-        }
-        improv(); improv();
-        filler2();
-        improv(); improv();
-        filler1();
-        tune2();
-        tune2();
-        filler1();
-        lick1();
-        lick1();
-        filler4();
-        bassSolo();
-        filler6();
-        tune1();
-        filler5();
-        rickRoll();
-        lick2();
-        lick2();
-        filler3();
-        improv(); improv();;
-        filler3();
-        filler6();
-        filler4();
-        lick1();
-        lick1();
-        filler1();
-        tune2();
-        tune2();
-        filler1();
-        tune1();
-        filler4();
-        improv(); improv();
-        filler2();
-        filler3();
-        lick2();
-        lick2();
-        filler4();
-        improv(); improv(); improv(); improv();
-        filler1();
-        rickRoll();
-        filler2();
-        riteOfSpring(); riteOfSpring();
-        filler1();
-        filler4();
-        tune1();
-        filler4();
-        lick1();
-        lick1();
-        improv(); improv(); improv(); improv();
-        if (coin()) {
-            filler4();
-            bebop();
-            filler4();
-            bebop();
-        }
-        filler6();
-        filler4();
-        bassSolo();
-        tune1();
-        filler1();
-        rickRoll();
-        if (coin()) {
-            lick1();
-            lick2();
-            tune1();
-            tune2();
-            tune2();
+            fourBarArpeggioMelody();
+            fourBarFiller();
+            fourBarRiteOfSpring();
+            fourBarFiller();
         } else {
-            tune2();
-            tune2();
-            tune1();
-            lick1();
-            lick2();
+            fourBarBassSolo();
+            fourBarImprov();
+            fourBarScaleMelody();
+            fourBarFiller();
+
+            if (coin()) {
+                fourBarImprov();
+                fourBarFiller();
+                fourBarImprov();
+                fourBarArpeggioLick();
+
+                fourBarTheLick();
+                fourBarTrillLick();
+                fourBarRickRoll();
+                fourBarBassSolo();
+            } else {
+                fourBarImprov();
+                fourBarScaleMelody();
+                fourBarArpeggioMelody();
+                fourBarRiteOfSpring();
+            }
         }
-        filler1();
-        filler2();
-        improv(); improv(); improv(); improv();
-        filler1();
-        improv(); improv(); improv(); improv();
-        filler1();
+
+        fourBarFiller();
+        fourBarTheLick();
+        fourBarTrillLick();
+        fourBarScaleMelody();
+
+        if (coin()) {
+            fourBarFiller();
+            fourBarImprov();
+            fourBarFiller();
+            fourBarArpeggioMelody();
+
+            fourBarTheLick();
+            fourBarFiller();
+            fourBarBassSolo();
+            fourBarImprov();
+        }
+
+        if (coin()) {
+            fourBarImprov();
+            fourBarFiller();
+            fourBarScaleMelody();
+            fourBarTrillLick();
+
+            fourBarFiller();
+            fourBarArpeggioLick();
+            fourBarImprov();
+            fourBarArpeggioLick();
+        }
+
+        fourBarTheLick();
+        fourBarImprov();
+        fourBarFiller();
+        fourBarBassSolo();
+
+        fourBarImprov();
+        fourBarFiller();
+        fourBarImprov();
+        fourBarArpeggioLick();
+
+        if (coin()) {
+            fourBarFiller();
+            fourBarArpeggioMelody();
+            fourBarFiller();
+            fourBarRickRoll();
+
+            if (coin()) {
+                fourBarArpeggioMelody();
+                fourBarTheLick();
+                fourBarFiller();
+                fourBarRiteOfSpring();
+            }
+        }
+
+        fourBarImprov();
+        fourBarTheLick();
+        fourBarArpeggioMelody();
+        fourBarImprov();
+
+        fourBarTrillLick();
+        fourBarImprov();
+        fourBarTheLick();
+        fourBarFiller();
+
+        fourBarFiller();
+        fourBarTrillLick();
+        fourBarFiller();
+        fourBarArpeggioLick();
+
+        if (coin()) {
+            fourBarScaleMelody();
+            fourBarFiller();
+            fourBarArpeggioMelody();
+            fourBarFiller();
+
+            fourBarTheLick();
+            fourBarRickRoll();
+            fourBarTheLick();
+            fourBarRiteOfSpring();
+        }
+
+        if (coin()) {
+            fourBarFiller();
+            fourBarImprov();
+            fourBarFiller();
+            fourBarRickRoll();
+
+            fourBarRiteOfSpring();
+            fourBarArpeggioLick();
+            fourBarTheLick();
+            fourBarFiller();
+        }
+
+        fourBarFiller();
+        fourBarRiteOfSpring();
+        fourBarFiller();
+        fourBarArpeggioMelody();
+
+        fourBarImprov();
+        fourBarTrillLick();
+        fourBarImprov();
+        fourBarArpeggioLick();
+
+        fourBarFiller();
+        fourBarTheLick();
+        fourBarTheLick();
+        fourBarImprov();
+
+        if (coin()) {
+            fourBarImprov();
+            fourBarImprov();
+            fourBarImprov();
+            fourBarImprov();
+        }
+
+        if (coin()) {
+            fourBarFiller();
+            fourBarArpeggioMelody();
+            fourBarFiller();
+            fourBarScaleMelody();
+
+            fourBarFiller();
+            fourBarArpeggioLick();
+            fourBarTrillLick();
+            fourBarImprov();
+        }
+
+        fourBarFiller();
+        fourBarBassSolo();
+        fourBarArpeggioMelody();
+        fourBarTrillLick();
+
+        if (coin()) {
+            fourBarTheLick();
+            fourBarTheLick();
+            fourBarArpeggioMelody();
+            fourBarScaleMelody();
+        } else {
+            fourBarScaleMelody();
+            fourBarArpeggioMelody();
+            fourBarTheLick();
+            fourBarRickRoll();
+
+            fourBarFiller();
+            fourBarArpeggioLick();
+            fourBarFiller();
+            fourBarImprov();
+        }
+
+        fourBarFiller();
+        fourBarImprov();
+        fourBarFiller();
+        fourBarArpeggioMelody();
+
+        if (coin()) {
+            fourBarArpeggioMelody();
+            fourBarFiller();
+            fourBarImprov();
+            fourBarTrillLick();
+        }
+
+        fourBarBassSolo();
+        fourBarScaleMelody();
+        fourBarArpeggioLick();
+        fourBarImprov();
+
+        if (coin()) {
+            fourBarRickRoll();
+            fourBarTheLick();
+            fourBarTrillLick();
+            fourBarScaleMelody();
+
+            fourBarFiller();
+            fourBarArpeggioLick();
+            fourBarImprov();
+            fourBarImprov();
+        }
+
+        if (coin()) {
+            fourBarTrillLick();
+            fourBarFiller();
+            fourBarImprov();
+            fourBarArpeggioLick();
+        }
+
+        fourBarArpeggioMelody();
+        fourBarImprov();
+        fourBarArpeggioLick();
+        fourBarFiller();
     }
 }
 

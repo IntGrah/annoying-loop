@@ -1,41 +1,68 @@
-function filler1() {
-    modulate(); offbeat(); noise(5); middle(); bass(false); progress(4);
-    offbeat(); noise(3); middle(); bass(); progress(4);
-    modulate(); offbeat(); noise(6); middle(); bass(); progress(4);
-    modulate(); offbeat(); noise(6); middle(); bass(); progress(4);
+function fourBarFiller() {
+    tonic = randTonic(); chord = randChord();
+    if (coin()) highNotes();
+    const modulate1 = coin();
+    noise(randInt(3, 5));
+    middle(); bass(modulate1); progress(4);
+
+    if (modulate1) { tonic = randTonic(); chord = randChord(); }
+    highNotes();
+    noise(randInt(3, 7)); middle(); bass(); progress(4);
+
+    tonic = randTonic(); chord = randChord();
+    if (coin()) highNotes();
+    const modulate2 = coin();
+    noise(randInt(3, 5));
+    middle(); bass(modulate2); progress(4);
+
+    if (modulate2) { tonic = randTonic(); chord = randChord(); }
+    if (coin()) highNotes(); else echoRain();
+    noise(randInt(3, 7)); middle(); bass(); progress(4);
 }
 
-function filler2() {
-    modulate(); noise(4); offbeat(); middle(); bass(); progress(4);
-    modulate(); noise(6); middle(); bass(); progress(4);
-    modulate(); noise(4); offbeat(); middle(); bass(false); progress(4);
-    noise(6); middle(); bass(); progress(4);
-}
+const syncopation = [
+    [0, 0.75],
+    [0.25, 0.75],
+    [0, 0.25, 0.75],
+    [0.25, 0.5, 0.75],
+    [0, 0.25, 0.5, 0.75]
+];
 
-function filler3() {
-    modulate(); noise(5); middle(); bass(); progress(4);
-    modulate(); offbeat(); noise(3); middle(); bass(); progress(4);
-    modulate(); noise(5); middle(); bass(false); progress(4);
-    rain2(); noise(6); middle(); bass(); progress(4);
-}
+const bebop = [
+    [0.25, 0.5, 0.75],
+    [0, 0.25, 0.5, 0.75],
+    [0, 0.25, 0.5, 0.75],
+    [0, 0.25, 0.5, 0.75],
+    [0, 0.25, 0.5, 0.75],
+    [0, 0.25, 0.5, 0.75],
+    [0, 0.25, 0.5, 0.75],
+];
 
-function filler4() {
-    modulate(); noise(5); middle(); bass(false); progress(4);
-    offbeat(); noise(3); middle(); bass(); progress(4);
-    modulate(); offbeat(); noise(6); middle(); bass(false); progress(4);
-    offbeat(); noise(6); middle(); bass(); progress(4);
-}
+const arpeggiaic = [-2, -2, -2, -2, -1, 1, 2, 2, 2, 2];
+const scalic = [-2, -1, -1, -1, -1, 1, 1, 1, 1, 2];
 
-function filler5() {
-    modulate(); noise(5); bass(); progress(4);
-    modulate(); rain1(); middle(); bass(); progress(4);
-    modulate(); noise(5); bass(); progress(4);
-    modulate(); offbeat(); bass(); middle(); progress(4);
-}
+const Scale = new Map();
+Scale.set(Chord.Major7th, [7, 9, 11, 12, 14, 16, 17, 19, 21, 23]);
+Scale.set(Chord.Minor9th, [7, 8, 10, 12, 14, 15, 17, 19, 20, 22]);
+Scale.set(Chord.Major9th, [7, 9, 11, 12, 14, 16, 18, 19, 21, 23]);
+Scale.set(Chord.Dominant9th, [7, 9, 10, 12, 14, 16, 17, 19, 21, 22]);
+Scale.set(Chord.Minor11th, [7, 9, 10, 12, 14, 16, 17, 19, 21, 22]);
+Scale.set(Chord.Major11th, [7, 9, 11, 12, 14, 16, 18, 19, 21, 23]);
 
-function filler6() {
-    modulate(); noise(5); middle(); bass(); progress(4);
-    modulate(); offbeat(); rain1(); middle(); bass(); progress(4);
-    modulate(); noise(5); middle(); bass(); progress(4);
-    modulate(); offbeat(); rain1(); middle(); bass(); progress(4);
+function fourBarImprov() {
+    const rhythm = randEl([bebop, syncopation]);
+    let note = randInt(0, 10);
+    const move = contour => note = randEl(contour.map(n => n + note).filter(n => 0 <= n && n < 10));
+    for (let n = 0; n < 4; ++n) {
+        if (coin()) tonic = randTonic();
+        chord = randChord();
+        const notes = Scale.get(chord);
+        for (let i = 0; i < 4; ++i) {
+            for (const t of randEl(rhythm)) {
+                trigger(notes[move(randEl([arpeggiaic, scalic]))] + 24, 0.25, i + t);
+            }
+        }
+        if (n % 2 === 1 && echoRain());
+        middle(); bass(true); progress(4);
+    }
 }

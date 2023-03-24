@@ -1,17 +1,17 @@
-function offbeat() {
+function highNotes() {
     trigger(randEl(chord) + 36, 1.5, 1, 0.25);
     trigger(randEl(chord) + 36, 1.5, 2, 0.25);
     trigger(randEl(chord) + 36, 1.25, 3, 0.25);
 }
 
-function rain1() {
+function rain() {
     trigger(chord[3] + 24, 1.5, 0.5, 0.3);
     trigger(chord[2] + 24, 1.5, 1.25, 0.3);
     trigger(chord[1] + 24, 1.5, 2, 0.3);
     trigger(chord[1] + 24, 1.5, 2.75, 0.3);
 }
 
-function rain2() {
+function echoRain() {
     trigger(chord[3] + 36, 0.25, 0.5, 0.3);
     trigger(chord[3] + 36, 1, 0.75, 0.3);
     trigger(chord[2] + 36, 0.25, 1.25, 0.3);
@@ -21,8 +21,23 @@ function rain2() {
     trigger(chord[1] + 36, 1.5, 2.75, 0.3);
 }
 
+function twinkle() {
+    trigger(chord[3] + 36, 0.25, 1, 0.4);
+    trigger(chord[1] + 36, 0.25, 1.25, 0.4);
+    trigger(chord[2] + 36, 0.25, 1.55, 0.4);
+    trigger(chord[0] + 36, 0.25, 1.75, 0.4);
+    trigger(chord[2] + 36, 0.25, 2.25, 0.4);
+    trigger(chord[0] + 36, 0.25, 2.5, 0.4);
+    trigger(chord[1] + 36, 0.25, 2.75, 0.4);
+    trigger(chord[3] + 24, 0.25, 3, 0.4);
+}
+
 function noise(n) {
-    Array(n).fill(chord).flat().forEach(note => trigger(note + 24, 0.3, 0.25 * randInt(0, 16), 0.4))
+    for (let i = 0; i < n; ++i) {
+        for (const note of chord) {
+            trigger(note + 24, 0.3, 0.25 * randInt(0, 16), 0.4);
+        }
+    }
 }
 
 function middle() {
