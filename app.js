@@ -10,19 +10,20 @@ function jazz() {
     started = true;
     start = Tone.now() + 1;
     time = 0;
-    tonic = 38; chord = Chord.Minor9th;
+    tonic = randInt(37, 41); chord = Chord.Minor9th;
     middle(); bass(false); progress(4);
     middle(); bass(); progress(4);
-    tonic = 36; chord = Chord.Dominant9th;
+    tonic -= 2; chord = Chord.Dominant9th;
     middle(); bass(); progress(4);
-    tonic = 39; chord = Chord.Minor9th;
+    tonic += 3; chord = Chord.Minor9th;
     middle(); bass(); progress(4);
-    tonic = 38;
     filler();
     for (let i = 0; i < 24; ++i) setTimeout(cycle, i * 160000);
 }
 
 function cycle() {
+    improv();
+    improv();
     if (coin()) {
         if (coin()) {
             filler();

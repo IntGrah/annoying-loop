@@ -17,6 +17,6 @@ function trigger(n, d, t, v = 1) {
 const coin = () => Math.random() < 0.5;
 const randInt = (min, max) => Math.floor((max - min) * Math.random()) + min;
 const randEl = arr => arr[randInt(0, arr.length)];
-const randTonic = (min = 36, max = 47) => randEl([-4, -3, -2, -1, 1, 2, 3, 4].map(n => n + tonic).filter(n => min <= n && n <= max));
+const randTonic = (min = 35, max = 46) => randEl([-4, -3, -2, -1, 1, 2, 3, 4].map(n => n + tonic).filter(n => min <= n && n <= max));
 const randChord = () => randEl(Object.values(Chord));
 const progress = beats => { time += beats; };
