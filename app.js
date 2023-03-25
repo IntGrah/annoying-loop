@@ -1,71 +1,109 @@
-function filler() {
-    tonic = randTonic(); chord = randChord();
-    if (coin()) highNotes();
-    const modulate1 = coin();
-    noise(randInt(3, 5));
-    middle(); bass(modulate1); progress(4);
+const beat = 0.5;
+let start, time, tonic, chord;
 
-    if (modulate1) tonic = randTonic();
-    chord = randChord();
-    highNotes();
-    noise(randInt(3, 7)); middle(); bass(); progress(4);
+document.getElementById("start").onclick = () => Tone.start().then(jazz);
 
-    tonic = randTonic(); chord = randChord();
-    if (coin()) highNotes();
-    const modulate2 = coin();
-    noise(randInt(3, 5));
-    middle(); bass(modulate2); progress(4);
-
-    if (modulate2) tonic = randTonic();
-    chord = randChord();
-    if (coin()) highNotes(); else echoRain();
-    noise(randInt(3, 7)); middle(); bass(); progress(4);
+function jazz() {
+    start = Tone.now() + 1;
+    time = 0;
+    tonic = 38; chord = Chord.Minor9th;
+    middle(); bass(false); progress(4);
+    middle(); bass(); progress(4);
+    tonic = 36; chord = Chord.Dominant9th;
+    middle(); bass(); progress(4);
+    tonic = 39; chord = Chord.Minor9th;
+    middle(); bass(); progress(4);
+    tonic = 38;
+    filler();
+    for (let i = 0; i < 24; ++i) setTimeout(cycle, i * 160000);
 }
 
-const syncopation = [
-    [0, 0.75],
-    [0.25, 0.75],
-    [0, 0.25, 0.75],
-    [0.25, 0.5, 0.75],
-    [0, 0.25, 0.5, 0.75]
-];
+function cycle() {
+    if (coin()) {
+        if (coin()) {
+            filler();
+            filler();
+            improv();
+            filler();
 
-const bebop = [
-    [0.25, 0.5, 0.75],
-    [0, 0.25, 0.5, 0.75],
-    [0, 0.25, 0.5, 0.75],
-    [0, 0.25, 0.5, 0.75],
-    [0, 0.25, 0.5, 0.75],
-    [0, 0.25, 0.5, 0.75],
-    [0, 0.25, 0.5, 0.75],
-];
+            improv();
+            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            filler();
+            improv();
 
-const arpeggiaic = [-2, -2, -2, -1, 1, 2, 2, 2];
-const scalic = [-2, -1, -1, -1, -1, 1, 1, 1, 1, 2];
+            randEl([arpeggioLick, trillLick])();
+            improv();
+            randEl([theLick, riteOfSpring])();
+            filler();
+        } else {
+            filler();
+            theLick();
+            randEl([filler, theLick])();
+            randEl([arpeggioMelody, scaleMelody])();
 
-const Scale = new Map();
-Scale.set(Chord.Major7th, [7, 9, 11, 12, 14, 16, 17, 19, 21, 23]);
-Scale.set(Chord.Minor9th, [7, 8, 10, 12, 14, 15, 17, 19, 20, 22]);
-Scale.set(Chord.Major9th, [7, 9, 11, 12, 14, 16, 18, 19, 21, 23]);
-Scale.set(Chord.Dominant9th, [7, 9, 10, 12, 14, 16, 17, 19, 21, 22]);
-Scale.set(Chord.Minor11th, [7, 9, 10, 12, 14, 16, 17, 19, 21, 22]);
-Scale.set(Chord.Major11th, [7, 9, 11, 12, 14, 16, 18, 19, 21, 23]);
+            filler();
+            randEl([arpeggioMelody, scaleMelody])();
+            filler();
+            randEl([arpeggioMelody, scaleMelody])();
 
-function improv() {
-    const rhythm = randEl([bebop, syncopation]);
-    let index = randInt(0, 10);
-    const move = contour => index = randEl(contour.map(n => n + index).filter(n => 0 <= n && n < 10));
-    for (let n = 0; n < 4; ++n) {
-        if (coin()) tonic = randTonic();
-        chord = randChord();
-        const notes = Scale.get(chord);
-        for (let i = 0; i < 4; ++i) {
-            const contour = randEl([arpeggiaic, scalic]);
-            for (const t of randEl(rhythm)) {
-                trigger(notes[move(contour)] + 24, 0.25, i + t);
-            }
+            improv();
+            filler();
+            filler();
+            randEl([bassSolo])();
         }
-        if (n % 2 === 1 && echoRain());
-        middle(); bass(true); progress(4);
+    } else {
+        if (coin()) {
+            filler();
+            riteOfSpring();
+            improv();
+            randEl([theLick, arpeggioLick, trillLick])();
+
+            filler();
+            randEl([arpeggioMelody, scaleMelody])();
+            improv();
+            improv();
+
+            filler();
+            randEl([rickRoll, improv])();
+            improv();
+            filler();
+        } else {
+            improv();
+            filler();
+            improv();
+            improv();
+
+            filler();
+            improv();
+            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            improv();
+
+            filler();
+            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            filler();
+            bassSolo();
+        }
+    }
+
+    if (coin()) {
+        filler();
+        filler();
+        randEl([arpeggioMelody, scaleMelody, riteOfSpring])();
+        filler();
+
+        improv();
+        improv();
+        improv();
+        improv();
+    } else {
+        filler();
+        improv();
+        improv();
+        randEl([theLick, trillLick, arpeggioLick])();
+
+        improv();
+        filler();
+        randEl([rickRoll, trillLick])();
+        improv();
     }
 }
