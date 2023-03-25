@@ -22,8 +22,6 @@ function jazz() {
 }
 
 function cycle() {
-    improv();
-    improv();
     if (coin()) {
         if (coin()) {
             filler();
