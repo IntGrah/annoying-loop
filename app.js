@@ -53,7 +53,7 @@ function cycle() {
             improv();
             filler();
             filler();
-            randEl([bassSolo])();
+            bassSolo();
         }
     } else {
         if (coin()) {
@@ -70,7 +70,7 @@ function cycle() {
             filler();
             randEl([rickRoll, improv])();
             improv();
-            filler();
+            bassSolo()
         } else {
             improv();
             filler();
