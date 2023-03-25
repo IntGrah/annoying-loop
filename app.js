@@ -3,7 +3,11 @@ let start, time, tonic, chord;
 
 document.getElementById("start").onclick = () => Tone.start().then(jazz);
 
+let started = false;
+
 function jazz() {
+    if (started) return;
+    started = true;
     start = Tone.now() + 1;
     time = 0;
     tonic = 38; chord = Chord.Minor9th;
