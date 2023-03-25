@@ -16,7 +16,7 @@ function jazz() {
     tonic = 39; chord = Chord.Minor9th;
     middle(); bass(); progress(4);
 
-    for (let i = 0; i < 12; ++i) {
+    for (let i = 0; i < 8; ++i) {
         cycle();
     }
 }
@@ -131,7 +131,7 @@ function cycle() {
     fourBarImprov();
     fourBarFiller();
     fourBarImprov();
-    fourBarArpeggioLick();
+    fourBarImprov();
 
     if (coin()) {
         fourBarFiller();
@@ -181,7 +181,7 @@ function cycle() {
         fourBarRickRoll();
 
         fourBarRiteOfSpring();
-        fourBarArpeggioLick();
+        fourBarFiller();
         fourBarTheLick();
         fourBarFiller();
     }
@@ -198,6 +198,11 @@ function cycle() {
 
     fourBarFiller();
     fourBarTheLick();
+    fourBarFiller();
+    fourBarImprov();
+    
+    fourBarFiller();
+    fourBarImprov();
     fourBarTheLick();
     fourBarImprov();
 
@@ -227,6 +232,11 @@ function cycle() {
 
     if (coin()) {
         fourBarTheLick();
+        fourBarFiller();
+        fourBarImprov();
+        
+        fourBarFiller();
+        fourBarImprov();
         fourBarTheLick();
         fourBarArpeggioMelody();
         fourBarScaleMelody();
@@ -246,6 +256,11 @@ function cycle() {
     fourBarImprov();
     fourBarFiller();
     fourBarArpeggioMelody();
+    
+    fourBarFiller();
+    fourBarImprov();
+    fourBarFiller();
+    fourBarImprov();
 
     if (coin()) {
         fourBarArpeggioMelody();
@@ -253,21 +268,31 @@ function cycle() {
         fourBarImprov();
         fourBarTrillLick();
     }
-
+    
+    fourBarFiller();
+    fourBarImprov();
     fourBarBassSolo();
     fourBarScaleMelody();
+
     fourBarArpeggioLick();
+    fourBarFiller();
+    fourBarImprov();
     fourBarImprov();
 
     if (coin()) {
+        fourBarFiller();
         fourBarRickRoll();
         fourBarTheLick();
+        fourBarImprov();
+        
+        fourBarFiller();
         fourBarTrillLick();
         fourBarScaleMelody();
+        fourBarFiller();
 
         fourBarFiller();
-        fourBarArpeggioLick();
         fourBarImprov();
+        fourBarFiller();
         fourBarImprov();
     }
 
@@ -275,11 +300,21 @@ function cycle() {
         fourBarTrillLick();
         fourBarFiller();
         fourBarImprov();
+        fourBarFiller();
+
+        fourBarImprov();
         fourBarArpeggioLick();
+        fourBarFiller();
+        fourBarImprov();
     }
 
     fourBarArpeggioMelody();
     fourBarImprov();
+    fourBarFiller();
+    fourBarImprov();
+
+    fourBarFiller();
     fourBarArpeggioLick();
     fourBarFiller();
+    fourBarImprov();
 }
