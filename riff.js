@@ -52,5 +52,5 @@ function bass(end = true) {
     trigger(0, 1, 0); trigger(7, 0.25, 0.75);
     trigger(12, 1, 1); trigger(7, 0.25, 1.75);
     trigger(0, 1, 2); trigger(7, 0.25, 2.75);
-    trigger(12, 0.5, 3); if (end) { trigger(7, 0.25, 3.5); trigger(0, 0.25, 3.75); } else { trigger(7, 0.5, 3.5); }
+    trigger(12, 0.5, 3); if (end) { trigger(7, 0.25, 3.5); trigger(0, 0.25, 3.75); } else trigger(7, 0.5, 3.5);
 }

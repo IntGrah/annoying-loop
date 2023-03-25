@@ -1,13 +1,11 @@
-let time;
-let tonic;
-let chord;
 const beat = 0.5;
-let started = false;
+let start, time, tonic, chord;
+
+document.getElementById("start").onclick = () => Tone.start().then(jazz);
 
 function jazz() {
-    if (started === true) return;
-    started = true;
-    time = Tone.now() + 1;
+    start = Tone.now() + 1;
+    time = 0;
     tonic = 38; chord = Chord.Minor9th;
     middle(); bass(false); progress(4);
     middle(); bass(); progress(4);
@@ -15,306 +13,97 @@ function jazz() {
     middle(); bass(); progress(4);
     tonic = 39; chord = Chord.Minor9th;
     middle(); bass(); progress(4);
-
-    for (let i = 0; i < 8; ++i) {
-        cycle();
-    }
-}
-
-const button = document.getElementById("jazz");
-button.onclick = () => {
-    button.innerText = "Close tab to stop";
-    Tone.start();
-    Tone.loaded().then(jazz);
+    tonic = 38;
+    filler();
+    for (let i = 0; i < 24; ++i) setTimeout(cycle, i * 160000);
 }
 
 function cycle() {
     if (coin()) {
         if (coin()) {
-            fourBarFiller();
-            fourBarFiller();
-            fourBarImprov();
-            fourBarFiller();
+            filler();
+            filler();
+            improv();
+            filler();
+
+            improv();
+            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            filler();
+            improv();
+
+            randEl([arpeggioLick, trillLick])();
+            improv();
+            randEl([theLick, riteOfSpring])();
+            filler();
         } else {
-            fourBarFiller();
-            fourBarScaleMelody();
-            fourBarImprov();
-            fourBarBassSolo();
+            filler();
+            theLick();
+            randEl([filler, theLick])();
+            randEl([arpeggioMelody, scaleMelody])();
 
-            if (coin()) {
-                fourBarFiller();
-                fourBarTheLick();
-                fourBarImprov();
-                fourBarTrillLick();
-            }
+            filler();
+            randEl([arpeggioMelody, scaleMelody])();
+            filler();
+            randEl([arpeggioMelody, scaleMelody])();
+
+            improv();
+            filler();
+            filler();
+            randEl([bassSolo])();
         }
-    }
-
-    fourBarFiller();
-    fourBarRiteOfSpring();
-    fourBarFiller();
-    fourBarImprov();
-
-    fourBarFiller();
-    fourBarScaleMelody();
-    fourBarImprov();
-    fourBarFiller();
-
-    fourBarTrillLick();
-    fourBarFiller();
-    fourBarArpeggioLick();
-    fourBarFiller();
-
-    if (coin()) {
-        fourBarArpeggioMelody();
-        fourBarFiller();
-        fourBarRiteOfSpring();
-        fourBarFiller();
     } else {
-        fourBarBassSolo();
-        fourBarImprov();
-        fourBarScaleMelody();
-        fourBarFiller();
-
         if (coin()) {
-            fourBarImprov();
-            fourBarFiller();
-            fourBarImprov();
-            fourBarArpeggioLick();
+            filler();
+            riteOfSpring();
+            improv();
+            randEl([theLick, arpeggioLick, trillLick])();
 
-            fourBarTheLick();
-            fourBarTrillLick();
-            fourBarRickRoll();
-            fourBarBassSolo();
+            filler();
+            randEl([arpeggioMelody, scaleMelody])();
+            improv();
+            improv();
+
+            filler();
+            randEl([rickRoll, improv])();
+            improv();
+            filler();
         } else {
-            fourBarImprov();
-            fourBarScaleMelody();
-            fourBarArpeggioMelody();
-            fourBarRiteOfSpring();
+            improv();
+            filler();
+            improv();
+            improv();
+
+            filler();
+            improv();
+            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            improv();
+
+            filler();
+            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            filler();
+            bassSolo();
         }
     }
 
-    fourBarFiller();
-    fourBarTheLick();
-    fourBarTrillLick();
-    fourBarScaleMelody();
-
     if (coin()) {
-        fourBarFiller();
-        fourBarImprov();
-        fourBarFiller();
-        fourBarArpeggioMelody();
+        filler();
+        filler();
+        randEl([arpeggioMelody, scaleMelody, riteOfSpring])();
+        filler();
 
-        fourBarTheLick();
-        fourBarFiller();
-        fourBarBassSolo();
-        fourBarImprov();
-    }
-
-    if (coin()) {
-        fourBarImprov();
-        fourBarFiller();
-        fourBarScaleMelody();
-        fourBarTrillLick();
-
-        fourBarFiller();
-        fourBarArpeggioLick();
-        fourBarImprov();
-        fourBarArpeggioLick();
-    }
-
-    fourBarTheLick();
-    fourBarImprov();
-    fourBarFiller();
-    fourBarBassSolo();
-
-    fourBarImprov();
-    fourBarFiller();
-    fourBarImprov();
-    fourBarImprov();
-
-    if (coin()) {
-        fourBarFiller();
-        fourBarArpeggioMelody();
-        fourBarFiller();
-        fourBarRickRoll();
-
-        if (coin()) {
-            fourBarArpeggioMelody();
-            fourBarTheLick();
-            fourBarFiller();
-            fourBarRiteOfSpring();
-        }
-    }
-
-    fourBarImprov();
-    fourBarTheLick();
-    fourBarArpeggioMelody();
-    fourBarImprov();
-
-    fourBarTrillLick();
-    fourBarImprov();
-    fourBarTheLick();
-    fourBarFiller();
-
-    fourBarFiller();
-    fourBarTrillLick();
-    fourBarFiller();
-    fourBarArpeggioLick();
-
-    if (coin()) {
-        fourBarScaleMelody();
-        fourBarFiller();
-        fourBarArpeggioMelody();
-        fourBarFiller();
-
-        fourBarTheLick();
-        fourBarRickRoll();
-        fourBarTheLick();
-        fourBarRiteOfSpring();
-    }
-
-    if (coin()) {
-        fourBarFiller();
-        fourBarImprov();
-        fourBarFiller();
-        fourBarRickRoll();
-
-        fourBarRiteOfSpring();
-        fourBarFiller();
-        fourBarTheLick();
-        fourBarFiller();
-    }
-
-    fourBarFiller();
-    fourBarRiteOfSpring();
-    fourBarFiller();
-    fourBarArpeggioMelody();
-
-    fourBarImprov();
-    fourBarTrillLick();
-    fourBarImprov();
-    fourBarArpeggioLick();
-
-    fourBarFiller();
-    fourBarTheLick();
-    fourBarFiller();
-    fourBarImprov();
-    
-    fourBarFiller();
-    fourBarImprov();
-    fourBarTheLick();
-    fourBarImprov();
-
-    if (coin()) {
-        fourBarImprov();
-        fourBarImprov();
-        fourBarImprov();
-        fourBarImprov();
-    }
-
-    if (coin()) {
-        fourBarFiller();
-        fourBarArpeggioMelody();
-        fourBarFiller();
-        fourBarScaleMelody();
-
-        fourBarFiller();
-        fourBarArpeggioLick();
-        fourBarTrillLick();
-        fourBarImprov();
-    }
-
-    fourBarFiller();
-    fourBarBassSolo();
-    fourBarArpeggioMelody();
-    fourBarTrillLick();
-
-    if (coin()) {
-        fourBarTheLick();
-        fourBarFiller();
-        fourBarImprov();
-        
-        fourBarFiller();
-        fourBarImprov();
-        fourBarTheLick();
-        fourBarArpeggioMelody();
-        fourBarScaleMelody();
+        improv();
+        improv();
+        improv();
+        improv();
     } else {
-        fourBarScaleMelody();
-        fourBarArpeggioMelody();
-        fourBarTheLick();
-        fourBarRickRoll();
+        filler();
+        improv();
+        improv();
+        randEl([theLick, trillLick, arpeggioLick])();
 
-        fourBarFiller();
-        fourBarArpeggioLick();
-        fourBarFiller();
-        fourBarImprov();
+        improv();
+        filler();
+        randEl([rickRoll, trillLick])();
+        improv();
     }
-
-    fourBarFiller();
-    fourBarImprov();
-    fourBarFiller();
-    fourBarArpeggioMelody();
-    
-    fourBarFiller();
-    fourBarImprov();
-    fourBarFiller();
-    fourBarImprov();
-
-    if (coin()) {
-        fourBarArpeggioMelody();
-        fourBarFiller();
-        fourBarImprov();
-        fourBarTrillLick();
-    }
-    
-    fourBarFiller();
-    fourBarImprov();
-    fourBarBassSolo();
-    fourBarScaleMelody();
-
-    fourBarArpeggioLick();
-    fourBarFiller();
-    fourBarImprov();
-    fourBarImprov();
-
-    if (coin()) {
-        fourBarFiller();
-        fourBarRickRoll();
-        fourBarTheLick();
-        fourBarImprov();
-        
-        fourBarFiller();
-        fourBarTrillLick();
-        fourBarScaleMelody();
-        fourBarFiller();
-
-        fourBarFiller();
-        fourBarImprov();
-        fourBarFiller();
-        fourBarImprov();
-    }
-
-    if (coin()) {
-        fourBarTrillLick();
-        fourBarFiller();
-        fourBarImprov();
-        fourBarFiller();
-
-        fourBarImprov();
-        fourBarArpeggioLick();
-        fourBarFiller();
-        fourBarImprov();
-    }
-
-    fourBarArpeggioMelody();
-    fourBarImprov();
-    fourBarFiller();
-    fourBarImprov();
-
-    fourBarFiller();
-    fourBarArpeggioLick();
-    fourBarFiller();
-    fourBarImprov();
 }
