@@ -79,11 +79,11 @@ function cycle() {
             filler();
             randEl([melody1, melody2, melody3])();
             improv();
-            improv();
+            randEl([bebop1, improv])();
 
             filler();
             bebop1();
-            randEl([bebop1, bebop2, bebop3, bebop4, bebop5])();
+            randEl([bebop2, bebop3, bebop4, bebop5])();
             melody2();
 
             filler();
