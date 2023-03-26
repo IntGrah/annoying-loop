@@ -35,11 +35,16 @@ function cycle() {
             filler();
 
             improv();
-            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            randEl([melody1, melody2, riteOfSpring, theLick, bebop1, bebop4, bebop5, rickRoll])();
             filler();
             improv();
 
-            randEl([arpeggioLick, trillLick])();
+            randEl([bebop3, bebop4])();
+            improv();
+            bebop5();
+            filler();
+
+            melody1();
             improv();
             randEl([theLick, riteOfSpring])();
             filler();
@@ -47,15 +52,20 @@ function cycle() {
             filler();
             theLick();
             randEl([filler, theLick])();
-            randEl([arpeggioMelody, scaleMelody])();
+            randEl([melody1, melody2])();
 
             filler();
-            randEl([arpeggioMelody, scaleMelody])();
+            bebop3();
+            bebop2();
+            improv();
+
             filler();
-            randEl([arpeggioMelody, scaleMelody])();
+            randEl([melody1, melody2])();
+            filler();
+            randEl([melody1, melody2])();
 
             improv();
-            filler();
+            randEl([bebop1, bebop2, bebop3, bebop4, bebop5])();
             filler();
             bassSolo();
         }
@@ -64,54 +74,79 @@ function cycle() {
             filler();
             riteOfSpring();
             improv();
-            randEl([theLick, arpeggioLick, trillLick])();
+            theLick();
 
             filler();
-            randEl([arpeggioMelody, scaleMelody])();
+            randEl([melody1, melody2, melody3])();
             improv();
             improv();
+
+            filler();
+            bebop1();
+            randEl([bebop1, bebop2, bebop3, bebop4, bebop5])();
+            melody2();
 
             filler();
             randEl([rickRoll, improv])();
-            improv();
+            filler();
             bassSolo()
         } else {
             improv();
-            filler();
+            melody3();
+            bebop1();
             improv();
-            improv();
+
+            riteOfSpring();
+            bebop2();
+            bebop5();
+            theLick();
 
             filler();
             improv();
-            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            randEl([melody1, melody2, bebop3, riteOfSpring, rickRoll])();
             improv();
 
             filler();
-            randEl([arpeggioMelody, scaleMelody, riteOfSpring, theLick, trillLick, arpeggioLick, rickRoll])();
+            randEl([melody1, melody2, theLick, rickRoll])();
             filler();
             bassSolo();
         }
     }
 
+    filler();
+    randEl([melody1, melody2, melody3, riteOfSpring, theLick, rickRoll])();
+    improv();
+    randEl([bebop4, bebop5])();
+
+    filler();
+    randEl([melody3, riteOfSpring, theLick])();
+    randEl([improv, bebop3])();
+    improv();
+
     if (coin()) {
+        randEl([filler, improv, bebop2])();
         filler();
-        filler();
-        randEl([arpeggioMelody, scaleMelody, riteOfSpring])();
+        randEl([melody1, melody2, melody3, riteOfSpring])();
         filler();
 
         improv();
+        randEl([bebop2, bebop3])();
         improv();
-        improv();
-        improv();
+        bebop1();
     } else {
         filler();
+        randEl([improv, bebop3])();
         improv();
-        improv();
-        randEl([theLick, trillLick, arpeggioLick])();
+        randEl([theLick, melody3, bebop4, bebop5])();
 
         improv();
         filler();
-        randEl([rickRoll, trillLick])();
+        randEl([rickRoll, bebop2, bebop4])();
         improv();
     }
+
+    bebop1();
+    improv();
+    bebop2();
+    filler();
 }

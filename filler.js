@@ -22,7 +22,7 @@ function filler() {
     noise(randInt(3, 7)); middle(); bass(); progress(4);
 }
 
-const syncopation = [
+const syncopatedRhythm = [
     [0, 0.75],
     [0.25, 0.75],
     [0, 0.25, 0.75],
@@ -30,7 +30,7 @@ const syncopation = [
     [0, 0.25, 0.5, 0.75]
 ];
 
-const bebop = [
+const bebopRhythm = [
     [0.25, 0.5, 0.75],
     [0, 0.25, 0.5, 0.75],
     [0, 0.25, 0.5, 0.75],
@@ -56,7 +56,7 @@ Scale.set(Chord.Minor11th, [7, 9, 10, 12, 14, 17, 19, 21, 22]);
 Scale.set(Chord.Major11th, [7, 9, 11, 12, 14, 16, 18, 19, 21]);
 
 function improv() {
-    const rhythm = randEl([bebop, syncopation]);
+    const rhythm = randEl([bebopRhythm, syncopatedRhythm]);
     let index = randInt(0, 9);
     const move = contour => randEl(contour.map(n => n + index).filter(n => 0 <= n && n < 9));
     for (let n = 0; n < 4; ++n) {
