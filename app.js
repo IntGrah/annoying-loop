@@ -31,13 +31,13 @@ function cycle() {
         if (coin()) {
             filler();
             filler();
-            improv();
+            randEl([melody3, riteOfSpring])();
             filler();
 
             improv();
-            randEl([melody1, melody2, riteOfSpring, theLick, bebop1, bebop4, bebop5, rickRoll])();
+            randEl([melody1, melody2, bebop4, bebop5, rickRoll])();
             filler();
-            improv();
+            filler();
 
             randEl([bebop3, bebop4])();
             improv();
@@ -50,7 +50,7 @@ function cycle() {
             filler();
         } else {
             filler();
-            theLick();
+            filler();
             randEl([filler, theLick])();
             randEl([melody1, melody2])();
 
@@ -74,12 +74,12 @@ function cycle() {
             filler();
             riteOfSpring();
             improv();
-            theLick();
+            filler();
 
             filler();
             randEl([melody1, melody2, melody3])();
             improv();
-            randEl([bebop1, improv])();
+            filler();
 
             filler();
             bebop1();
@@ -94,7 +94,7 @@ function cycle() {
             improv();
             melody3();
             bebop1();
-            improv();
+            filler();
 
             riteOfSpring();
             bebop2();
@@ -102,7 +102,7 @@ function cycle() {
             theLick();
 
             filler();
-            improv();
+        filler();
             randEl([melody1, melody2, bebop3, riteOfSpring, rickRoll])();
             improv();
 
@@ -119,8 +119,8 @@ function cycle() {
     randEl([bebop4, bebop5])();
 
     filler();
-    randEl([melody3, riteOfSpring, theLick])();
-    randEl([improv, bebop3])();
+    randEl([melody3, riteOfSpring])();
+    bebop3();
     improv();
 
     if (coin()) {
@@ -129,14 +129,14 @@ function cycle() {
         randEl([melody1, melody2, melody3, riteOfSpring])();
         filler();
 
-        improv();
+        filler();
         randEl([bebop2, bebop3])();
         improv();
         bebop1();
     } else {
         filler();
         randEl([improv, bebop3])();
-        improv();
+        filler();
         randEl([theLick, melody3, bebop4, bebop5])();
 
         improv();
@@ -145,7 +145,7 @@ function cycle() {
         improv();
     }
 
-    bebop1();
+    randEl([bebop1, melody3])();
     improv();
     bebop2();
     filler();
