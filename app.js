@@ -4,13 +4,13 @@ let start, time, tonic, chord;
 const button = document.getElementById("start");
 button.onclick = () => {
     button.style.fontSize = "50px";
-    button.innerHTML = "There! I started playing some jazz.<br><br>If you can't hear anything, then<br>maybe try turning up the volume.<br><br>If that doesn't work, then maybe your phone is just bad. Yikes.<br>Maybe try an actual computer.<br><br>Oh, by the way, if you want to turn this off,<br>first re-evaluate your life decisions,<br>and then close the website."
-    Tone.start().then(jazz);
+    button.innerHTML = "Started.<br /><br />Does not work on mobile.<br /><br />Close tab to stop."
+    Tone.start().then(start);
 }
 
 let started = false;
 
-function jazz() {
+function start() {
     if (started) return;
     started = true;
     start = Tone.now() + 1;
