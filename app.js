@@ -1,19 +1,19 @@
 const beat = 0.5;
-let startT, time, tonic, chord;
+let start, time, tonic, chord;
 
 const button = document.getElementById("start");
 button.onclick = () => {
     button.style.fontSize = "50px";
     button.innerHTML = "close tab to stop"
-    Tone.start().then(start);
+    Tone.start().then(run);
 }
 
 let started = false;
 
-function start() {
+function run() {
     if (started) return;
     started = true;
-    startT = Tone.now() + 1;
+    start = Tone.now() + 1;
     time = 0;
     tonic = randInt(37, 41); chord = Chord.Minor9th;
     middle(); bass(false); progress(4);
