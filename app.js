@@ -4,7 +4,7 @@ let startT, time, tonic, chord;
 const button = document.getElementById("start");
 button.onclick = () => {
     button.style.fontSize = "50px";
-    button.innerHTML = "Started.<br /><br />Does not work on mobile.<br /><br />Close tab to stop."
+    button.innerHTML = "close tab to stop"
     Tone.start().then(start);
 }
 
