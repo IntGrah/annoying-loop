@@ -1,5 +1,5 @@
 const beat = 0.5;
-let start, time, tonic, chord;
+let startT, time, tonic, chord;
 
 const button = document.getElementById("start");
 button.onclick = () => {
@@ -13,7 +13,7 @@ let started = false;
 function start() {
     if (started) return;
     started = true;
-    start = Tone.now() + 1;
+    startT = Tone.now() + 1;
     time = 0;
     tonic = randInt(37, 41); chord = Chord.Minor9th;
     middle(); bass(false); progress(4);
