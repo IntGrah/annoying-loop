@@ -27,6 +27,7 @@ function start() {
 }
 
 function cycle() {
+    console.log("Cycle");
     if (coin()) {
         if (coin()) {
             filler();
